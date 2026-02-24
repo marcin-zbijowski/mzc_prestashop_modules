@@ -636,7 +636,7 @@ class Mzc_landing_newsletter extends Module
             'meta_title' => $metaTitle,
             'meta_description' => $metaDescription,
             'meta_keywords' => $metaKeywords,
-            'landing_message' => $message,
+            'landing_message_b64' => base64_encode($message),
             'custom_css' => Configuration::get('MZC_LANDING_CSS') ?: '',
             'id_module' => (int) $this->id,
             'gdpr_consent' => $gdprConsent ?: '',
