@@ -1,0 +1,22 @@
+{
+  "name": "mzc/carrier-attribute",
+  "description": "Restrict available shipping carriers based on product attribute values (e.g. sizes). Whitelist model for PrestaShop 8.0+.",
+  "version": "1.0.0",
+  "type": "prestashop-module",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Marcin Zbijowski Consulting",
+      "homepage": "https://zbijowski.consulting"
+    }
+  ],
+  "require": {
+    "php": ">=8.1"
+  },
+  "autoload": {
+    "classmap": [
+      "mzc_carrier_attribute.php",
+      "classes/"
+    ]
+  }
+}

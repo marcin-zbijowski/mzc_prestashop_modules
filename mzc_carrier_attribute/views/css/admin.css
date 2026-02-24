@@ -1,0 +1,61 @@
+/**
+ * MZC Carrier Attribute — Back-office styles
+ *
+ * @author    Marcin Zbijowski Consulting
+ * @copyright 2026 Marcin Zbijowski Consulting
+ * @license   MIT
+ */
+
+/* Attribute group panels */
+.mzc-attr-group {
+  margin-bottom: 10px;
+}
+
+.mzc-attr-group .panel-heading {
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #ddd;
+  padding: 10px 15px;
+  font-size: 14px;
+}
+
+.mzc-attr-group .panel-heading:hover {
+  background-color: #e8e8e8;
+}
+
+.mzc-attr-group .panel-heading .badge {
+  background-color: #25b9d7;
+  color: #fff;
+  margin-left: 10px;
+  font-size: 11px;
+}
+
+/* Carrier checkboxes */
+.mzc-carrier-checkbox {
+  display: inline-block;
+  margin-right: 15px;
+  margin-bottom: 5px;
+  font-weight: normal;
+  cursor: pointer;
+  padding: 3px 8px;
+  border-radius: 3px;
+  transition: background-color 0.15s;
+}
+
+.mzc-carrier-checkbox:hover {
+  background-color: #f0f7ff;
+}
+
+.mzc-carrier-checkbox input[type='checkbox'] {
+  margin-right: 5px;
+  vertical-align: middle;
+}
+
+/* Table styling */
+.mzc-attr-group .table td {
+  vertical-align: middle;
+}
+
+.mzc-attr-group .table th {
+  background-color: #fafafa;
+  font-weight: 600;
+}
