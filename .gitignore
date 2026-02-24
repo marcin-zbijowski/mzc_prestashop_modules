@@ -1,0 +1,5 @@
+prestashop_data
+prestashop_img
+prestashop_modules
+.env
+.env.*

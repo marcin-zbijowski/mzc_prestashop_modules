@@ -1,0 +1,50 @@
+/**
+ * MZC Landing Newsletter – Back-office admin styles
+ */
+
+/* ---- CSS Presets panel ---- */
+.mzc-preset-grid {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.mzc-preset-card {
+  flex: 1;
+  min-width: 200px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+}
+
+.mzc-preset-icon {
+  font-size: 24px;
+  color: #555;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.mzc-preset-desc {
+  font-size: 12px;
+  color: #888;
+  margin: 8px 0;
+}
+
+/* ---- Subscriber table ---- */
+.mzc-subscriber-body {
+  padding-top: 0;
+}
+
+.mzc-inline-form {
+  display: inline;
+}
+
+/* ---- CSS Documentation ---- */
+.mzc-css-example {
+  background: #f5f5f5;
+  padding: 12px;
+  border-radius: 4px;
+  font-size: 13px;
+}

@@ -1,0 +1,71 @@
+body {
+  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  min-height: 100vh;
+}
+
+.mzc-landing-content {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.mzc-landing-logo img {
+  filter: brightness(0) invert(1);
+}
+
+.mzc-landing-message h1,
+.mzc-landing-message h2,
+.mzc-landing-message h3 {
+  color: #fff;
+}
+
+.mzc-landing-message p {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.mzc-form-input {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+.mzc-form-input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.mzc-form-input:focus {
+  border-color: #7c4dff;
+  box-shadow: 0 0 0 2px rgba(124, 77, 255, 0.2);
+}
+
+.mzc-form-button {
+  background: linear-gradient(135deg, #7c4dff, #448aff);
+}
+
+.mzc-form-button:hover {
+  background: linear-gradient(135deg, #6a3de8, #3579ee);
+}
+
+.mzc-gdpr-consent,
+.mzc-gdpr-consent label,
+.mzc-gdpr-consent a {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.mzc-gdpr-consent a:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.mzc-form-feedback.mzc-success {
+  background: rgba(46, 125, 50, 0.2);
+  color: #81c784;
+  border-color: rgba(46, 125, 50, 0.3);
+}
+
+.mzc-form-feedback.mzc-error {
+  background: rgba(198, 40, 40, 0.2);
+  color: #ef9a9a;
+  border-color: rgba(198, 40, 40, 0.3);
+}

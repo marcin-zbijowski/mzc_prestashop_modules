@@ -1,0 +1,22 @@
+{
+  "name": "mzc/landing-newsletter",
+  "description": "Display a landing page with newsletter signup when your PrestaShop store is not ready yet.",
+  "version": "1.0.0",
+  "type": "prestashop-module",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Marcin Zbijowski Consulting",
+      "homepage": "https://zbijowski.consulting"
+    }
+  ],
+  "require": {
+    "php": ">=8.1"
+  },
+  "autoload": {
+    "classmap": [
+      "mzc_landing_newsletter.php",
+      "controllers/"
+    ]
+  }
+}
