@@ -12,11 +12,11 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-class Mzc_landing_newsletter extends Module
+class Mzclandingnewsletter extends Module
 {
     public function __construct()
     {
-        $this->name = 'mzc_landing_newsletter';
+        $this->name = 'mzclandingnewsletter';
         $this->tab = 'front_office_features';
         $this->version = '1.0.0';
         $this->author = 'Marcin Zbijowski Consulting';
@@ -729,7 +729,7 @@ class Mzc_landing_newsletter extends Module
     {
         $hour = (int) floor(time() / 3600) + $hourOffset;
 
-        return hash('sha256', _COOKIE_KEY_ . 'mzc_landing_newsletter' . $hour);
+        return hash('sha256', _COOKIE_KEY_ . 'mzclandingnewsletter' . $hour);
     }
 
     /**
@@ -752,6 +752,16 @@ class Mzc_landing_newsletter extends Module
     // -------------------------------------------------------------------------
     // GDPR hooks
     // -------------------------------------------------------------------------
+
+    /**
+     * GDPR: Register consent message for this module.
+     * Required by psgdpr when the registerGDPRConsent hook is registered.
+     */
+    public function hookRegisterGDPRConsent()
+    {
+        // This hook is used by psgdpr to know that this module collects personal data.
+        // No return value is needed; psgdpr handles consent UI automatically.
+    }
 
     /**
      * GDPR: Delete customer data collected by this module

@@ -26,7 +26,7 @@ services:
       - ./prestashop_data:/var/www/html
       - ./prestashop_img:/var/www/html/img
       - ./prestashop_modules:/var/www/html/modules
-      - ./mzc_landing_newsletter:/var/www/html/modules/mzc_landing_newsletter
+      - ./mzclandingnewsletter:/var/www/html/modules/mzclandingnewsletter
       - ./mzc_carrier_attribute:/var/www/html/modules/mzc_carrier_attribute
     networks:
       - prestashop-net
