@@ -15,7 +15,7 @@
   },
   "autoload": {
     "classmap": [
-      "mzclandingnewsletter.php",
+      "mzc_landing_newsletter.php",
       "controllers/"
     ]
   }

@@ -12,11 +12,11 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-class Mzclandingnewsletter extends Module
+class Mzc_landing_newsletter extends Module
 {
     public function __construct()
     {
-        $this->name = 'mzclandingnewsletter';
+        $this->name = 'mzc_landing_newsletter';
         $this->tab = 'front_office_features';
         $this->version = '1.0.0';
         $this->author = 'Marcin Zbijowski Consulting';
@@ -337,6 +337,14 @@ class Mzclandingnewsletter extends Module
     {
         $languages = Language::getLanguages(false);
         $defaultLang = (int) Configuration::get('PS_LANG_DEFAULT');
+
+        // PS9 HelperForm template expects 'is_default' on each language entry
+        foreach ($languages as &$lang) {
+            if (!isset($lang['is_default'])) {
+                $lang['is_default'] = ((int) $lang['id_lang'] === $defaultLang) ? 1 : 0;
+            }
+        }
+        unset($lang);
 
         $fieldsForm = [
             'form' => [
@@ -729,7 +737,7 @@ class Mzclandingnewsletter extends Module
     {
         $hour = (int) floor(time() / 3600) + $hourOffset;
 
-        return hash('sha256', _COOKIE_KEY_ . 'mzclandingnewsletter' . $hour);
+        return hash('sha256', _COOKIE_KEY_ . 'mzc_landing_newsletter' . $hour);
     }
 
     /**

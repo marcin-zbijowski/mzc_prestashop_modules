@@ -65,7 +65,7 @@ Subscribers are stored in PrestaShop's native newsletter table (ps_emailsubscrip
 ### Manual Installation
 
 1. Extract the ZIP file
-2. Upload the mzclandingnewsletter folder to your PrestaShop's modules directory via FTP
+2. Upload the mzc_landing_newsletter folder to your PrestaShop's modules directory via FTP
 3. Go to Modules > Module Manager in the back office
 4. Search for MZC Landing Newsletter
 5. Click Install, then Configure
@@ -362,7 +362,7 @@ To translate the module into additional languages or modify existing translation
 4. Find MZC Landing Newsletter in the module list
 5. Enter your translations and click Save
 
-PrestaShop saves the translation file to modules/mzclandingnewsletter/translations/ automatically.
+PrestaShop saves the translation file to modules/mzc_landing_newsletter/translations/ automatically.
 
 ---
 

@@ -74,11 +74,11 @@
                                name="email"
                                id="mzc-email"
                                class="mzc-form-input"
-                               placeholder="{l s='Enter your email address' mod='mzclandingnewsletter'}"
+                               placeholder="{l s='Enter your email address' mod='mzc_landing_newsletter'}"
                                required
                                autocomplete="email">
                         <button type="submit" class="mzc-form-button" id="mzc-submit-btn">
-                            {l s='Subscribe' mod='mzclandingnewsletter'}
+                            {l s='Subscribe' mod='mzc_landing_newsletter'}
                         </button>
                     </div>
 
@@ -131,10 +131,10 @@
     <script>
     window.mzcLandingConfig = {
         strings: {
-            subscribe: '{l s='Subscribe' mod='mzclandingnewsletter' js=1}',
-            subscribing: '{l s='Subscribing...' mod='mzclandingnewsletter' js=1}',
-            gdprError: '{l s='Please accept the privacy policy to continue.' mod='mzclandingnewsletter' js=1}',
-            genericError: '{l s='An error occurred. Please try again.' mod='mzclandingnewsletter' js=1}'
+            subscribe: '{l s='Subscribe' mod='mzc_landing_newsletter' js=1}',
+            subscribing: '{l s='Subscribing...' mod='mzc_landing_newsletter' js=1}',
+            gdprError: '{l s='Please accept the privacy policy to continue.' mod='mzc_landing_newsletter' js=1}',
+            genericError: '{l s='An error occurred. Please try again.' mod='mzc_landing_newsletter' js=1}'
         }
     };
     </script>

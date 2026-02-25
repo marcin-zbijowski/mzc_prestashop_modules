@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <module>
-    <name>mzclandingnewsletter</name>
+    <name>mzc_landing_newsletter</name>
     <displayName><![CDATA[MZC Landing Newsletter]]></displayName>
     <version><![CDATA[1.0.0]]></version>
     <description><![CDATA[Display a landing page with newsletter signup when your store is not ready yet.]]></description>

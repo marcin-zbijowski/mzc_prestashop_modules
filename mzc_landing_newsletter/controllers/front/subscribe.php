@@ -12,7 +12,7 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-class MzclandingnewsletterSubscribeModuleFrontController extends ModuleFrontController
+class Mzc_landing_newsletterSubscribeModuleFrontController extends ModuleFrontController
 {
     /** @var bool */
     public $ssl = true;
@@ -102,7 +102,7 @@ class MzclandingnewsletterSubscribeModuleFrontController extends ModuleFrontCont
 
         // Accept token from current or previous hour to avoid edge-case rejections
         // when the token was generated just before the hour boundary
-        /** @var Mzclandingnewsletter $module */
+        /** @var Mzc_landing_newsletter $module */
         $module = $this->module;
 
         return hash_equals($module->generateToken(0), $token)
