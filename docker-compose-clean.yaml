@@ -56,5 +56,35 @@ services:
     networks:
       - prestashop-net-test
 
+  post-install:
+    image: docker:cli
+    container_name: prestashop_post_install
+    depends_on:
+      prestashop:
+        condition: service_started
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    entrypoint: ['/bin/sh', '-c']
+    command:
+      - |
+        echo "[post-install] Waiting for PrestaShop install to finish..."
+        until docker exec prestashop_clean test -f /var/www/html/app/config/parameters.php 2>/dev/null; do
+          sleep 5
+        done
+        sleep 5
+        docker exec prestashop_clean bash -c '
+          rm -rf /var/www/html/install && echo "[post-install] Removed /install"
+          ADMIN=$$(ls -d /var/www/html/admin*/ 2>/dev/null | grep -v admin-api | head -1)
+          if [ -n "$$ADMIN" ] && [ "$$(basename $$ADMIN)" = "admin" ]; then
+            SUFFIX=$$(head -c 16 /dev/urandom | md5sum | head -c 20)
+            mv "$$ADMIN" "/var/www/html/admin$$SUFFIX"
+            echo "[post-install] Renamed admin to admin$$SUFFIX"
+          else
+            echo "[post-install] Admin already renamed: $$(basename $$ADMIN)"
+          fi
+        '
+        echo "[post-install] Done!"
+    restart: 'no'
+
 networks:
   prestashop-net-test:
