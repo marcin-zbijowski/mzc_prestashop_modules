@@ -20,6 +20,22 @@ require_once dirname(__FILE__) . '/classes/MzcCarrierAttrCarrierFilter.php';
 
 class Mzccarrierattribute extends Module
 {
+    /** @var array Back-office menu tab under Shipping */
+    public $tabs = [
+        [
+            'class_name' => 'AdminMzcCarrierAttribute',
+            'parent_class_name' => 'AdminParentShipping',
+            'visible' => true,
+            'name' => [
+                'en' => 'Carrier Attributes',
+                'pl' => 'Atrybuty przewoźników',
+                'fr' => 'Attributs transporteurs',
+                'es' => 'Atributos transportistas',
+                'it' => 'Attributi corrieri',
+            ],
+        ],
+    ];
+
     /** @var MzcCarrierAttrRuleRepository */
     private $repository;
 
@@ -111,9 +127,10 @@ class Mzccarrierattribute extends Module
 
         $presentedCart = &$params['presentedCart'];
         if (isset($presentedCart['subtotals']['shipping'])) {
-            $currentLabel = $presentedCart['subtotals']['shipping']['label'];
+            $subtotals = $presentedCart['subtotals'];
             $notice = $this->l('(some methods restricted by product attributes)');
-            $presentedCart['subtotals']['shipping']['label'] = $currentLabel . ' ' . $notice;
+            $subtotals['shipping']['label'] .= ' ' . $notice;
+            $presentedCart['subtotals'] = $subtotals;
         }
     }
 

@@ -27,7 +27,7 @@ class MzcCarrierAttrCarrierFilter
      * Filter delivery options based on attribute rules
      *
      * @param array $deliveryOptionList Passed by reference from the hook
-     * @param Cart  $cart
+     * @param Cart $cart
      */
     public function filterDeliveryOptions(array &$deliveryOptionList, Cart $cart)
     {
@@ -49,7 +49,7 @@ class MzcCarrierAttrCarrierFilter
                 continue;
             }
             $combinationIds[$idPa] = $idPa;
-            $idAddr = (int) $product['id_address_delivery'];
+            $idAddr = (int) ($product['id_address_delivery'] ?? 0);
             $addrCombinations[$idAddr][$idPa] = $idPa;
         }
 
@@ -88,7 +88,7 @@ class MzcCarrierAttrCarrierFilter
             }
 
             $allowedReferences = $allowedSets[0];
-            for ($i = 1, $count = count($allowedSets); $i < $count; $i++) {
+            for ($i = 1, $count = count($allowedSets); $i < $count; ++$i) {
                 $allowedReferences = array_intersect($allowedReferences, $allowedSets[$i]);
             }
 

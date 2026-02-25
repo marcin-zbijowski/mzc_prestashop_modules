@@ -13,7 +13,7 @@ if (!defined('_PS_VERSION_')) {
 class MzcCarrierAttrRuleRepository
 {
     /** @var array|null Per-request rules cache */
-    private static $rulesCache = null;
+    private static $rulesCache;
 
     /** @var array Per-request carrier reference → id_carrier cache */
     private static $carrierRefCache = [];
