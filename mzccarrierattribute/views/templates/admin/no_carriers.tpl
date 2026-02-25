@@ -7,5 +7,5 @@
  *}
 
 <div class="alert alert-warning">
-    {l s='No active carriers found. Create carriers first.' mod='mzc_carrier_attribute'}
+    {l s='No active carriers found. Create carriers first.' mod='mzccarrierattribute'}
 </div>

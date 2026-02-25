@@ -1,29 +1,38 @@
-#!/bin/bash
-# Post-install script: remove /install and rename /admin for security
-set -e
+#!/usr/bin/env bash
+# Post-install cleanup for the clean test PrestaShop container.
+# Run manually after the container finishes installing:
+#   ./scripts/post-install.sh [container_name]
+set -euo pipefail
 
-echo "[post-install] Waiting for PrestaShop installation to finish..."
+CONTAINER="${1:-prestashop_clean}"
 
-# Wait for the install to complete (parameters.php is written at the end)
-while [ ! -f /var/www/html/app/config/parameters.php ]; do
+echo "[post-install] Checking container '$CONTAINER'..."
+
+# Wait for install to complete
+until docker exec "$CONTAINER" test -f /var/www/html/app/config/parameters.php 2>/dev/null; do
+    echo "[post-install] Waiting for installation to finish..."
     sleep 5
 done
 
-# Give it a moment to finish writing
-sleep 3
-
 # Remove install folder
-if [ -d /var/www/html/install ]; then
-    rm -rf /var/www/html/install
-    echo "[post-install] Removed /install folder"
-fi
+docker exec "$CONTAINER" bash -c '
+    if [ -d /var/www/html/install ]; then
+        rm -rf /var/www/html/install
+        echo "[post-install] Removed /install"
+    else
+        echo "[post-install] /install already removed"
+    fi
+'
 
-# Rename admin folder (skip admin-api)
-ADMIN_DIR=$(ls -d /var/www/html/admin*/ 2>/dev/null | grep -v admin-api | head -1)
-if [ -n "$ADMIN_DIR" ] && [ "$(basename "$ADMIN_DIR")" = "admin" ]; then
-    RANDOM_SUFFIX=$(head -c 16 /dev/urandom | md5sum | head -c 20)
-    mv "$ADMIN_DIR" "/var/www/html/admin${RANDOM_SUFFIX}"
-    echo "[post-install] Renamed admin folder to admin${RANDOM_SUFFIX}"
+# Rename admin folder
+ADMIN_DIR=$(docker exec "$CONTAINER" bash -c 'ls -d /var/www/html/admin*/ 2>/dev/null | grep -v admin-api | head -1 | xargs basename')
+
+if [ "$ADMIN_DIR" = "admin" ]; then
+    SUFFIX=$(head -c 16 /dev/urandom | xxd -p | head -c 20)
+    docker exec "$CONTAINER" mv "/var/www/html/admin" "/var/www/html/admin${SUFFIX}"
+    echo "[post-install] Renamed admin → admin${SUFFIX}"
+    echo "[post-install] Back office: http://localhost:8199/admin${SUFFIX}/"
 else
-    echo "[post-install] Admin folder already renamed: $(basename "$ADMIN_DIR")"
+    echo "[post-install] Admin folder: $ADMIN_DIR"
+    echo "[post-install] Back office: http://localhost:8199/${ADMIN_DIR}/"
 fi

@@ -18,7 +18,7 @@ require_once dirname(__FILE__) . '/classes/MzcCarrierAttrInstaller.php';
 require_once dirname(__FILE__) . '/classes/MzcCarrierAttrRuleRepository.php';
 require_once dirname(__FILE__) . '/classes/MzcCarrierAttrCarrierFilter.php';
 
-class Mzc_carrier_attribute extends Module
+class Mzccarrierattribute extends Module
 {
     /** @var MzcCarrierAttrRuleRepository */
     private $repository;
@@ -28,7 +28,7 @@ class Mzc_carrier_attribute extends Module
 
     public function __construct()
     {
-        $this->name = 'mzc_carrier_attribute';
+        $this->name = 'mzccarrierattribute';
         $this->tab = 'shipping_logistics';
         $this->version = '1.0.0';
         $this->author = 'Marcin Zbijowski Consulting';
@@ -40,7 +40,7 @@ class Mzc_carrier_attribute extends Module
 
         $this->displayName = $this->l('MZC Carrier Attribute');
         $this->description = $this->l('Restrict available shipping carriers based on product attribute values (e.g. sizes). Whitelist model: map attribute values to allowed carriers.');
-        $this->confirmUninstall = $this->l('Are you sure you want to uninstall this module? Check the "Keep data" option in settings if you want to preserve your rules.');
+        $this->confirmUninstall = $this->l('Are you sure you want to uninstall this module? All carrier-attribute rules will be deleted.');
 
         $this->repository = new MzcCarrierAttrRuleRepository();
         $this->filter = new MzcCarrierAttrCarrierFilter($this->repository);
@@ -59,26 +59,16 @@ class Mzc_carrier_attribute extends Module
             && $this->registerHook('actionCarrierUpdate')
             && $this->registerHook('actionPresentCart')
             && $installer->installDb()
-            && Configuration::updateValue('MZC_CARRIER_ATTR_KEEPDATA', 0)
             && Configuration::updateValue('MZC_CARRIER_ATTR_RULES', '');
     }
 
     public function uninstall()
     {
-        $keepData = (bool) Configuration::get('MZC_CARRIER_ATTR_KEEPDATA');
+        $installer = new MzcCarrierAttrInstaller();
 
-        $result = parent::uninstall();
-
-        if (!$keepData) {
-            $installer = new MzcCarrierAttrInstaller();
-            $result = $result && $installer->uninstallDb();
-        }
-
-        $result = $result
-            && Configuration::deleteByName('MZC_CARRIER_ATTR_KEEPDATA')
+        return parent::uninstall()
+            && $installer->uninstallDb()
             && Configuration::deleteByName('MZC_CARRIER_ATTR_RULES');
-
-        return $result;
     }
 
     // =========================================================================
@@ -141,64 +131,9 @@ class Mzc_carrier_attribute extends Module
             $output .= $this->processSave();
         }
 
-        if (Tools::isSubmit('submitMzcCarrierAttributeSettings')) {
-            Configuration::updateValue(
-                'MZC_CARRIER_ATTR_KEEPDATA',
-                (int) Tools::getValue('MZC_CARRIER_ATTR_KEEPDATA')
-            );
-            $output .= $this->displayConfirmation($this->l('Settings saved.'));
-        }
-
-        $output .= $this->renderSettingsForm();
         $output .= $this->renderRulesForm();
 
         return $output;
-    }
-
-    /**
-     * Render the general settings form (keep data toggle) via HelperForm
-     */
-    private function renderSettingsForm()
-    {
-        $fieldsForm = [
-            'form' => [
-                'legend' => [
-                    'title' => $this->l('General Settings'),
-                    'icon' => 'icon-cogs',
-                ],
-                'input' => [
-                    [
-                        'type' => 'switch',
-                        'label' => $this->l('Keep data on uninstall'),
-                        'name' => 'MZC_CARRIER_ATTR_KEEPDATA',
-                        'desc' => $this->l('If enabled, the rules table will be preserved when uninstalling the module, allowing you to reinstall without losing your configuration.'),
-                        'is_bool' => true,
-                        'values' => [
-                            ['id' => 'keepdata_on', 'value' => 1, 'label' => $this->l('Yes')],
-                            ['id' => 'keepdata_off', 'value' => 0, 'label' => $this->l('No')],
-                        ],
-                    ],
-                ],
-                'submit' => [
-                    'title' => $this->l('Save Settings'),
-                    'name' => 'submitMzcCarrierAttributeSettings',
-                ],
-            ],
-        ];
-
-        $helper = new HelperForm();
-        $helper->module = $this;
-        $helper->table = $this->table;
-        $helper->identifier = $this->identifier;
-        $helper->token = Tools::getAdminTokenLite('AdminModules');
-        $helper->currentIndex = AdminController::$currentIndex . '&configure=' . $this->name;
-        $helper->default_form_language = (int) Configuration::get('PS_LANG_DEFAULT');
-        $helper->submit_action = 'submitMzcCarrierAttributeSettings';
-        $helper->fields_value = [
-            'MZC_CARRIER_ATTR_KEEPDATA' => (int) Configuration::get('MZC_CARRIER_ATTR_KEEPDATA'),
-        ];
-
-        return $helper->generateForm([$fieldsForm]);
     }
 
     /**

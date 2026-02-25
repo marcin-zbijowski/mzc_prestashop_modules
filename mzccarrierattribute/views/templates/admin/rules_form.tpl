@@ -8,30 +8,30 @@
 
 <div class="panel">
     <div class="panel-heading">
-        <i class="icon-truck"></i> {l s='Carrier Restrictions by Attribute Value' mod='mzc_carrier_attribute'}
+        <i class="icon-truck"></i> {l s='Carrier Restrictions by Attribute Value' mod='mzccarrierattribute'}
     </div>
 
     <div class="row" style="margin-bottom: 15px;">
         <div class="col-lg-12">
             {if $show_only_configured}
                 <a href="{$configure_url|escape:'htmlall':'UTF-8'}" class="btn btn-default">
-                    <i class="icon-list"></i> {l s='Show all attributes' mod='mzc_carrier_attribute'}
+                    <i class="icon-list"></i> {l s='Show all attributes' mod='mzccarrierattribute'}
                 </a>
             {else}
                 <a href="{$configure_url|escape:'htmlall':'UTF-8'}&show_configured=1" class="btn btn-default">
-                    <i class="icon-filter"></i> {l s='Show only configured attributes' mod='mzc_carrier_attribute'}
+                    <i class="icon-filter"></i> {l s='Show only configured attributes' mod='mzccarrierattribute'}
                 </a>
             {/if}
         </div>
     </div>
 
     <div class="alert alert-info">
-        <p><strong>{l s='How it works:' mod='mzc_carrier_attribute'}</strong></p>
+        <p><strong>{l s='How it works:' mod='mzccarrierattribute'}</strong></p>
         <ul>
-            <li>{l s='Select which carriers are allowed for each attribute value.' mod='mzc_carrier_attribute'}</li>
-            <li>{l s='If an attribute value has no carriers selected, it imposes no restriction (all carriers allowed).' mod='mzc_carrier_attribute'}</li>
-            <li>{l s='If multiple restricted attributes are in the cart, only carriers allowed by ALL of them will be available.' mod='mzc_carrier_attribute'}</li>
-            <li>{l s='Simple products (no combinations) never restrict carriers.' mod='mzc_carrier_attribute'}</li>
+            <li>{l s='Select which carriers are allowed for each attribute value.' mod='mzccarrierattribute'}</li>
+            <li>{l s='If an attribute value has no carriers selected, it imposes no restriction (all carriers allowed).' mod='mzccarrierattribute'}</li>
+            <li>{l s='If multiple restricted attributes are in the cart, only carriers allowed by ALL of them will be available.' mod='mzccarrierattribute'}</li>
+            <li>{l s='Simple products (no combinations) never restrict carriers.' mod='mzccarrierattribute'}</li>
         </ul>
     </div>
 
@@ -41,14 +41,14 @@
                 <div class="panel-heading" style="cursor:pointer;" data-toggle="collapse" data-target="#mzc-group-{$group.id_attribute_group|intval}">
                     <i class="icon-chevron-down"></i>
                     <strong>{$group.name|escape:'htmlall':'UTF-8'}</strong>
-                    <span class="badge">{$group.attributes|count} {l s='values' mod='mzc_carrier_attribute'}</span>
+                    <span class="badge">{$group.attributes|count} {l s='values' mod='mzccarrierattribute'}</span>
                 </div>
                 <div class="panel-body collapse" id="mzc-group-{$group.id_attribute_group|intval}">
                     <table class="table table-bordered table-striped">
                         <thead>
                             <tr>
-                                <th style="width: 200px;">{l s='Attribute Value' mod='mzc_carrier_attribute'}</th>
-                                <th>{l s='Allowed Carriers' mod='mzc_carrier_attribute'}</th>
+                                <th style="width: 200px;">{l s='Attribute Value' mod='mzccarrierattribute'}</th>
+                                <th>{l s='Allowed Carriers' mod='mzccarrierattribute'}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -80,7 +80,7 @@
 
         <div class="panel-footer">
             <button type="submit" name="submitMzcCarrierAttribute" class="btn btn-default pull-right">
-                <i class="process-icon-save"></i> {l s='Save Rules' mod='mzc_carrier_attribute'}
+                <i class="process-icon-save"></i> {l s='Save Rules' mod='mzccarrierattribute'}
             </button>
             <div class="clearfix"></div>
         </div>

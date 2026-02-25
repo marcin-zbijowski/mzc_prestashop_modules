@@ -7,5 +7,5 @@
  *}
 
 <div class="alert alert-warning">
-    {l s='No attribute groups found. Create attribute groups and values first.' mod='mzc_carrier_attribute'}
+    {l s='No attribute groups found. Create attribute groups and values first.' mod='mzccarrierattribute'}
 </div>

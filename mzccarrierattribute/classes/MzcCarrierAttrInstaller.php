@@ -13,7 +13,7 @@ if (!defined('_PS_VERSION_')) {
 class MzcCarrierAttrInstaller
 {
     /**
-     * Create the rules table (skips if already exists for keep-data reinstalls)
+     * Create the rules table
      *
      * @return bool
      */
