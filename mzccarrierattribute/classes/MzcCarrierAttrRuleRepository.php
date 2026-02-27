@@ -1,6 +1,9 @@
 <?php
 /**
- * MZC Carrier Attribute — Rules repository (CRUD + cache)
+ * MZC Carrier Attribute — Rules repository (v2 — grouped OR/AND rules)
+ *
+ * Conditions are stored grouped by attribute group:
+ *   ['conditions' => [ groupId => [attrId, ...], ... ], 'carriers' => [...]]
  *
  * @author    Marcin Zbijowski Consulting
  * @copyright 2026 Marcin Zbijowski Consulting
@@ -12,18 +15,20 @@ if (!defined('_PS_VERSION_')) {
 
 class MzcCarrierAttrRuleRepository
 {
-    /** @var array|null Per-request rules cache */
+    /** @var array|null Per-request rule groups cache */
     private static $rulesCache;
 
     /** @var array Per-request carrier reference → id_carrier cache */
     private static $carrierRefCache = [];
 
     /**
-     * Get all rules as [id_attribute => [id_carrier_reference, ...]]
+     * Get all rule groups.
+     *
+     * Each group: ['conditions' => [groupId => [attrId, ...]], 'carriers' => [id_carrier_reference, ...]]
      *
      * @return array
      */
-    public function getRules()
+    public function getRuleGroups()
     {
         if (self::$rulesCache !== null) {
             return self::$rulesCache;
@@ -32,8 +37,8 @@ class MzcCarrierAttrRuleRepository
         $cached = Configuration::get('MZC_CARRIER_ATTR_RULES');
         if (!empty($cached)) {
             $decoded = json_decode($cached, true);
-            if (is_array($decoded)) {
-                self::$rulesCache = $decoded;
+            if (is_array($decoded) && isset($decoded['v']) && $decoded['v'] === 2) {
+                self::$rulesCache = $decoded['groups'];
 
                 return self::$rulesCache;
             }
@@ -46,66 +51,187 @@ class MzcCarrierAttrRuleRepository
     }
 
     /**
-     * Load rules from the database
+     * Load rule groups from the three normalised tables.
+     *
+     * Conditions are grouped by their id_attribute_group via a JOIN on
+     * ps_attribute so the matcher can apply OR-within / AND-between logic.
      *
      * @return array
      */
     public function loadFromDb()
     {
-        $rows = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-            'SELECT `id_attribute`, `id_carrier_reference`
-             FROM `' . _DB_PREFIX_ . 'mzc_carrier_attr_rule`'
+        $db = Db::getInstance(_PS_USE_SQL_SLAVE_);
+        $idShop = (int) Context::getContext()->shop->id;
+
+        $groups = $db->executeS(
+            'SELECT `id_rule_group`
+             FROM `' . _DB_PREFIX_ . 'mzc_carrier_attr_rule_group`
+             WHERE `id_shop` = ' . $idShop .
+            ' ORDER BY `id_rule_group` ASC'
         );
 
-        $rules = [];
-        if (is_array($rows)) {
-            foreach ($rows as $row) {
-                $rules[(int) $row['id_attribute']][] = (int) $row['id_carrier_reference'];
+        if (empty($groups) || !is_array($groups)) {
+            return [];
+        }
+
+        $groupIds = array_map(function ($r) {
+            return (int) $r['id_rule_group'];
+        }, $groups);
+        $idsList = implode(',', $groupIds);
+
+        /* JOIN ps_attribute to get id_attribute_group for grouping */
+        $condRows = $db->executeS(
+            'SELECT rc.`id_rule_group`, rc.`id_attribute`, a.`id_attribute_group`
+             FROM `' . _DB_PREFIX_ . 'mzc_carrier_attr_rule_condition` rc
+             INNER JOIN `' . _DB_PREFIX_ . 'attribute` a
+               ON a.`id_attribute` = rc.`id_attribute`
+             WHERE rc.`id_rule_group` IN (' . $idsList . ')'
+        );
+
+        $carrierRows = $db->executeS(
+            'SELECT `id_rule_group`, `id_carrier_reference`
+             FROM `' . _DB_PREFIX_ . 'mzc_carrier_attr_rule_carrier`
+             WHERE `id_rule_group` IN (' . $idsList . ')'
+        );
+
+        /* Build grouped conditions: ruleGroup → attrGroup → [attrIds] */
+        $conditions = [];
+        if (is_array($condRows)) {
+            foreach ($condRows as $row) {
+                $rg = (int) $row['id_rule_group'];
+                $ag = (int) $row['id_attribute_group'];
+                $conditions[$rg][$ag][] = (int) $row['id_attribute'];
             }
         }
 
-        return $rules;
+        $carriers = [];
+        if (is_array($carrierRows)) {
+            foreach ($carrierRows as $row) {
+                $carriers[(int) $row['id_rule_group']][] = (int) $row['id_carrier_reference'];
+            }
+        }
+
+        $ruleGroups = [];
+        foreach ($groupIds as $gid) {
+            if (!empty($conditions[$gid]) && !empty($carriers[$gid])) {
+                /* Sort each group's attr ids for consistency */
+                $conds = $conditions[$gid];
+                foreach ($conds as &$ids) {
+                    sort($ids);
+                }
+                unset($ids);
+                ksort($conds);
+
+                $ruleGroups[] = [
+                    'conditions' => $conds,
+                    'carriers' => $carriers[$gid],
+                ];
+            }
+        }
+
+        return $ruleGroups;
     }
 
     /**
-     * Replace all rules with a new set
+     * Replace all rule groups for the current shop.
      *
-     * @param array $newRules [id_attribute => [id_carrier_reference, ...]]
+     * @param array $ruleGroups [['conditions' => [groupId => [attrId, ...]], 'carriers' => [...]], ...]
      *
      * @return bool
      */
-    public function saveRules(array $newRules)
+    public function saveRuleGroups(array $ruleGroups)
     {
         $db = Db::getInstance();
+        $idShop = (int) Context::getContext()->shop->id;
         $now = date('Y-m-d H:i:s');
 
-        $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'mzc_carrier_attr_rule`');
+        /* delete existing groups for this shop */
+        $existing = $db->executeS(
+            'SELECT `id_rule_group`
+             FROM `' . _DB_PREFIX_ . 'mzc_carrier_attr_rule_group`
+             WHERE `id_shop` = ' . $idShop
+        );
 
-        foreach ($newRules as $idAttr => $refs) {
-            foreach ($refs as $ref) {
-                $db->insert('mzc_carrier_attr_rule', [
-                    'id_attribute' => (int) $idAttr,
+        if (!empty($existing) && is_array($existing)) {
+            $ids = implode(',', array_map(function ($r) {
+                return (int) $r['id_rule_group'];
+            }, $existing));
+
+            $db->execute(
+                'DELETE FROM `' . _DB_PREFIX_ . 'mzc_carrier_attr_rule_carrier`
+                 WHERE `id_rule_group` IN (' . $ids . ')'
+            );
+            $db->execute(
+                'DELETE FROM `' . _DB_PREFIX_ . 'mzc_carrier_attr_rule_condition`
+                 WHERE `id_rule_group` IN (' . $ids . ')'
+            );
+            $db->execute(
+                'DELETE FROM `' . _DB_PREFIX_ . 'mzc_carrier_attr_rule_group`
+                 WHERE `id_shop` = ' . $idShop
+            );
+        }
+
+        /* insert new groups */
+        foreach ($ruleGroups as $group) {
+            if (empty($group['conditions']) || empty($group['carriers'])) {
+                continue;
+            }
+
+            $db->insert('mzc_carrier_attr_rule_group', [
+                'id_shop' => $idShop,
+                'date_add' => $now,
+                'date_upd' => $now,
+            ]);
+            $idGroup = (int) $db->Insert_ID();
+
+            /* Flatten grouped conditions for DB storage */
+            foreach ($group['conditions'] as $attrIds) {
+                foreach ($attrIds as $idAttr) {
+                    $db->insert('mzc_carrier_attr_rule_condition', [
+                        'id_rule_group' => $idGroup,
+                        'id_attribute' => (int) $idAttr,
+                    ]);
+                }
+            }
+
+            foreach ($group['carriers'] as $ref) {
+                $db->insert('mzc_carrier_attr_rule_carrier', [
+                    'id_rule_group' => $idGroup,
                     'id_carrier_reference' => (int) $ref,
-                    'date_add' => $now,
-                    'date_upd' => $now,
                 ]);
             }
         }
 
-        $this->saveToConfigCache($newRules);
+        $this->saveToConfigCache($ruleGroups);
         $this->invalidate();
 
         return true;
     }
 
     /**
-     * Serialize rules into Configuration for fast read access
+     * Persist rules as JSON in Configuration for fast reads.
      *
-     * @param array $rules
+     * @param array $ruleGroups
      */
-    public function saveToConfigCache(array $rules)
+    public function saveToConfigCache(array $ruleGroups)
     {
-        Configuration::updateValue('MZC_CARRIER_ATTR_RULES', json_encode($rules));
+        $stripped = [];
+        foreach ($ruleGroups as $g) {
+            /* Convert grouped conditions to string-keyed for JSON */
+            $conds = [];
+            foreach ($g['conditions'] as $gid => $ids) {
+                $conds[(string) $gid] = array_values($ids);
+            }
+            $stripped[] = [
+                'conditions' => $conds,
+                'carriers' => $g['carriers'],
+            ];
+        }
+
+        Configuration::updateValue('MZC_CARRIER_ATTR_RULES', json_encode([
+            'v' => 2,
+            'groups' => $stripped,
+        ]));
     }
 
     /**
@@ -169,26 +295,5 @@ class MzcCarrierAttrRuleRepository
         }
 
         return $map;
-    }
-
-    /**
-     * Get a list of all attribute IDs in the shop
-     *
-     * @return int[]
-     */
-    public function getAllAttributeIds()
-    {
-        $rows = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-            'SELECT `id_attribute` FROM `' . _DB_PREFIX_ . 'attribute`'
-        );
-
-        $ids = [];
-        if (is_array($rows)) {
-            foreach ($rows as $row) {
-                $ids[] = (int) $row['id_attribute'];
-            }
-        }
-
-        return $ids;
     }
 }

@@ -8,75 +8,28 @@
 
 <div class="panel">
     <div class="panel-heading">
-        <i class="icon-truck"></i> {l s='Carrier Restrictions by Attribute Value' mod='mzccarrierattribute'}
-    </div>
-
-    <div class="row" style="margin-bottom: 15px;">
-        <div class="col-lg-12">
-            {if $show_only_configured}
-                <a href="{$configure_url|escape:'htmlall':'UTF-8'}" class="btn btn-default">
-                    <i class="icon-list"></i> {l s='Show all attributes' mod='mzccarrierattribute'}
-                </a>
-            {else}
-                <a href="{$configure_url|escape:'htmlall':'UTF-8'}&show_configured=1" class="btn btn-default">
-                    <i class="icon-filter"></i> {l s='Show only configured attributes' mod='mzccarrierattribute'}
-                </a>
-            {/if}
-        </div>
+        <i class="icon-truck"></i> {l s='Carrier Restriction Rules' mod='mzccarrierattribute'}
     </div>
 
     <div class="alert alert-info">
         <p><strong>{l s='How it works:' mod='mzccarrierattribute'}</strong></p>
         <ul>
-            <li>{l s='Select which carriers are allowed for each attribute value.' mod='mzccarrierattribute'}</li>
-            <li>{l s='If an attribute value has no carriers selected, it imposes no restriction (all carriers allowed).' mod='mzccarrierattribute'}</li>
-            <li>{l s='If multiple restricted attributes are in the cart, only carriers allowed by ALL of them will be available.' mod='mzccarrierattribute'}</li>
-            <li>{l s='Simple products (no combinations) never restrict carriers.' mod='mzccarrierattribute'}</li>
+            <li>{l s='Create rules that restrict carriers based on attribute values.' mod='mzccarrierattribute'}</li>
+            <li>{l s='Each rule shows all attribute groups. Check the values that should trigger the rule.' mod='mzccarrierattribute'}</li>
+            <li>{l s='Within a group: any checked value matches (OR). Between groups: all checked groups must match (AND).' mod='mzccarrierattribute'}</li>
+            <li>{l s='Unchecked groups impose no constraint. Products with no matching rules keep all carriers.' mod='mzccarrierattribute'}</li>
+            <li>{l s='When multiple rules match, only carriers allowed by ALL matching rules are available.' mod='mzccarrierattribute'}</li>
         </ul>
     </div>
 
-    <form method="post" action="{$configure_url|escape:'htmlall':'UTF-8'}">
-        {foreach $attribute_groups as $group}
-            <div class="panel panel-default mzc-attr-group">
-                <div class="panel-heading" style="cursor:pointer;" data-toggle="collapse" data-target="#mzc-group-{$group.id_attribute_group|intval}">
-                    <i class="icon-chevron-down"></i>
-                    <strong>{$group.name|escape:'htmlall':'UTF-8'}</strong>
-                    <span class="badge">{$group.attributes|count} {l s='values' mod='mzccarrierattribute'}</span>
-                </div>
-                <div class="panel-body collapse" id="mzc-group-{$group.id_attribute_group|intval}">
-                    <table class="table table-bordered table-striped">
-                        <thead>
-                            <tr>
-                                <th style="width: 200px;">{l s='Attribute Value' mod='mzccarrierattribute'}</th>
-                                <th>{l s='Allowed Carriers' mod='mzccarrierattribute'}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {foreach $group.attributes as $attr}
-                                <tr>
-                                    <td><strong>{$attr.name|escape:'htmlall':'UTF-8'}</strong></td>
-                                    <td>
-                                        {foreach $carrier_list as $carrier}
-                                            <label class="mzc-carrier-checkbox">
-                                                <input
-                                                    type="checkbox"
-                                                    name="rule_{$attr.id_attribute|intval}[]"
-                                                    value="{$carrier.id_reference|intval}"
-                                                    {if in_array($carrier.id_reference, $attr.current_refs)}checked="checked"{/if}
-                                                >
-                                                {$carrier.label|escape:'htmlall':'UTF-8'}
-                                            </label>
-                                        {/foreach}
-                                    </td>
-                                </tr>
-                            {/foreach}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        {/foreach}
+    <form method="post" action="{$configure_url|escape:'htmlall':'UTF-8'}" id="mzc-rules-form">
+        <div id="mzc-rules-container"></div>
 
-        <input type="hidden" name="mzc_attr_ids" value="{$all_attr_ids|escape:'htmlall':'UTF-8'}">
+        <div class="mzc-add-rule-row">
+            <button type="button" id="mzc-add-rule" class="btn btn-default">
+                <i class="icon-plus"></i> {l s='Add Rule' mod='mzccarrierattribute'}
+            </button>
+        </div>
 
         <div class="panel-footer">
             <button type="submit" name="submitMzcCarrierAttribute" class="btn btn-default pull-right">
@@ -86,3 +39,19 @@
         </div>
     </form>
 </div>
+
+{* Configuration data for the JS rule builder *}
+<script type="application/json" id="mzc-data">
+{$mzc_data_json nofilter}
+</script>
+
+{* Translatable strings for JS *}
+<script>
+var mzcTranslations = {ldelim}
+    rule: "{l s='Rule' mod='mzccarrierattribute' js=1}",
+    remove: "{l s='Remove' mod='mzccarrierattribute' js=1}",
+    conditions: "{l s='Conditions (select values per attribute group):' mod='mzccarrierattribute' js=1}",
+    conditionsHint: "{l s='Within a group: any checked value matches (OR). Between groups: all checked groups must match (AND). Unchecked group = no constraint.' mod='mzccarrierattribute' js=1}",
+    allowedCarriers: "{l s='Allowed Carriers:' mod='mzccarrierattribute' js=1}"
+{rdelim};
+</script>

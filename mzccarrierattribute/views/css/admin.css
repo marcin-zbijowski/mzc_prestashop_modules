@@ -6,56 +6,136 @@
  * @license   MIT
  */
 
-/* Attribute group panels */
-.mzc-attr-group {
-  margin-bottom: 10px;
+/* Rule panels */
+.mzc-rule {
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
-.mzc-attr-group .panel-heading {
+.mzc-rule > .panel-body {
+  padding: 18px 20px;
+}
+
+.mzc-rule-heading {
   background-color: #f5f5f5;
   border-bottom: 1px solid #ddd;
   padding: 10px 15px;
+}
+
+.mzc-rule-heading::after {
+  content: '';
+  display: table;
+  clear: both;
+}
+
+/* Sections inside each rule */
+.mzc-section {
+  margin-bottom: 20px;
+}
+
+.mzc-section h5 {
+  font-weight: 600;
   font-size: 14px;
+  margin-bottom: 8px;
+  color: #333;
 }
 
-.mzc-attr-group .panel-heading:hover {
-  background-color: #e8e8e8;
+/* Hint text under the conditions heading */
+.mzc-hint {
+  font-size: 0.85em;
+  margin-bottom: 16px;
 }
 
-.mzc-attr-group .panel-heading .badge {
-  background-color: #25b9d7;
-  color: #fff;
-  margin-left: 10px;
-  font-size: 11px;
+/* Divider before carriers section */
+.mzc-section + .mzc-section {
+  padding-top: 16px;
+  border-top: 1px solid #e8e8e8;
 }
 
-/* Carrier checkboxes */
+/* Attribute group fieldsets */
+.mzc-group-section {
+  border: 1px solid #d8d8d8;
+  border-left: 3px solid #6c9bd1;
+  border-radius: 4px;
+  padding: 14px 16px 12px;
+  margin-bottom: 16px;
+  background: #fbfbfb;
+}
+
+.mzc-group-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #333;
+  border: none;
+  padding: 0;
+  margin-bottom: 10px;
+}
+
+/* Checkbox grid — uniform columns */
+.mzc-attr-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 4px 16px;
+}
+
+.mzc-carrier-checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 24px;
+}
+
+/* Checkbox labels — shared */
+.mzc-attr-checkbox,
 .mzc-carrier-checkbox {
-  display: inline-block;
-  margin-right: 15px;
-  margin-bottom: 5px;
+  display: inline-flex;
+  align-items: center;
   font-weight: normal;
   cursor: pointer;
-  padding: 3px 8px;
-  border-radius: 3px;
-  transition: background-color 0.15s;
+  padding: 5px 10px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  line-height: 1.3;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s;
 }
 
+.mzc-attr-checkbox {
+  white-space: normal;
+  word-break: break-word;
+}
+
+.mzc-carrier-checkbox {
+  white-space: nowrap;
+}
+
+.mzc-attr-checkbox:hover,
 .mzc-carrier-checkbox:hover {
-  background-color: #f0f7ff;
+  background-color: #e8f0fe;
 }
 
+/* Checked state highlight */
+.mzc-attr-checkbox.is-checked,
+.mzc-carrier-checkbox.is-checked {
+  background-color: #dce9f9;
+  border-color: #91b8e0;
+}
+
+.mzc-attr-checkbox.is-checked:hover,
+.mzc-carrier-checkbox.is-checked:hover {
+  background-color: #cde0f5;
+}
+
+.mzc-attr-checkbox input[type='checkbox'],
 .mzc-carrier-checkbox input[type='checkbox'] {
-  margin-right: 5px;
-  vertical-align: middle;
+  flex-shrink: 0;
+  width: 15px;
+  height: 15px;
+  margin: 0 7px 0 0;
 }
 
-/* Table styling */
-.mzc-attr-group .table td {
-  vertical-align: middle;
-}
-
-.mzc-attr-group .table th {
-  background-color: #fafafa;
-  font-weight: 600;
+/* Add-rule row */
+.mzc-add-rule-row {
+  margin: 15px 0;
 }

@@ -1,6 +1,6 @@
 # MZC Carrier Attribute — Dokumentacja
 
-## Wersja 1.0.0
+## Wersja 1.1.0
 
 ## Autor: Marcin Zbijowski Consulting
 
@@ -31,9 +31,9 @@
 
 MZC Carrier Attribute pozwala ograniczyć dostępnych przewoźników przy kasie na podstawie wartości atrybutów produktów (np. rozmiarów, materiałów, wag).
 
-Moduł wykorzystuje model białej listy: dla każdej wartości atrybutu wybierasz, którzy przewoźnicy są dozwoleni. Wartości atrybutów bez przypisanych przewoźników nie nakładają żadnych ograniczeń — wszyscy przewoźnicy pozostają dostępni. Tylko wartości atrybutów z jawnie przypisanymi przewoźnikami ograniczają opcje wysyłki.
+Moduł wykorzystuje model białej listy z regułami złożonymi: tworzysz reguły łączące jeden lub więcej warunków atrybut-wartość z zestawem dozwolonych przewoźników. Reguła ma zastosowanie gdy WSZYSTKIE jej warunki pasują do kombinacji produktu. Na przykład możesz utworzyć regułę „Rozmiar 40×50 + Ramka Oprawiony → tylko Kurier", pozostawiając „Rozmiar 40×50 + Ramka Nieoprawiony" bez reguły, aby wszyscy przewoźnicy byli dostępni. Reguły z jednym warunkiem działają dokładnie jak proste mapowania atrybut → przewoźnik.
 
-Gdy klient dodaje do koszyka produkty z ograniczonymi wartościami atrybutów, moduł automatycznie usuwa niedozwolonych przewoźników z opcji dostawy przy kasie. Jeśli w koszyku znajduje się wiele ograniczonych wartości atrybutów, dostępni będą tylko przewoźnicy dozwoleni przez WSZYSTKIE z nich.
+Gdy klient dodaje do koszyka produkty z ograniczonymi kombinacjami atrybutów, moduł automatycznie usuwa niedozwolonych przewoźników z opcji dostawy przy kasie. Jeśli wiele reguł pasuje do produktów w koszyku, dostępni będą tylko przewoźnicy dozwoleni przez WSZYSTKIE pasujące reguły.
 
 Produkty proste bez kombinacji nigdy nie są objęte działaniem tego modułu.
 
@@ -73,29 +73,32 @@ Po instalacji link do modułu pojawia się również w lewym menu panelu adminis
 
 ## 4. Jak to działa
 
-### Model białej listy
+### Model białej listy — Reguły złożone
 
-Moduł działa na prostej zasadzie białej listy:
+Moduł działa na zasadzie białej listy z regułami złożonymi wielowarunkowymi:
 
-1. Każdej wartości atrybutu produktu (np. „XXL" w grupie „Rozmiar") można przypisać jednego lub więcej dozwolonych przewoźników
-2. Jeśli wartość atrybutu nie ma przypisanych przewoźników, nie nakłada żadnych ograniczeń — wszyscy przewoźnicy pozostają dostępni
-3. Jeśli wartość atrybutu ma przypisanych przewoźników, tylko ci przewoźnicy są dozwoleni gdy produkt z tym atrybutem jest w koszyku
-4. Gdy w koszyku znajduje się wiele ograniczonych wartości atrybutów, moduł oblicza część wspólną — dostępni są tylko przewoźnicy obecni na WSZYSTKICH listach dozwolonych
+1. Każda reguła składa się z jednego lub więcej warunków atrybut-wartość oraz zestawu dozwolonych przewoźników
+2. Reguła ma zastosowanie gdy WSZYSTKIE jej warunki pasują do atrybutów kombinacji produktu
+3. Reguły z jednym warunkiem (jeden atrybut-wartość → przewoźnicy) działają dokładnie jak poprzedni model — wsteczna kompatybilność
+4. Reguły złożone (2+ warunki) pozwalają na precyzyjną kontrolę nad konkretnymi kombinacjami atrybutów (np. „Rozmiar 40×50 + Ramka Oprawiony → tylko Kurier")
+5. Jeśli żadna reguła nie pasuje do kombinacji produktu, nie nakłada się żadne ograniczenie — wszyscy przewoźnicy pozostają dostępni
+6. Gdy wiele reguł pasuje do produktów w koszyku, moduł oblicza część wspólną — dostępni są tylko przewoźnicy obecni na WSZYSTKICH listach dozwolonych pasujących reguł
 
 ### Przykładowa logika
 
-Rozważmy następujące reguły:
+Rozważmy następujące reguły złożone:
 
-- Rozmiar „XXL" → dozwoleni przewoźnicy: Przewoźnik A, Przewoźnik B
-- Rozmiar „S" → brak przypisanych przewoźników (brak ograniczeń)
-- Materiał „Szkło" → dozwoleni przewoźnicy: Przewoźnik B, Przewoźnik C
+- Reguła 1: Rozmiar „40×50" + Ramka „Oprawiony" → dozwoleni przewoźnicy: tylko Kurier
+- Reguła 2: Rozmiar „50×70" + Ramka „Oprawiony" → dozwoleni przewoźnicy: tylko Kurier
+- Brak reguły dla kombinacji nieoprawionych → wszyscy przewoźnicy dostępni
 
 Scenariusze:
 
-- Koszyk zawiera produkt w rozmiarze S → wszyscy przewoźnicy dostępni (brak ograniczeń)
-- Koszyk zawiera produkt w rozmiarze XXL → dostępni tylko Przewoźnik A i B
-- Koszyk zawiera produkt w rozmiarze XXL i z materiałem Szkło → dostępny tylko Przewoźnik B (część wspólna {A, B} i {B, C})
-- Koszyk zawiera produkt w rozmiarze XXL i inny w rozmiarze S → dostępni tylko Przewoźnik A i B (tylko XXL nakłada ograniczenia)
+- Koszyk zawiera plakat 40×50 Nieoprawiony → żadna reguła nie pasuje → wszyscy przewoźnicy dostępni
+- Koszyk zawiera plakat 40×50 Oprawiony → Reguła 1 pasuje → dostępny tylko Kurier
+- Koszyk zawiera plakat 50×70 Oprawiony → Reguła 2 pasuje → dostępny tylko Kurier
+- Koszyk zawiera plakat 40×50 Oprawiony i plakat 50×70 Oprawiony → Reguły 1 i 2 pasują → część wspólna {Kurier} i {Kurier} = tylko Kurier
+- Koszyk zawiera plakat 40×50 Oprawiony i plakat 40×50 Nieoprawiony → Reguła 1 pasuje do oprawionego, brak reguły dla nieoprawionego → dostępny tylko Kurier
 
 ### Używane hooki
 
@@ -111,21 +114,21 @@ Moduł wykorzystuje trzy hooki PrestaShop:
 
 Nawiguj do Moduły > Menedżer modułów, znajdź MZC Carrier Attribute i kliknij Konfiguruj. Alternatywnie, użyj skrótu **Wysyłka** > **Atrybuty przewoźników** w lewym menu.
 
-### Panel reguł
+### Kreator reguł
 
-Strona konfiguracji pokazuje wszystkie grupy atrybutów i ich wartości w zwijanych panelach. Dla każdej wartości atrybutu wiersz checkboxów wyświetla wszystkich aktywnych przewoźników. Zaznacz przewoźników, których chcesz dozwolić dla danej wartości atrybutu.
+Strona konfiguracji zawiera dynamiczny kreator reguł. Reguły wyświetlane są jako karty, z których każda zawiera swoje warunki i dozwolonych przewoźników.
 
-### Filtrowanie
-
-Użyj przycisku Pokaż tylko skonfigurowane atrybuty aby przefiltrować widok do tych wartości atrybutów, które mają co najmniej jednego przypisanego przewoźnika. Jest to przydatne gdy masz wiele atrybutów ale tylko kilka reguł.
-
-Kliknij Pokaż wszystkie atrybuty aby wrócić do pełnego widoku.
+- Kliknij **Dodaj regułę** aby utworzyć nową regułę
+- Każda reguła posiada jeden lub więcej selektorów warunków (grupa atrybutów → lista rozwijana wartości) oraz zestaw checkboxów przewoźników
+- Kliknij **Dodaj warunek** w ramach reguły aby dodać kolejny warunek atrybut-wartość (tworząc regułę złożoną)
+- Usuń poszczególne warunki przyciskiem usuwania obok każdego warunku
+- Usuń całą regułę przyciskiem usuwania na karcie reguły
 
 ### Zapisywanie
 
-Kliknij Zapisz reguły na dole strony aby zapisać wszystkie reguły naraz. Moduł zapisuje wszystkie reguły w jednej transakcji dla spójności.
+Kliknij **Zapisz reguły** na dole strony aby zapisać wszystkie reguły naraz. Moduł zapisuje wszystkie reguły w jednej transakcji bazodanowej dla spójności.
 
-Komunikat sukcesu potwierdza zapis. Jeśli nie znaleziono atrybutów, wyświetlany jest komunikat błędu.
+Komunikat sukcesu potwierdza zapis. Jeśli nie znaleziono atrybutów lub przewoźników, wyświetlane jest ostrzeżenie.
 
 ---
 
@@ -161,6 +164,19 @@ Sprzedajesz odzież, a rozmiary XXL wymagają konkretnego przewoźnika z większ
 2. Zostaw wszystkie inne rozmiary bez wybranych przewoźników
 
 Rezultat: Zamówienia zawierające przedmioty XXL lub XXXL pokazują tylko przewoźnika dużych paczek.
+
+### Przypadek 4: Plakaty oprawione vs nieoprawione (Reguły złożone)
+
+Sprzedajesz plakaty w różnych rozmiarach, zarówno oprawione jak i nieoprawione. Duże oprawione plakaty są zbyt nieporęczne dla paczkomatów i muszą być wysyłane kurierem.
+
+1. Utwórz reguły złożone łączące warunki Rozmiar i Ramka:
+   - Rozmiar „40×50" + Ramka „Oprawiony" → tylko Kurier
+   - Rozmiar „50×70" + Ramka „Oprawiony" → tylko Kurier
+   - Rozmiar „70×100" + Ramka „Oprawiony" → tylko Kurier
+2. Pozostaw wszystkie kombinacje nieoprawione bez reguł (wszyscy przewoźnicy dozwoleni)
+3. Pozostaw małe oprawione rozmiary (np. 20×30) bez reguł jeśli mieszczą się w paczkomatach
+
+Rezultat: Duże oprawione plakaty pokazują tylko dostawę kurierską, podczas gdy nieoprawione plakaty każdego rozmiaru i małe oprawione plakaty pokazują wszystkich przewoźników łącznie z paczkomatami.
 
 ---
 
@@ -217,7 +233,13 @@ Cache jest automatycznie unieważniany gdy:
 
 ### Baza danych
 
-Moduł tworzy jedną tabelę (mzc_carrier_attr_rule) z indeksowanymi kolumnami dla efektywnych wyszukiwań. Tabela używa złożonego unikalnego klucza aby zapobiec duplikatom reguł.
+Moduł tworzy 3 tabele do przechowywania reguł złożonych:
+
+- **mzc_carrier_attr_rule_group** — grupy reguł per sklep. Każda grupa reprezentuje jedną regułę złożoną.
+- **mzc_carrier_attr_rule_condition** — warunki per grupa. Każdy warunek określa grupę atrybutów i wartość atrybutu.
+- **mzc_carrier_attr_rule_carrier** — dozwoleni przewoźnicy per grupa. Każdy wpis łączy grupę reguł z dozwolonym przewoźnikiem.
+
+Wszystkie tabele używają indeksowanych kolumn dla efektywnych wyszukiwań i kluczy obcych dla integralności referencyjnej.
 
 ---
 
@@ -231,7 +253,7 @@ Moduł jest dostarczany z pełnymi tłumaczeniami dla 5 języków:
 - Hiszpański (es)
 - Włoski (it)
 
-Każdy plik tłumaczeń obejmuje wszystkie 20 tłumaczalnych ciągów w klasie modułu, szablonie formularza reguł i szablonach ostrzeżeń.
+Każdy plik tłumaczeń obejmuje wszystkie 22 tłumaczalne ciągi w klasie modułu, szablonie formularza reguł i szablonach ostrzeżeń.
 
 ### Dodawanie lub edycja tłumaczeń
 
@@ -260,7 +282,7 @@ PrestaShop automatycznie zapisze plik tłumaczeń do modules/mzccarrierattribute
 
 - Dzieje się tak gdy część wspólna wszystkich ograniczonych wartości atrybutów jest pusta (żaden przewoźnik nie jest dozwolony przez wszystkie ograniczone produkty w koszyku)
 - Przejrzyj reguły aby upewnić się że co najmniej jeden przewoźnik jest wspólny dla wszystkich ograniczonych wartości atrybutów, które mogą jednocześnie znaleźć się w koszyku
-- Użyj filtra „Pokaż tylko skonfigurowane atrybuty" aby przejrzeć wszystkie aktywne reguły
+- Otwórz kreator reguł, aby przejrzeć wszystkie aktywne reguły i ich przypisanych przewoźników
 
 ### Reguły nie wyświetlają się na stronie konfiguracji
 
@@ -271,7 +293,7 @@ PrestaShop automatycznie zapisze plik tłumaczeń do modules/mzccarrierattribute
 ### Wolna strona konfiguracji
 
 - Jeśli masz setki wartości atrybutów, strona konfiguracji może ładować się wolno ze względu na duży formularz
-- Użyj filtra „Pokaż tylko skonfigurowane atrybuty" aby zmniejszyć ilość wyświetlanych danych
+
 - Rozważ utworzenie dedykowanej grupy atrybutów „Klasa wysyłki" z mniejszą liczbą wartości zamiast konfigurowania reguł dla każdego atrybutu
 
 ---
@@ -285,7 +307,7 @@ PrestaShop automatycznie zapisze plik tłumaczeń do modules/mzccarrierattribute
 
 Moduł:
 
-- Usunie tabelę reguł (mzc_carrier_attr_rule)
+- Usunie wszystkie tabele reguł (mzc_carrier_attr_rule_group, mzc_carrier_attr_rule_condition, mzc_carrier_attr_rule_carrier)
 - Usunie wartość konfiguracji (MZC_CARRIER_ATTR_RULES)
 - Wyrejestruje wszystkie hooki
 

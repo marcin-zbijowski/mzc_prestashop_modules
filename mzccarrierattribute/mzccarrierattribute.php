@@ -1,10 +1,11 @@
 <?php
 /**
- * MZC Carrier Attribute
+ * MZC Carrier Attribute (v1.2.0)
  *
- * Restrict available shipping carriers based on product attribute values (e.g. sizes).
- * Uses a whitelist model: configured attribute values only allow specified carriers.
- * Unconfigured attribute values and simple products impose no restriction.
+ * Restrict available shipping carriers based on product attribute values.
+ * Rules use multi-select conditions: within an attribute group, checked values
+ * are OR'd; between groups, the constraint is AND'd.  Unchecked groups impose
+ * no restriction.  One rule can cover many combinations at once.
  *
  * @author    Marcin Zbijowski Consulting
  * @copyright 2026 Marcin Zbijowski Consulting
@@ -46,7 +47,7 @@ class Mzccarrierattribute extends Module
     {
         $this->name = 'mzccarrierattribute';
         $this->tab = 'shipping_logistics';
-        $this->version = '1.0.0';
+        $this->version = '1.2.0';
         $this->author = 'Marcin Zbijowski Consulting';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -55,11 +56,25 @@ class Mzccarrierattribute extends Module
         parent::__construct();
 
         $this->displayName = $this->l('MZC Carrier Attribute');
-        $this->description = $this->l('Restrict available shipping carriers based on product attribute values (e.g. sizes). Whitelist model: map attribute values to allowed carriers.');
+        $this->description = $this->l('Restrict available shipping carriers based on product attribute values. Select multiple values per attribute group — OR within group, AND between groups.');
         $this->confirmUninstall = $this->l('Are you sure you want to uninstall this module? All carrier-attribute rules will be deleted.');
 
         $this->repository = new MzcCarrierAttrRuleRepository();
         $this->filter = new MzcCarrierAttrCarrierFilter($this->repository);
+
+        $this->ensureUpgrade();
+    }
+
+    /**
+     * Automatically migrate from v1 single-attribute schema when needed.
+     */
+    private function ensureUpgrade()
+    {
+        if (Configuration::get('MZC_CARRIER_ATTR_VERSION') !== '2.0') {
+            $installer = new MzcCarrierAttrInstaller();
+            $installer->installDb();
+            Configuration::updateValue('MZC_CARRIER_ATTR_VERSION', '2.0');
+        }
     }
 
     // =========================================================================
@@ -75,7 +90,8 @@ class Mzccarrierattribute extends Module
             && $this->registerHook('actionCarrierUpdate')
             && $this->registerHook('actionPresentCart')
             && $installer->installDb()
-            && Configuration::updateValue('MZC_CARRIER_ATTR_RULES', '');
+            && Configuration::updateValue('MZC_CARRIER_ATTR_RULES', '')
+            && Configuration::updateValue('MZC_CARRIER_ATTR_VERSION', '2.0');
     }
 
     public function uninstall()
@@ -84,7 +100,8 @@ class Mzccarrierattribute extends Module
 
         return parent::uninstall()
             && $installer->uninstallDb()
-            && Configuration::deleteByName('MZC_CARRIER_ATTR_RULES');
+            && Configuration::deleteByName('MZC_CARRIER_ATTR_RULES')
+            && Configuration::deleteByName('MZC_CARRIER_ATTR_VERSION');
     }
 
     // =========================================================================
@@ -142,7 +159,8 @@ class Mzccarrierattribute extends Module
     {
         $output = '';
 
-        $this->context->controller->addCSS($this->_path . 'views/css/admin.css');
+        $this->context->controller->addCSS($this->_path . 'views/css/admin.css?v=' . $this->version);
+        $this->context->controller->addJS($this->_path . 'views/js/admin.js?v=' . $this->version);
 
         if (Tools::isSubmit('submitMzcCarrierAttribute')) {
             $output .= $this->processSave();
@@ -154,12 +172,13 @@ class Mzccarrierattribute extends Module
     }
 
     /**
-     * Render the rules configuration form via Smarty template
+     * Render the rules configuration form.
+     * Existing rules and metadata are passed as JSON; the admin.js script
+     * renders dynamic rule panels with per-group checkbox sections.
      */
     private function renderRulesForm()
     {
         $idLang = (int) $this->context->language->id;
-        $showOnlyConfigured = (bool) Tools::getValue('show_configured', false);
 
         $attributeGroups = AttributeGroup::getAttributesGroups($idLang);
         if (empty($attributeGroups)) {
@@ -179,9 +198,9 @@ class Mzccarrierattribute extends Module
             ];
         }
 
-        $rules = $this->repository->getRules();
+        /* Build attribute groups with values for the JS rule builder */
+        $attrGroupsData = [];
 
-        $groups = [];
         foreach ($attributeGroups as $group) {
             $idGroup = (int) $group['id_attribute_group'];
             $attributes = AttributeGroup::getAttributes($idLang, $idGroup);
@@ -190,88 +209,100 @@ class Mzccarrierattribute extends Module
                 continue;
             }
 
-            if ($showOnlyConfigured) {
-                $hasConfigured = false;
-                foreach ($attributes as $attr) {
-                    if (isset($rules[(int) $attr['id_attribute']])) {
-                        $hasConfigured = true;
-                        break;
-                    }
-                }
-                if (!$hasConfigured) {
-                    continue;
-                }
-            }
-
-            $attrList = [];
+            $attrValues = [];
             foreach ($attributes as $attr) {
-                $idAttr = (int) $attr['id_attribute'];
-                if ($showOnlyConfigured && !isset($rules[$idAttr])) {
-                    continue;
-                }
-                $attrList[] = [
-                    'id_attribute' => $idAttr,
+                $attrValues[] = [
+                    'id' => (int) $attr['id_attribute'],
                     'name' => $attr['name'],
-                    'current_refs' => isset($rules[$idAttr]) ? $rules[$idAttr] : [],
                 ];
             }
 
-            if (!empty($attrList)) {
-                $groups[] = [
-                    'id_attribute_group' => $idGroup,
-                    'name' => $group['name'],
-                    'attributes' => $attrList,
-                ];
+            $attrGroupsData[] = [
+                'id' => $idGroup,
+                'name' => $group['name'],
+                'values' => $attrValues,
+            ];
+        }
+
+        /* Load existing rule groups — conditions are already grouped */
+        $ruleGroups = $this->repository->getRuleGroups();
+        $enriched = [];
+
+        foreach ($ruleGroups as $rg) {
+            /* Ensure condition group keys are strings for JS object */
+            $groupedConds = [];
+            foreach ($rg['conditions'] as $gid => $attrIds) {
+                $groupedConds[(string) $gid] = array_values($attrIds);
             }
+            $enriched[] = [
+                'conditions' => $groupedConds,
+                'carriers' => $rg['carriers'],
+            ];
         }
 
         $configureUrl = AdminController::$currentIndex . '&configure=' . $this->name
             . '&token=' . Tools::getAdminTokenLite('AdminModules');
 
         $this->context->smarty->assign([
-            'attribute_groups' => $groups,
-            'carrier_list' => $carrierList,
+            'mzc_data_json' => json_encode([
+                'attributeGroups' => $attrGroupsData,
+                'carrierList' => $carrierList,
+                'existingRules' => $enriched,
+            ], JSON_HEX_TAG),
             'configure_url' => $configureUrl,
-            'show_only_configured' => $showOnlyConfigured,
-            'all_attr_ids' => implode(',', $this->repository->getAllAttributeIds()),
         ]);
 
         return $this->display(__FILE__, 'views/templates/admin/rules_form.tpl');
     }
 
     /**
-     * Process rules form save
+     * Process the rules form save.
+     * Reads rule[<index>][conditions][<groupId>][] and rule[<index>][carriers][] arrays.
      */
     private function processSave()
     {
-        $allAttrIds = Tools::getValue('mzc_attr_ids', '');
-        $attrIds = array_filter(array_map('intval', explode(',', $allAttrIds)));
+        $rulesData = Tools::getValue('rule', []);
 
-        if (empty($attrIds)) {
-            return $this->displayError($this->l('No attributes found to save.'));
-        }
+        $ruleGroups = [];
+        if (is_array($rulesData)) {
+            foreach ($rulesData as $ruleData) {
+                if (!is_array($ruleData)) {
+                    continue;
+                }
 
-        $newRules = [];
-        foreach ($attrIds as $idAttr) {
-            $selectedRefs = Tools::getValue('rule_' . $idAttr, []);
-            if (!is_array($selectedRefs) || empty($selectedRefs)) {
-                continue;
-            }
+                $rawConditions = isset($ruleData['conditions']) ? $ruleData['conditions'] : [];
+                $carriers = isset($ruleData['carriers']) ? $ruleData['carriers'] : [];
 
-            $cleaned = [];
-            foreach ($selectedRefs as $ref) {
-                $ref = (int) $ref;
-                if ($ref > 0) {
-                    $cleaned[] = $ref;
+                if (!is_array($rawConditions) || !is_array($carriers)) {
+                    continue;
+                }
+
+                /* Build grouped conditions: groupId => [attrId, ...] */
+                $groupedConditions = [];
+                foreach ($rawConditions as $groupId => $attrIds) {
+                    if (!is_array($attrIds)) {
+                        continue;
+                    }
+                    $cleaned = array_unique(array_filter(array_map('intval', $attrIds)));
+                    if (!empty($cleaned)) {
+                        sort($cleaned);
+                        $groupedConditions[(int) $groupId] = array_values($cleaned);
+                    }
+                }
+
+                $carriers = array_unique(array_filter(array_map('intval', $carriers)));
+
+                if (!empty($groupedConditions) && !empty($carriers)) {
+                    ksort($groupedConditions);
+                    $ruleGroups[] = [
+                        'conditions' => $groupedConditions,
+                        'carriers' => array_values($carriers),
+                    ];
                 }
             }
-
-            if (!empty($cleaned)) {
-                $newRules[$idAttr] = $cleaned;
-            }
         }
 
-        $this->repository->saveRules($newRules);
+        $this->repository->saveRuleGroups($ruleGroups);
 
         return $this->displayConfirmation($this->l('Carrier attribute rules saved successfully.'));
     }

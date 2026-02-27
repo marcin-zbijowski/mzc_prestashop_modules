@@ -1,6 +1,6 @@
 # MZC Carrier Attribute — Documentation
 
-## Version 1.0.0
+## Version 1.1.0
 
 ## Author: Marcin Zbijowski Consulting
 
@@ -31,9 +31,9 @@
 
 MZC Carrier Attribute lets you restrict which shipping carriers are available at checkout based on product attribute values (e.g. sizes, materials, weights).
 
-It uses a whitelist model: for each attribute value, you select which carriers are allowed. Attribute values without any carriers selected impose no restriction — all carriers remain available. Only attribute values with explicit carrier assignments limit the shipping options.
+It uses a whitelist model with compound rules: you create rules that combine one or more attribute-value conditions with a set of allowed carriers. A rule applies when ALL its conditions match a product combination. For example, you can create a rule like "Size 40×50 + Frame Framed → Courier only", while leaving "Size 40×50 + Frame Unframed" without a rule so that all carriers remain available. Single-condition rules work exactly like simple attribute → carrier mappings.
 
-When a customer adds products with restricted attribute values to the cart, the module automatically removes disallowed carriers from the checkout delivery options. If multiple restricted attribute values are in the cart, only carriers allowed by ALL of them will be available.
+When a customer adds products with restricted attribute combinations to the cart, the module automatically removes disallowed carriers from the checkout delivery options. If multiple rules match products in the cart, only carriers allowed by ALL matching rules will be available.
 
 Simple products without combinations are never affected by this module.
 
@@ -73,29 +73,32 @@ After installation, a link to the module also appears in the back-office left me
 
 ## 4. How It Works
 
-### The Whitelist Model
+### The Whitelist Model — Compound Rules
 
-The module operates on a simple whitelist principle:
+The module operates on a whitelist principle with compound multi-condition rules:
 
-1. Each product attribute value (e.g. "XXL" in the "Size" group) can be assigned one or more allowed carriers
-2. If an attribute value has no carriers assigned, it imposes no restriction — all carriers remain available
-3. If an attribute value has carriers assigned, only those carriers are allowed when a product with that attribute is in the cart
-4. When multiple restricted attribute values are in the cart, the module computes the intersection — only carriers that appear in ALL allowlists are available
+1. Each rule consists of one or more attribute-value conditions plus a set of allowed carriers
+2. A rule applies when ALL its conditions match a product combination's attributes
+3. Single-condition rules (one attribute-value → carriers) work exactly like the previous model — backward compatible
+4. Compound rules (2+ conditions) allow precise control over specific attribute combinations (e.g. "Size 40×50 + Frame Framed → Courier only")
+5. If no rule matches a product combination, no restriction is imposed — all carriers remain available
+6. When multiple rules match products in the cart, the module computes the intersection — only carriers that appear in ALL matching rules' allowlists are available
 
 ### Example Logic
 
-Consider these rules:
+Consider these compound rules:
 
-- Size "XXL" → allowed carriers: Carrier A, Carrier B
-- Size "S" → no carriers assigned (no restriction)
-- Material "Glass" → allowed carriers: Carrier B, Carrier C
+- Rule 1: Size "40×50" + Frame "Framed" → allowed carriers: Courier only
+- Rule 2: Size "50×70" + Frame "Framed" → allowed carriers: Courier only
+- No rule for unframed combinations → all carriers available
 
 Scenarios:
 
-- Cart contains a product in size S → all carriers available (no restriction)
-- Cart contains a product in size XXL → only Carrier A and B available
-- Cart contains a product in size XXL and material Glass → only Carrier B available (intersection of {A, B} and {B, C})
-- Cart contains a product in size XXL and another in size S → only Carrier A and B available (only XXL imposes restrictions)
+- Cart contains a poster 40×50 Unframed → no rule matches → all carriers available
+- Cart contains a poster 40×50 Framed → Rule 1 matches → only Courier available
+- Cart contains a poster 50×70 Framed → Rule 2 matches → only Courier available
+- Cart contains a poster 40×50 Framed and a poster 50×70 Framed → Rules 1 and 2 match → intersection of {Courier} and {Courier} = Courier only
+- Cart contains a poster 40×50 Framed and a poster 40×50 Unframed → Rule 1 matches for the framed one, no rule for unframed → only Courier available
 
 ### Hooks Used
 
@@ -111,21 +114,21 @@ The module uses three PrestaShop hooks:
 
 Navigate to Modules > Module Manager, find MZC Carrier Attribute, and click Configure. Alternatively, use the **Shipping** > **Carrier Attributes** shortcut in the back-office left menu.
 
-### Rules Panel
+### Rule Builder
 
-The configuration page shows all attribute groups and their values in collapsible panels. For each attribute value, a row of checkboxes lists all active carriers. Check the carriers you want to allow for that attribute value.
+The configuration page features a dynamic rule builder. Rules are displayed as cards, each containing its conditions and allowed carriers.
 
-### Filtering
-
-Use the Show only configured attributes button to filter the view to only those attribute values that have at least one carrier assigned. This is helpful when you have many attributes but only a few rules.
-
-Click Show all attributes to return to the full view.
+- Click **Add Rule** to create a new rule
+- Each rule has one or more condition selectors (attribute group → value dropdowns) and a set of carrier checkboxes
+- Click **Add condition** within a rule to add another attribute-value condition to that rule (creating a compound rule)
+- Remove individual conditions with the delete button next to each condition
+- Remove an entire rule with the delete button on the rule card
 
 ### Saving
 
-Click Save Rules at the bottom of the page to save all rules at once. The module saves all rules in a single transaction for consistency.
+Click **Save Rules** at the bottom of the page to save all rules at once. The module saves all rules in a single database transaction for consistency.
 
-A success message confirms the save. If no attributes are found, an error message is displayed.
+A success message confirms the save. If no attributes or carriers are found, a warning message is displayed.
 
 ---
 
@@ -161,6 +164,19 @@ You sell clothing and XXL sizes require a specific carrier with larger packaging
 2. Leave all other sizes with no carriers selected
 
 Result: Orders containing XXL or XXXL items only show the large-package carrier.
+
+### Use Case 4: Framed vs Unframed Posters (Compound Rules)
+
+You sell posters in various sizes, both framed and unframed. Large framed posters are too bulky for parcel lockers and must ship via courier.
+
+1. Create compound rules combining Size and Frame conditions:
+   - Size "40×50" + Frame "Framed" → Courier only
+   - Size "50×70" + Frame "Framed" → Courier only
+   - Size "70×100" + Frame "Framed" → Courier only
+2. Leave all unframed combinations without rules (all carriers allowed)
+3. Leave small framed sizes (e.g. 20×30) without rules if they fit in parcel lockers
+
+Result: Large framed posters only show courier delivery, while unframed posters of any size and small framed posters show all carriers including parcel lockers.
 
 ---
 
@@ -217,7 +233,13 @@ The cache is invalidated automatically when:
 
 ### Database
 
-The module creates a single table (mzc_carrier_attr_rule) with indexed columns for efficient lookups. The table uses a composite unique key to prevent duplicate rules.
+The module creates 3 tables to store compound rules:
+
+- **mzc_carrier_attr_rule_group** — rule groups per shop. Each group represents one compound rule.
+- **mzc_carrier_attr_rule_condition** — conditions per group. Each condition specifies an attribute group and attribute value.
+- **mzc_carrier_attr_rule_carrier** — allowed carriers per group. Each entry links a rule group to a permitted carrier.
+
+All tables use indexed columns for efficient lookups and foreign keys for referential integrity.
 
 ---
 
@@ -231,7 +253,7 @@ The module ships with complete translations for 5 languages:
 - Spanish (es)
 - Italian (it)
 
-Each translation file covers all 20 translatable strings across the module class, rules form template, and warning templates.
+Each translation file covers all 22 translatable strings across the module class, rules form template, and warning templates.
 
 ### Adding or Editing Translations
 
@@ -260,7 +282,7 @@ PrestaShop saves the translation file to modules/mzccarrierattribute/translation
 
 - This happens when the intersection of all restricted attribute values results in an empty set (no carrier is allowed by all restricted products in the cart)
 - Review your rules to ensure that at least one carrier is common across all restricted attribute values that might be in the cart simultaneously
-- Use the "Show only configured attributes" filter to review all active rules
+- Open the rule builder to review all active rules and their carrier selections
 
 ### Rules not showing on configuration page
 
@@ -271,7 +293,6 @@ PrestaShop saves the translation file to modules/mzccarrierattribute/translation
 ### Configuration page slow
 
 - If you have hundreds of attribute values, the configuration page may load slowly due to the large form
-- Use the "Show only configured attributes" filter to reduce the displayed data
 - Consider creating a dedicated "Shipping Class" attribute group with fewer values instead of configuring rules for every attribute
 
 ---
@@ -285,7 +306,7 @@ PrestaShop saves the translation file to modules/mzccarrierattribute/translation
 
 The module will:
 
-- Drop the rules table (mzc_carrier_attr_rule)
+- Drop all rule tables (mzc_carrier_attr_rule_group, mzc_carrier_attr_rule_condition, mzc_carrier_attr_rule_carrier)
 - Remove the configuration value (MZC_CARRIER_ATTR_RULES)
 - Unregister all hooks
 

@@ -1,6 +1,6 @@
 # MZC Carrier Attribute — Documentation
 
-## Version 1.0.0
+## Version 1.1.0
 
 ## Auteur : Marcin Zbijowski Consulting
 
@@ -31,9 +31,9 @@
 
 MZC Carrier Attribute vous permet de restreindre les transporteurs disponibles lors du paiement en fonction des valeurs d'attributs des produits (ex. tailles, matériaux, poids).
 
-Le module utilise un modèle de liste blanche : pour chaque valeur d'attribut, vous sélectionnez les transporteurs autorisés. Les valeurs d'attributs sans transporteurs sélectionnés n'imposent aucune restriction — tous les transporteurs restent disponibles. Seules les valeurs d'attributs avec des transporteurs explicitement assignés limitent les options d'expédition.
+Le module utilise un modèle de liste blanche avec des règles composées : vous créez des règles combinant une ou plusieurs conditions attribut-valeur avec un ensemble de transporteurs autorisés. Une règle s'applique lorsque TOUTES ses conditions correspondent à une combinaison de produit. Par exemple, vous pouvez créer une règle « Taille 40×50 + Cadre Encadré → Coursier uniquement », tout en laissant « Taille 40×50 + Cadre Non encadré » sans règle pour que tous les transporteurs restent disponibles. Les règles à condition unique fonctionnent exactement comme les mappages simples attribut → transporteur.
 
-Lorsqu'un client ajoute des produits avec des valeurs d'attributs restreintes au panier, le module supprime automatiquement les transporteurs non autorisés des options de livraison lors du paiement. Si plusieurs valeurs d'attributs restreintes sont dans le panier, seuls les transporteurs autorisés par TOUTES seront disponibles.
+Lorsqu'un client ajoute des produits avec des combinaisons d'attributs restreintes au panier, le module supprime automatiquement les transporteurs non autorisés des options de livraison lors du paiement. Si plusieurs règles correspondent aux produits du panier, seuls les transporteurs autorisés par TOUTES les règles correspondantes seront disponibles.
 
 Les produits simples sans combinaisons ne sont jamais affectés par ce module.
 
@@ -73,29 +73,32 @@ Après l'installation, un lien vers le module apparaît également dans le menu 
 
 ## 4. Comment ça marche
 
-### Le modèle de liste blanche
+### Le modèle de liste blanche — Règles composées
 
-Le module fonctionne sur un principe simple de liste blanche :
+Le module fonctionne sur un principe de liste blanche avec des règles composées multi-conditions :
 
-1. Chaque valeur d'attribut produit (ex. « XXL » dans le groupe « Taille ») peut se voir assigner un ou plusieurs transporteurs autorisés
-2. Si une valeur d'attribut n'a pas de transporteurs assignés, elle n'impose aucune restriction — tous les transporteurs restent disponibles
-3. Si une valeur d'attribut a des transporteurs assignés, seuls ces transporteurs sont autorisés lorsqu'un produit avec cet attribut est dans le panier
-4. Lorsque plusieurs valeurs d'attributs restreintes sont dans le panier, le module calcule l'intersection — seuls les transporteurs présents dans TOUTES les listes d'autorisations sont disponibles
+1. Chaque règle se compose d'une ou plusieurs conditions attribut-valeur et d'un ensemble de transporteurs autorisés
+2. Une règle s'applique lorsque TOUTES ses conditions correspondent aux attributs d'une combinaison de produit
+3. Les règles à condition unique (un attribut-valeur → transporteurs) fonctionnent exactement comme le modèle précédent — rétrocompatible
+4. Les règles composées (2+ conditions) permettent un contrôle précis sur des combinaisons d'attributs spécifiques (ex. « Taille 40×50 + Cadre Encadré → Coursier uniquement »)
+5. Si aucune règle ne correspond à une combinaison de produit, aucune restriction n'est imposée — tous les transporteurs restent disponibles
+6. Lorsque plusieurs règles correspondent aux produits du panier, le module calcule l'intersection — seuls les transporteurs présents dans TOUTES les listes d'autorisations des règles correspondantes sont disponibles
 
 ### Exemple de logique
 
-Considérons ces règles :
+Considérons ces règles composées :
 
-- Taille « XXL » → transporteurs autorisés : Transporteur A, Transporteur B
-- Taille « S » → pas de transporteurs assignés (pas de restriction)
-- Matériau « Verre » → transporteurs autorisés : Transporteur B, Transporteur C
+- Règle 1 : Taille « 40×50 » + Cadre « Encadré » → transporteurs autorisés : Coursier uniquement
+- Règle 2 : Taille « 50×70 » + Cadre « Encadré » → transporteurs autorisés : Coursier uniquement
+- Pas de règle pour les combinaisons non encadrées → tous les transporteurs disponibles
 
 Scénarios :
 
-- Le panier contient un produit en taille S → tous les transporteurs disponibles (pas de restriction)
-- Le panier contient un produit en taille XXL → seuls Transporteur A et B disponibles
-- Le panier contient un produit en taille XXL et matériau Verre → seul Transporteur B disponible (intersection de {A, B} et {B, C})
-- Le panier contient un produit en taille XXL et un autre en taille S → seuls Transporteur A et B disponibles (seul XXL impose des restrictions)
+- Le panier contient un poster 40×50 Non encadré → aucune règle ne correspond → tous les transporteurs disponibles
+- Le panier contient un poster 40×50 Encadré → Règle 1 correspond → seul le Coursier disponible
+- Le panier contient un poster 50×70 Encadré → Règle 2 correspond → seul le Coursier disponible
+- Le panier contient un poster 40×50 Encadré et un poster 50×70 Encadré → Règles 1 et 2 correspondent → intersection de {Coursier} et {Coursier} = Coursier uniquement
+- Le panier contient un poster 40×50 Encadré et un poster 40×50 Non encadré → Règle 1 correspond pour l'encadré, pas de règle pour le non encadré → seul le Coursier disponible
 
 ### Hooks utilisés
 
@@ -111,21 +114,21 @@ Le module utilise trois hooks PrestaShop :
 
 Naviguez vers Modules > Gestionnaire de modules, trouvez MZC Carrier Attribute et cliquez sur Configurer. Vous pouvez également utiliser le raccourci **Transport** > **Attributs transporteurs** dans le menu de gauche.
 
-### Panneau des règles
+### Constructeur de règles
 
-La page de configuration affiche tous les groupes d'attributs et leurs valeurs dans des panneaux repliables. Pour chaque valeur d'attribut, une rangée de cases à cocher liste tous les transporteurs actifs. Cochez les transporteurs que vous souhaitez autoriser pour cette valeur d'attribut.
+La page de configuration propose un constructeur de règles dynamique. Les règles sont affichées sous forme de cartes, chacune contenant ses conditions et transporteurs autorisés.
 
-### Filtrage
-
-Utilisez le bouton Afficher uniquement les attributs configurés pour filtrer l'affichage aux seules valeurs d'attributs ayant au moins un transporteur assigné. C'est utile lorsque vous avez de nombreux attributs mais seulement quelques règles.
-
-Cliquez sur Afficher tous les attributs pour revenir à la vue complète.
+- Cliquez sur **Ajouter une règle** pour créer une nouvelle règle
+- Chaque règle possède un ou plusieurs sélecteurs de conditions (groupe d'attributs → liste déroulante de valeurs) et un ensemble de cases à cocher de transporteurs
+- Cliquez sur **Ajouter une condition** dans une règle pour ajouter une autre condition attribut-valeur (créant une règle composée)
+- Supprimez des conditions individuelles avec le bouton de suppression à côté de chaque condition
+- Supprimez une règle entière avec le bouton de suppression sur la carte de la règle
 
 ### Enregistrement
 
-Cliquez sur Enregistrer les règles en bas de la page pour sauvegarder toutes les règles en une fois. Le module enregistre toutes les règles dans une seule transaction pour la cohérence.
+Cliquez sur **Enregistrer les règles** en bas de la page pour sauvegarder toutes les règles en une fois. Le module enregistre toutes les règles dans une seule transaction de base de données pour la cohérence.
 
-Un message de succès confirme l'enregistrement. Si aucun attribut n'est trouvé, un message d'erreur est affiché.
+Un message de succès confirme l'enregistrement. Si aucun attribut ou transporteur n'est trouvé, un message d'avertissement est affiché.
 
 ---
 
@@ -161,6 +164,19 @@ Vous vendez des vêtements et les tailles XXL nécessitent un transporteur spéc
 2. Laissez toutes les autres tailles sans transporteurs sélectionnés
 
 Résultat : Les commandes contenant des articles XXL ou XXXL n'affichent que le transporteur gros colis.
+
+### Cas d'utilisation 4 : Posters encadrés vs non encadrés (Règles composées)
+
+Vous vendez des posters en différentes tailles, encadrés et non encadrés. Les grands posters encadrés sont trop volumineux pour les points relais et doivent être expédiés par coursier.
+
+1. Créez des règles composées combinant les conditions Taille et Cadre :
+   - Taille « 40×50 » + Cadre « Encadré » → Coursier uniquement
+   - Taille « 50×70 » + Cadre « Encadré » → Coursier uniquement
+   - Taille « 70×100 » + Cadre « Encadré » → Coursier uniquement
+2. Laissez toutes les combinaisons non encadrées sans règles (tous transporteurs autorisés)
+3. Laissez les petites tailles encadrées (ex. 20×30) sans règles si elles passent en point relais
+
+Résultat : Les grands posters encadrés n'affichent que la livraison par coursier, tandis que les posters non encadrés de toute taille et les petits posters encadrés affichent tous les transporteurs y compris les points relais.
 
 ---
 
@@ -217,7 +233,13 @@ Le cache est automatiquement invalidé lorsque :
 
 ### Base de données
 
-Le module crée une seule table (mzc_carrier_attr_rule) avec des colonnes indexées pour des recherches efficaces. La table utilise une clé unique composite pour empêcher les règles en double.
+Le module crée 3 tables pour stocker les règles composées :
+
+- **mzc_carrier_attr_rule_group** — groupes de règles par boutique. Chaque groupe représente une règle composée.
+- **mzc_carrier_attr_rule_condition** — conditions par groupe. Chaque condition spécifie un groupe d'attributs et une valeur d'attribut.
+- **mzc_carrier_attr_rule_carrier** — transporteurs autorisés par groupe. Chaque entrée lie un groupe de règles à un transporteur autorisé.
+
+Toutes les tables utilisent des colonnes indexées pour des recherches efficaces et des clés étrangères pour l'intégrité référentielle.
 
 ---
 
@@ -231,7 +253,7 @@ Le module est livré avec des traductions complètes pour 5 langues :
 - Espagnol (es)
 - Italien (it)
 
-Chaque fichier de traduction couvre les 20 chaînes traduisibles de la classe du module, du template de formulaire de règles et des templates d'avertissement.
+Chaque fichier de traduction couvre les 22 chaînes traduisibles de la classe du module, du template de formulaire de règles et des templates d'avertissement.
 
 ### Ajouter ou modifier des traductions
 
@@ -260,7 +282,7 @@ PrestaShop enregistre automatiquement le fichier de traduction dans modules/mzcc
 
 - Cela se produit lorsque l'intersection de toutes les valeurs d'attributs restreintes est vide (aucun transporteur n'est autorisé par tous les produits restreints dans le panier)
 - Passez en revue vos règles pour vous assurer qu'au moins un transporteur est commun à toutes les valeurs d'attributs restreintes susceptibles d'être simultanément dans le panier
-- Utilisez le filtre « Afficher uniquement les attributs configurés » pour examiner toutes les règles actives
+- Ouvrez le constructeur de règles pour examiner toutes les règles actives et leurs sélections de transporteurs
 
 ### Les règles ne s'affichent pas sur la page de configuration
 
@@ -271,7 +293,6 @@ PrestaShop enregistre automatiquement le fichier de traduction dans modules/mzcc
 ### Page de configuration lente
 
 - Si vous avez des centaines de valeurs d'attributs, la page de configuration peut se charger lentement en raison du formulaire volumineux
-- Utilisez le filtre « Afficher uniquement les attributs configurés » pour réduire les données affichées
 - Envisagez de créer un groupe d'attributs dédié « Classe d'expédition » avec moins de valeurs au lieu de configurer des règles pour chaque attribut
 
 ---
@@ -285,7 +306,7 @@ PrestaShop enregistre automatiquement le fichier de traduction dans modules/mzcc
 
 Le module va :
 
-- Supprimer la table des règles (mzc_carrier_attr_rule)
+- Supprimer toutes les tables de règles (mzc_carrier_attr_rule_group, mzc_carrier_attr_rule_condition, mzc_carrier_attr_rule_carrier)
 - Supprimer la valeur de configuration (MZC_CARRIER_ATTR_RULES)
 - Désenregistrer tous les hooks
 

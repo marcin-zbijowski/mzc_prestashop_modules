@@ -1,6 +1,10 @@
 <?php
 /**
- * MZC Carrier Attribute — Carrier filter (core delivery option filtering logic)
+ * MZC Carrier Attribute — Carrier filter (v2 — grouped OR/AND matching)
+ *
+ * Within an attribute group, checked values are OR'd.
+ * Between attribute groups, the constraint is AND'd.
+ * Unchecked groups impose no constraint.
  *
  * @author    Marcin Zbijowski Consulting
  * @copyright 2026 Marcin Zbijowski Consulting
@@ -24,7 +28,13 @@ class MzcCarrierAttrCarrierFilter
     }
 
     /**
-     * Filter delivery options based on attribute rules
+     * Filter delivery options based on grouped attribute rules.
+     *
+     * For every product combination in the cart the module finds all rule
+     * groups whose conditions match.  A rule matches when, for every
+     * attribute group that has conditions, at least one condition value
+     * is present in the combination's attributes (OR within group,
+     * AND between groups).
      *
      * @param array $deliveryOptionList Passed by reference from the hook
      * @param Cart $cart
@@ -58,9 +68,9 @@ class MzcCarrierAttrCarrierFilter
         }
 
         $comboAttrMap = $this->repository->getCombinationAttributes(array_values($combinationIds));
-        $rules = $this->repository->getRules();
+        $ruleGroups = $this->repository->getRuleGroups();
 
-        if (empty($rules)) {
+        if (empty($ruleGroups)) {
             return;
         }
 
@@ -75,11 +85,12 @@ class MzcCarrierAttrCarrierFilter
                 if (!isset($comboAttrMap[$idPa])) {
                     continue;
                 }
-                foreach ($comboAttrMap[$idPa] as $idAttr) {
-                    if (!isset($rules[$idAttr])) {
-                        continue;
+                $comboAttrs = $comboAttrMap[$idPa];
+
+                foreach ($ruleGroups as $group) {
+                    if ($this->ruleMatchesCombination($group['conditions'], $comboAttrs)) {
+                        $allowedSets[] = $group['carriers'];
                     }
-                    $allowedSets[] = $rules[$idAttr];
                 }
             }
 
@@ -121,7 +132,44 @@ class MzcCarrierAttrCarrierFilter
     }
 
     /**
-     * Check if a cart has any carrier restrictions based on attribute rules
+     * Check whether a rule matches a product combination.
+     *
+     * Conditions are grouped by attribute group:
+     *   ['conditions' => [ groupId => [attrId, ...], ... ]]
+     *
+     * For each attribute group present in the conditions, at least one of its
+     * values must appear in the combination's attributes (OR within group).
+     * All groups with conditions must pass (AND between groups).
+     *
+     * @param array $conditions Grouped conditions: [groupId => [attrId, ...]]
+     * @param int[] $comboAttrs Combination attribute IDs
+     *
+     * @return bool
+     */
+    private function ruleMatchesCombination(array $conditions, array $comboAttrs)
+    {
+        if (empty($conditions)) {
+            return false;
+        }
+
+        foreach ($conditions as $attrIds) {
+            $found = false;
+            foreach ($attrIds as $attrId) {
+                if (in_array($attrId, $comboAttrs, true)) {
+                    $found = true;
+                    break;
+                }
+            }
+            if (!$found) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Check if a cart has any carrier restrictions based on grouped rules.
      *
      * @param Cart $cart
      *
@@ -129,8 +177,8 @@ class MzcCarrierAttrCarrierFilter
      */
     public function cartHasRestrictions(Cart $cart)
     {
-        $rules = $this->repository->getRules();
-        if (empty($rules)) {
+        $ruleGroups = $this->repository->getRuleGroups();
+        if (empty($ruleGroups)) {
             return false;
         }
 
@@ -150,9 +198,9 @@ class MzcCarrierAttrCarrierFilter
 
         $comboAttrMap = $this->repository->getCombinationAttributes($combinationIds);
 
-        foreach ($comboAttrMap as $attrs) {
-            foreach ($attrs as $idAttr) {
-                if (isset($rules[$idAttr])) {
+        foreach ($comboAttrMap as $comboAttrs) {
+            foreach ($ruleGroups as $group) {
+                if ($this->ruleMatchesCombination($group['conditions'], $comboAttrs)) {
                     return true;
                 }
             }

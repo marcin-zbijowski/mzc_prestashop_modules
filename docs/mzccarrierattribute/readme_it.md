@@ -1,6 +1,6 @@
 # MZC Carrier Attribute — Documentazione
 
-## Versione 1.0.0
+## Versione 1.1.0
 
 ## Autore: Marcin Zbijowski Consulting
 
@@ -31,9 +31,9 @@
 
 MZC Carrier Attribute ti permette di limitare quali corrieri sono disponibili al checkout in base ai valori degli attributi del prodotto (es. taglie, materiali, pesi).
 
-Utilizza un modello whitelist: per ogni valore di attributo, selezioni quali corrieri sono consentiti. I valori di attributi senza corrieri selezionati non impongono alcuna restrizione — tutti i corrieri restano disponibili. Solo i valori di attributi con corrieri esplicitamente assegnati limitano le opzioni di spedizione.
+Utilizza un modello whitelist con regole composte: crei regole che combinano una o più condizioni attributo-valore con un insieme di corrieri consentiti. Una regola si applica quando TUTTE le sue condizioni corrispondono a una combinazione di prodotto. Ad esempio, puoi creare una regola «Taglia 40×50 + Cornice Incorniciato → solo Corriere espresso», lasciando «Taglia 40×50 + Cornice Non incorniciato» senza regola affinché tutti i corrieri restino disponibili. Le regole a condizione singola funzionano esattamente come i semplici mappaggi attributo → corriere.
 
-Quando un cliente aggiunge prodotti con valori di attributi ristretti al carrello, il modulo rimuove automaticamente i corrieri non consentiti dalle opzioni di consegna al checkout. Se nel carrello sono presenti più valori di attributi ristretti, saranno disponibili solo i corrieri consentiti da TUTTI.
+Quando un cliente aggiunge prodotti con combinazioni di attributi ristrette al carrello, il modulo rimuove automaticamente i corrieri non consentiti dalle opzioni di consegna al checkout. Se più regole corrispondono ai prodotti nel carrello, saranno disponibili solo i corrieri consentiti da TUTTE le regole corrispondenti.
 
 I prodotti semplici senza combinazioni non vengono mai influenzati da questo modulo.
 
@@ -73,29 +73,32 @@ Dopo l'installazione, un link al modulo appare anche nel menu sinistro del back-
 
 ## 4. Come funziona
 
-### Il modello whitelist
+### Il modello whitelist — Regole composte
 
-Il modulo opera su un semplice principio whitelist:
+Il modulo opera su un principio whitelist con regole composte multi-condizione:
 
-1. Ogni valore di attributo del prodotto (es. «XXL» nel gruppo «Taglia») può avere assegnati uno o più corrieri consentiti
-2. Se un valore di attributo non ha corrieri assegnati, non impone alcuna restrizione — tutti i corrieri restano disponibili
-3. Se un valore di attributo ha corrieri assegnati, solo quei corrieri sono consentiti quando un prodotto con quell'attributo è nel carrello
-4. Quando più valori di attributi ristretti sono nel carrello, il modulo calcola l'intersezione — solo i corrieri presenti in TUTTE le whitelist sono disponibili
+1. Ogni regola è composta da una o più condizioni attributo-valore più un insieme di corrieri consentiti
+2. Una regola si applica quando TUTTE le sue condizioni corrispondono agli attributi di una combinazione di prodotto
+3. Le regole a condizione singola (un attributo-valore → corrieri) funzionano esattamente come il modello precedente — retrocompatibile
+4. Le regole composte (2+ condizioni) permettono un controllo preciso su combinazioni di attributi specifiche (es. «Taglia 40×50 + Cornice Incorniciato → solo Corriere espresso»)
+5. Se nessuna regola corrisponde a una combinazione di prodotto, non viene imposta alcuna restrizione — tutti i corrieri restano disponibili
+6. Quando più regole corrispondono ai prodotti nel carrello, il modulo calcola l'intersezione — solo i corrieri presenti in TUTTE le whitelist delle regole corrispondenti sono disponibili
 
 ### Esempio di logica
 
-Consideriamo queste regole:
+Consideriamo queste regole composte:
 
-- Taglia «XXL» → corrieri consentiti: Corriere A, Corriere B
-- Taglia «S» → nessun corriere assegnato (nessuna restrizione)
-- Materiale «Vetro» → corrieri consentiti: Corriere B, Corriere C
+- Regola 1: Taglia «40×50» + Cornice «Incorniciato» → corrieri consentiti: solo Corriere espresso
+- Regola 2: Taglia «50×70» + Cornice «Incorniciato» → corrieri consentiti: solo Corriere espresso
+- Nessuna regola per le combinazioni non incorniciate → tutti i corrieri disponibili
 
 Scenari:
 
-- Il carrello contiene un prodotto in taglia S → tutti i corrieri disponibili (nessuna restrizione)
-- Il carrello contiene un prodotto in taglia XXL → solo Corriere A e B disponibili
-- Il carrello contiene un prodotto in taglia XXL e materiale Vetro → solo Corriere B disponibile (intersezione di {A, B} e {B, C})
-- Il carrello contiene un prodotto in taglia XXL e un altro in taglia S → solo Corriere A e B disponibili (solo XXL impone restrizioni)
+- Il carrello contiene un poster 40×50 Non incorniciato → nessuna regola corrisponde → tutti i corrieri disponibili
+- Il carrello contiene un poster 40×50 Incorniciato → Regola 1 corrisponde → solo Corriere espresso disponibile
+- Il carrello contiene un poster 50×70 Incorniciato → Regola 2 corrisponde → solo Corriere espresso disponibile
+- Il carrello contiene un poster 40×50 Incorniciato e un poster 50×70 Incorniciato → Regole 1 e 2 corrispondono → intersezione di {Corriere espresso} e {Corriere espresso} = solo Corriere espresso
+- Il carrello contiene un poster 40×50 Incorniciato e un poster 40×50 Non incorniciato → Regola 1 corrisponde per l'incorniciato, nessuna regola per il non incorniciato → solo Corriere espresso disponibile
 
 ### Hook utilizzati
 
@@ -111,21 +114,21 @@ Il modulo utilizza tre hook di PrestaShop:
 
 Naviga su Moduli > Gestore moduli, trova MZC Carrier Attribute e clicca su Configura. In alternativa, usa la scorciatoia **Spedizione** > **Attributi corrieri** nel menu a sinistra.
 
-### Pannello delle regole
+### Costruttore di regole
 
-La pagina di configurazione mostra tutti i gruppi di attributi e i loro valori in pannelli comprimibili. Per ogni valore di attributo, una riga di caselle di controllo elenca tutti i corrieri attivi. Spunta i corrieri che vuoi consentire per quel valore di attributo.
+La pagina di configurazione presenta un costruttore di regole dinamico. Le regole vengono visualizzate come schede, ognuna contenente le proprie condizioni e corrieri consentiti.
 
-### Filtraggio
-
-Usa il pulsante Mostra solo attributi configurati per filtrare la vista ai soli valori di attributi che hanno almeno un corriere assegnato. Questo è utile quando hai molti attributi ma solo poche regole.
-
-Clicca su Mostra tutti gli attributi per tornare alla vista completa.
+- Clicca su **Aggiungi regola** per creare una nuova regola
+- Ogni regola ha uno o più selettori di condizioni (gruppo di attributi → menu a tendina valori) e un insieme di caselle di controllo per i corrieri
+- Clicca su **Aggiungi condizione** all'interno di una regola per aggiungere un'altra condizione attributo-valore (creando una regola composta)
+- Rimuovi condizioni individuali con il pulsante di eliminazione accanto a ciascuna condizione
+- Rimuovi un'intera regola con il pulsante di eliminazione sulla scheda della regola
 
 ### Salvataggio
 
-Clicca su Salva regole in fondo alla pagina per salvare tutte le regole in una volta. Il modulo salva tutte le regole in una singola transazione per coerenza.
+Clicca su **Salva regole** in fondo alla pagina per salvare tutte le regole in una volta. Il modulo salva tutte le regole in una singola transazione del database per coerenza.
 
-Un messaggio di successo conferma il salvataggio. Se non vengono trovati attributi, viene visualizzato un messaggio di errore.
+Un messaggio di successo conferma il salvataggio. Se non vengono trovati attributi o corrieri, viene visualizzato un messaggio di avviso.
 
 ---
 
@@ -161,6 +164,19 @@ Vendi abbigliamento e le taglie XXL richiedono un corriere specifico con imballa
 2. Lascia tutte le altre taglie senza corrieri selezionati
 
 Risultato: Gli ordini contenenti articoli XXL o XXXL mostrano solo il corriere per pacchi grandi.
+
+### Caso d'uso 4: Poster incorniciati vs non incorniciati (Regole composte)
+
+Vendi poster in varie taglie, sia incorniciati che non incorniciati. I grandi poster incorniciati sono troppo ingombranti per i punti di ritiro e devono essere spediti tramite corriere espresso.
+
+1. Crea regole composte combinando le condizioni Taglia e Cornice:
+   - Taglia «40×50» + Cornice «Incorniciato» → solo Corriere espresso
+   - Taglia «50×70» + Cornice «Incorniciato» → solo Corriere espresso
+   - Taglia «70×100» + Cornice «Incorniciato» → solo Corriere espresso
+2. Lascia tutte le combinazioni non incorniciate senza regole (tutti i corrieri consentiti)
+3. Lascia le taglie piccole incorniciate (es. 20×30) senza regole se entrano nei punti di ritiro
+
+Risultato: I grandi poster incorniciati mostrano solo la consegna tramite corriere espresso, mentre i poster non incorniciati di qualsiasi taglia e i piccoli poster incorniciati mostrano tutti i corrieri inclusi i punti di ritiro.
 
 ---
 
@@ -217,7 +233,13 @@ La cache viene automaticamente invalidata quando:
 
 ### Database
 
-Il modulo crea una singola tabella (mzc_carrier_attr_rule) con colonne indicizzate per ricerche efficienti. La tabella usa una chiave unica composita per prevenire regole duplicate.
+Il modulo crea 3 tabelle per memorizzare le regole composte:
+
+- **mzc_carrier_attr_rule_group** — gruppi di regole per negozio. Ogni gruppo rappresenta una regola composta.
+- **mzc_carrier_attr_rule_condition** — condizioni per gruppo. Ogni condizione specifica un gruppo di attributi e un valore di attributo.
+- **mzc_carrier_attr_rule_carrier** — corrieri consentiti per gruppo. Ogni voce collega un gruppo di regole a un corriere consentito.
+
+Tutte le tabelle usano colonne indicizzate per ricerche efficienti e chiavi esterne per l'integrità referenziale.
 
 ---
 
@@ -231,7 +253,7 @@ Il modulo è fornito con traduzioni complete per 5 lingue:
 - Spagnolo (es)
 - Italiano (it)
 
-Ogni file di traduzione copre tutte le 20 stringhe traducibili nella classe del modulo, nel template del modulo di regole e nei template di avviso.
+Ogni file di traduzione copre tutte le 22 stringhe traducibili nella classe del modulo, nel template del modulo di regole e nei template di avviso.
 
 ### Aggiungere o modificare traduzioni
 
@@ -260,7 +282,7 @@ PrestaShop salva automaticamente il file di traduzione in modules/mzccarrierattr
 
 - Questo accade quando l'intersezione di tutti i valori di attributi ristretti risulta in un insieme vuoto (nessun corriere è consentito da tutti i prodotti ristretti nel carrello)
 - Rivedi le tue regole per assicurarti che almeno un corriere sia comune a tutti i valori di attributi ristretti che potrebbero essere simultaneamente nel carrello
-- Usa il filtro «Mostra solo attributi configurati» per esaminare tutte le regole attive
+- Apri il costruttore di regole per esaminare tutte le regole attive e le loro selezioni di corrieri
 
 ### Le regole non vengono mostrate nella pagina di configurazione
 
@@ -271,7 +293,6 @@ PrestaShop salva automaticamente il file di traduzione in modules/mzccarrierattr
 ### Pagina di configurazione lenta
 
 - Se hai centinaia di valori di attributi, la pagina di configurazione potrebbe caricarsi lentamente a causa del modulo grande
-- Usa il filtro «Mostra solo attributi configurati» per ridurre i dati visualizzati
 - Considera la creazione di un gruppo di attributi dedicato «Classe di spedizione» con meno valori invece di configurare regole per ogni attributo
 
 ---
@@ -285,7 +306,7 @@ PrestaShop salva automaticamente il file di traduzione in modules/mzccarrierattr
 
 Il modulo:
 
-- Eliminerà la tabella delle regole (mzc_carrier_attr_rule)
+- Eliminerà tutte le tabelle delle regole (mzc_carrier_attr_rule_group, mzc_carrier_attr_rule_condition, mzc_carrier_attr_rule_carrier)
 - Rimuoverà il valore di configurazione (MZC_CARRIER_ATTR_RULES)
 - Deregistrerà tutti gli hook
 
