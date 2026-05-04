@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+    <name>mzcga4gtm</name>
+    <displayName><![CDATA[MZC GA4 / GTM DataLayer]]></displayName>
+    <version><![CDATA[1.0.0]]></version>
+    <description><![CDATA[Pushes structured GA4 events to dataLayer for Google Tag Manager.]]></description>
+    <author><![CDATA[Marcin Zbijowski Consulting]]></author>
+    <tab><![CDATA[analytics_stats]]></tab>
+    <is_configurable>0</is_configurable>
+    <need_instance>0</need_instance>
+</module>
