@@ -1,0 +1,73 @@
+<?php
+global $_MODULE;
+$_MODULE = [];
+
+// -------------------------------------------------------------------------
+// Source: mzcmailcontent.php (main module class)
+// -------------------------------------------------------------------------
+
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_1045fdaf1a62ddf9d2b133969b925ab3'] = 'MZC Mail Content';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_c1d6f76a91c6a3abfeac9d545799bf89'] = 'Inject extra HTML content into selected transactional emails for a configurable date range, per language.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_bb8956c67b82c7444a80c6b2433dd8b4'] = 'Are you sure you want to uninstall this module?';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_ff50fb52e3dacee32dc657f50e406b23'] = 'Mail content campaigns';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_44e62d5cd9b9b1b6013b2586765e9875'] = 'Each campaign injects HTML content into one email template, during its date window, for languages with content.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_41bf693a150c6ddcc61eba68eada2735'] = 'Add new campaign';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_f8d5be27548e91f4a94bbb9c42059e46'] = 'No campaigns yet. Use the button above to create the first one.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_b718adec73e04ce3ec720dd11a06a308'] = 'ID';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_49ee3087348e8d44e1feda1917443987'] = 'Name';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_278c491bdd8a53618c149c4ac790da34'] = 'Template';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_52f5e0bc3859bc5f5e25130b6c7e8881'] = 'Position';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_5da618e8e4b89c66fe86e32cdafde142'] = 'From';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_e12167aa0a7698e6ebc92b4ce3909b53'] = 'To';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_4d3d769b812b6faa6b76e1a8abaece2d'] = 'Active';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_06df33001c1d7187fdd81ea1f5b277aa'] = 'Actions';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_7dce122004969d56ae2e0245cb754d35'] = 'Edit';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_f2a6c498fb90ee345d997f888fce3b18'] = 'Delete';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_31fde7b05ac8952dacf4af8a704074ec'] = 'Preview';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_93cba07454f06a4a960172bbd6e2a435'] = 'Yes';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_bafd7322c6e97d25b6299b5d6fe8920b'] = 'No';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_5b1a507bb19b3eef64748c3339b14d6b'] = 'Delete this campaign? This cannot be undone.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_16186ead9220c2a4646402c69109cfa0'] = 'Send a test email';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_8022dd0bbdbb1cdaf0cc5dfee52dd862'] = 'Sends one campaign\'s template to the chosen address with sample variables. The campaign date window is bypassed; only the matching campaign\'s HTML is injected.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_f00a1d99f6f47917006e88a803ecde1f'] = 'Campaign';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_094fbac209fb6a573fef67a0f2ff72aa'] = 'Recipient email';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_4994a8ffeba4ac3140beb89e8d41f174'] = 'Language';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_6389099b0b3e12919092dc74736f7fb3'] = 'Send test';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_2d11b909abb40caf039cfdc6bf838f1f'] = '— no campaigns available —';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_51719c36f04e41f2d3c578d260e065db'] = 'Edit campaign #%d';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_7ec6786cfbbba275781b7c85bb48acdf'] = 'New campaign';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_aea32fbbddf7d5dc52131f41c75805e4'] = 'Internal label for this campaign — visible only in admin (e.g. "May 2026 promo").';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_13a44cb3c08c1c40a3c5b62152538ee8'] = 'Email template';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_22456af1db6cab1cab19880fcefe72a8'] = 'The transactional email into which the extra content will be injected.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_648ba1c1f5c003f90c28b97cb4c4b6f1'] = '— select a template —';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_3e7aa0dadca9916bd237b4cebc19e475'] = 'Injection position';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_a1222fdbe87a87815002d43583e0708e'] = 'Top — right after the opening body tag';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_8e67a9e3506a421da15ee2bb3438a287'] = 'Bottom — right before the closing body tag';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_50d9d560b468ec07f8b4fe721fcae24e'] = 'Date from';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_f0774476c8faf49e86ac720c36e9ac55'] = 'Start of the campaign window. Leave empty for no lower bound.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_bad39a65b5302bb8628585aae59da36b'] = 'Date to';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_014ed54af6e6362f9163c51221130a32'] = 'End of the campaign window. Leave empty for no upper bound.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_a10013b6c1f43d608f842c88b8b3ca09'] = 'Extra HTML content';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_c2059d861ea43355af787ace52e26ee8'] = 'Content injected into the email. Languages without content are skipped.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_ea4788705e6873b424c65e91c2846b19'] = 'Cancel';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_c9cc8cce247e49bae79f15173ce97354'] = 'Save';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_bc35e602b3cad322d1914b1e91206d4b'] = 'Name is required.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_7a2fc850a8c01b8a8109463e0a03d731'] = 'Please choose a valid email template.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_147c4e2fee4c6ffe048b9a9ed48837bc'] = 'Invalid "Date from" format. Use YYYY-MM-DD HH:MM:SS.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_91fc748e852792af267f2e3cb1b0c21f'] = 'Invalid "Date to" format. Use YYYY-MM-DD HH:MM:SS.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_ea610299fd44b0c9d7942c92baa11ebe'] = '"Date from" must be earlier than "Date to".';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_e9339978d6574ec16719f0af1e649196'] = 'Database error while saving.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_dd8340f625a801e627780c370d60e5fb'] = 'Failed to save the campaign.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_d75c51dc58e067982c89434cfaf93824'] = 'Campaign saved.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_53aa50febfa2387280f81f2ef80678e2'] = 'Invalid campaign ID.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_585ca0d3edb9f89cb6425548a8e7bede'] = 'Campaign not found.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_91a63eef9d0d287ce19e8f9d79c1c1dd'] = 'Campaign deleted.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_10a8eb719f82f727a5495aaef9e1700f'] = 'Failed to delete the campaign.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_e6a74c1fb92392e796f2265d03fb4216'] = 'Please choose a campaign to test.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_7ab62076ead1cabb49ef4e874018ac33'] = 'Invalid recipient email address.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_4f426c4d181d22814c41408dad98f5ba'] = 'Please choose a language for the test email.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_216f25d274f80d54405485a76b0a4e52'] = 'Test email "%1$s" sent to %2$s.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_4a1bca76eeb482f240af1f6928461ea7'] = 'Failed to send the test email. Check the PrestaShop email configuration.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_1071a277393bbb90d6b44f16912ddb88'] = 'This is a test email from MZC Mail Content.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_692c0c7a2cae1a47a17e1896c976faf5'] = '(no content for this language)';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_5e76f4db3e3914dd7c73aa950fb5babb'] = 'Preview message body.';

@@ -28,6 +28,8 @@ services:
       - ./prestashop_modules:/var/www/html/modules
       - ./mzc_landing_newsletter:/var/www/html/modules/mzc_landing_newsletter
       - ./mzccarrierattribute:/var/www/html/modules/mzccarrierattribute
+      - ./mzcga4gtm:/var/www/html/modules/mzcga4gtm
+      - ./mzcmailcontent:/var/www/html/modules/mzcmailcontent
     networks:
       - prestashop-net
     depends_on:

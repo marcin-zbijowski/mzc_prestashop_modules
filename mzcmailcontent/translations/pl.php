@@ -1,0 +1,73 @@
+<?php
+global $_MODULE;
+$_MODULE = [];
+
+// -------------------------------------------------------------------------
+// Source: mzcmailcontent.php (main module class)
+// -------------------------------------------------------------------------
+
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_1045fdaf1a62ddf9d2b133969b925ab3'] = 'MZC Treść w mailach';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_c1d6f76a91c6a3abfeac9d545799bf89'] = 'Wstrzykuj dodatkową treść HTML do wybranych maili transakcyjnych w określonym przedziale dat, niezależnie dla każdego języka.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_bb8956c67b82c7444a80c6b2433dd8b4'] = 'Czy na pewno chcesz odinstalować ten moduł?';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_ff50fb52e3dacee32dc657f50e406b23'] = 'Kampanie treści w mailach';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_44e62d5cd9b9b1b6013b2586765e9875'] = 'Każda kampania wstrzykuje treść HTML do jednego szablonu maila w czasie trwania okna kampanii, dla języków z wypełnioną treścią.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_41bf693a150c6ddcc61eba68eada2735'] = 'Dodaj nową kampanię';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_866b9e628a2e8592678f2269a04c4e1c'] = 'Brak kampanii. Użyj przycisku powyżej, aby dodać pierwszą.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_b718adec73e04ce3ec720dd11a06a308'] = 'ID';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_49ee3087348e8d44e1feda1917443987'] = 'Nazwa';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_278c491bdd8a53618c149c4ac790da34'] = 'Szablon';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_52f5e0bc3859bc5f5e25130b6c7e8881'] = 'Pozycja';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_5da618e8e4b89c66fe86e32cdafde142'] = 'Od';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_e12167aa0a7698e6ebc92b4ce3909b53'] = 'Do';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_4d3d769b812b6faa6b76e1a8abaece2d'] = 'Aktywna';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_06df33001c1d7187fdd81ea1f5b277aa'] = 'Akcje';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_7dce122004969d56ae2e0245cb754d35'] = 'Edytuj';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_f2a6c498fb90ee345d997f888fce3b18'] = 'Usuń';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_31fde7b05ac8952dacf4af8a704074ec'] = 'Podgląd';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_93cba07454f06a4a960172bbd6e2a435'] = 'Tak';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_bafd7322c6e97d25b6299b5d6fe8920b'] = 'Nie';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_5b1a507bb19b3eef64748c3339b14d6b'] = 'Usunąć tę kampanię? Operacji nie można cofnąć.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_16186ead9220c2a4646402c69109cfa0'] = 'Wyślij testowy mail';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_8022dd0bbdbb1cdaf0cc5dfee52dd862'] = 'Wysyła szablon wybranej kampanii pod wskazany adres z przykładowymi zmiennymi. Okno kampanii jest pomijane; wstrzyknięta zostanie wyłącznie treść z tej kampanii.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_f00a1d99f6f47917006e88a803ecde1f'] = 'Kampania';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_094fbac209fb6a573fef67a0f2ff72aa'] = 'Adres odbiorcy';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_4994a8ffeba4ac3140beb89e8d41f174'] = 'Język';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_6389099b0b3e12919092dc74736f7fb3'] = 'Wyślij test';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_2d11b909abb40caf039cfdc6bf838f1f'] = '— brak dostępnych kampanii —';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_51719c36f04e41f2d3c578d260e065db'] = 'Edycja kampanii #%d';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_7ec6786cfbbba275781b7c85bb48acdf'] = 'Nowa kampania';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_aea32fbbddf7d5dc52131f41c75805e4'] = 'Wewnętrzna nazwa kampanii — widoczna tylko w panelu admin (np. "Promocja maj 2026").';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_13a44cb3c08c1c40a3c5b62152538ee8'] = 'Szablon maila';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_22456af1db6cab1cab19880fcefe72a8'] = 'Mail transakcyjny, do którego zostanie wstrzyknięta dodatkowa treść.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_648ba1c1f5c003f90c28b97cb4c4b6f1'] = '— wybierz szablon —';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_3e7aa0dadca9916bd237b4cebc19e475'] = 'Pozycja wstrzyknięcia';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_d43a6aedd1dbf2e566961b426f2f1f7f'] = 'Góra — zaraz po otwierającym tagu body';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_af454e06e89daa09c325c94ab34fde7d'] = 'Dół — zaraz przed zamykającym tagiem body';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_50d9d560b468ec07f8b4fe721fcae24e'] = 'Data od';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_f0774476c8faf49e86ac720c36e9ac55'] = 'Początek okna kampanii. Pozostaw puste, jeśli nie chcesz dolnej granicy.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_bad39a65b5302bb8628585aae59da36b'] = 'Data do';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_014ed54af6e6362f9163c51221130a32'] = 'Koniec okna kampanii. Pozostaw puste, jeśli nie chcesz górnej granicy.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_a10013b6c1f43d608f842c88b8b3ca09'] = 'Dodatkowa treść HTML';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_c2059d861ea43355af787ace52e26ee8'] = 'Treść wstrzykiwana do maila. Języki bez treści są pomijane.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_ea4788705e6873b424c65e91c2846b19'] = 'Anuluj';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_c9cc8cce247e49bae79f15173ce97354'] = 'Zapisz';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_bc35e602b3cad322d1914b1e91206d4b'] = 'Pole "Nazwa" jest wymagane.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_7a2fc850a8c01b8a8109463e0a03d731'] = 'Wybierz prawidłowy szablon maila.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_147c4e2fee4c6ffe048b9a9ed48837bc'] = 'Nieprawidłowy format pola "Data od". Użyj YYYY-MM-DD HH:MM:SS.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_91fc748e852792af267f2e3cb1b0c21f'] = 'Nieprawidłowy format pola "Data do". Użyj YYYY-MM-DD HH:MM:SS.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_ea610299fd44b0c9d7942c92baa11ebe'] = '"Data od" musi być wcześniejsza niż "Data do".';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_e9339978d6574ec16719f0af1e649196'] = 'Błąd bazy danych podczas zapisu.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_dd8340f625a801e627780c370d60e5fb'] = 'Nie udało się zapisać kampanii.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_d75c51dc58e067982c89434cfaf93824'] = 'Kampania zapisana.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_53aa50febfa2387280f81f2ef80678e2'] = 'Nieprawidłowy identyfikator kampanii.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_585ca0d3edb9f89cb6425548a8e7bede'] = 'Kampania nie znaleziona.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_91a63eef9d0d287ce19e8f9d79c1c1dd'] = 'Kampania usunięta.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_10a8eb719f82f727a5495aaef9e1700f'] = 'Nie udało się usunąć kampanii.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_e6a74c1fb92392e796f2265d03fb4216'] = 'Wybierz kampanię do przetestowania.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_7ab62076ead1cabb49ef4e874018ac33'] = 'Nieprawidłowy adres email odbiorcy.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_4f426c4d181d22814c41408dad98f5ba'] = 'Wybierz język dla testowego maila.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_216f25d274f80d54405485a76b0a4e52'] = 'Testowy mail "%1$s" wysłany na adres %2$s.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_4a1bca76eeb482f240af1f6928461ea7'] = 'Nie udało się wysłać testowego maila. Sprawdź konfigurację mailingu w PrestaShop.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_1071a277393bbb90d6b44f16912ddb88'] = 'To jest testowy mail z modułu MZC Treść w mailach.';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_692c0c7a2cae1a47a17e1896c976faf5'] = '(brak treści dla tego języka)';
+$_MODULE['<{mzcmailcontent}prestashop>mzcmailcontent_5e76f4db3e3914dd7c73aa950fb5babb'] = 'Treść maila w trybie podglądu.';
