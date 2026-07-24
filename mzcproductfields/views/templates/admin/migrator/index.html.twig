@@ -1,0 +1,109 @@
+{% extends '@PrestaShop/Admin/layout.html.twig' %}
+
+{% block content %}
+  <div class="panel">
+    <div class="panel-heading">
+      {{ 'Migrate from Anvanto Product Fields'|trans({}, 'Modules.Mzcproductfields.Admin') }}
+      <a href="{{ path('mzc_productfields_field_index') }}" class="btn btn-default pull-right">
+        {{ 'Back to fields'|trans({}, 'Modules.Mzcproductfields.Admin') }}
+      </a>
+    </div>
+    <div class="panel-body">
+      {% if not anvanto_available %}
+        <div class="alert alert-warning">
+          {{ 'No Anvanto Product Fields tables were found on this environment — nothing to migrate here.'|trans({}, 'Modules.Mzcproductfields.Admin') }}
+        </div>
+      {% else %}
+        <p>
+          {{ 'This never modifies or deletes Anvanto\'s own data — it only reads from it.'|trans({}, 'Modules.Mzcproductfields.Admin') }}
+        </p>
+
+        <h4>{{ '1. Archive historical order data'|trans({}, 'Modules.Mzcproductfields.Admin') }}</h4>
+        <p>
+          {{ 'Copies Anvanto\'s historical personalization order data into a permanent archive this module\'s own uninstall never touches. Do this before ever considering uninstalling Anvanto — its own uninstaller drops that data.'|trans({}, 'Modules.Mzcproductfields.Admin') }}
+        </p>
+        <form method="post" action="{{ path('mzc_productfields_migrator_archive_orders') }}">
+          <button type="submit" class="btn btn-primary">
+            {{ 'Archive order data now'|trans({}, 'Modules.Mzcproductfields.Admin') }}
+          </button>
+        </form>
+
+        <hr>
+
+        <h4>{{ '2. Migrate field configuration for one category'|trans({}, 'Modules.Mzcproductfields.Admin') }}</h4>
+        <p>
+          {{ 'Creates our own field definitions from Anvanto\'s active fields that apply to a category (directly, or via one of its products). Safe to run again later for another category — already-migrated fields are never duplicated.'|trans({}, 'Modules.Mzcproductfields.Admin') }}
+        </p>
+        <form method="post" action="{{ path('mzc_productfields_migrator_migrate_fields') }}" class="form-inline">
+          <div class="form-group">
+            <label for="mzc-migrator-category-search">{{ 'Category'|trans({}, 'Modules.Mzcproductfields.Admin') }}</label>
+            <input type="text" id="mzc-migrator-category-search" class="form-control" placeholder="{{ 'Search by name...'|trans({}, 'Modules.Mzcproductfields.Admin') }}" autocomplete="off">
+            <input type="hidden" name="id_category" id="mzc-migrator-category-id">
+            <span id="mzc-migrator-category-selected" style="margin-left:8px;font-weight:600;"></span>
+          </div>
+          <div id="mzc-migrator-category-results" class="list-group" style="max-width:400px;position:absolute;z-index:10;"></div>
+          <button type="submit" class="btn btn-primary" style="margin-left:8px;" id="mzc-migrator-migrate-submit" disabled>
+            {{ 'Migrate this category'|trans({}, 'Modules.Mzcproductfields.Admin') }}
+          </button>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+  <script>
+    (function () {
+      var searchInput = document.getElementById('mzc-migrator-category-search');
+      if (!searchInput) {
+        return;
+      }
+
+      var idInput = document.getElementById('mzc-migrator-category-id');
+      var selectedLabel = document.getElementById('mzc-migrator-category-selected');
+      var results = document.getElementById('mzc-migrator-category-results');
+      var submitButton = document.getElementById('mzc-migrator-migrate-submit');
+      var searchUrl = {{ category_search_url|json_encode|raw }};
+      var timer = null;
+
+      searchInput.addEventListener('input', function () {
+        idInput.value = '';
+        selectedLabel.textContent = '';
+        submitButton.disabled = true;
+        results.innerHTML = '';
+
+        var query = searchInput.value.trim();
+        if (query.length < 2) {
+          return;
+        }
+
+        clearTimeout(timer);
+        timer = setTimeout(function () {
+          fetch(searchUrl.replace('__QUERY__', encodeURIComponent(query)))
+            .then(function (response) {
+              return response.json();
+            })
+            .then(function (items) {
+              results.innerHTML = '';
+              items.forEach(function (item) {
+                var link = document.createElement('a');
+                link.href = '#';
+                link.className = 'list-group-item';
+                link.textContent = item.name + ' (#' + item.id + ')';
+                link.addEventListener('click', function (e) {
+                  e.preventDefault();
+                  idInput.value = item.id;
+                  selectedLabel.textContent = item.name + ' (#' + item.id + ')';
+                  searchInput.value = '';
+                  results.innerHTML = '';
+                  submitButton.disabled = false;
+                });
+                results.appendChild(link);
+              });
+            });
+        }, 250);
+      });
+    })();
+  </script>
+{% endblock %}

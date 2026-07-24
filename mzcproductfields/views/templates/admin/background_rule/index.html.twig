@@ -1,0 +1,68 @@
+{% extends '@PrestaShop/Admin/layout.html.twig' %}
+
+{% block content %}
+  <div class="panel">
+    <div class="panel-heading">
+      {{ 'Background per combination / attribute value'|trans({}, 'Modules.Mzcproductfields.Admin') }}
+    </div>
+
+    <div style="padding: 20px;">
+      <p class="help-block">
+        {{ 'Switches a field\'s live-preview background image based on what the customer has currently selected, on any product that offers these attribute values — e.g. a different photo for "Canvas" than for "Paper", or for "30x40cm" than for "21x30cm". Pick just one attribute value for a rule that applies regardless of any other choice (e.g. "21x30cm" alone), or several together for a more specific rule (e.g. "Canvas" AND "30x40cm").'|trans({}, 'Modules.Mzcproductfields.Admin') }}
+      </p>
+
+      {% if is_editing %}
+        <p><strong>{{ 'Editing rule'|trans({}, 'Modules.Mzcproductfields.Admin') }}</strong></p>
+      {% endif %}
+
+      {{ form_start(mzc_background_rule_form) }}
+        {{ form_widget(mzc_background_rule_form) }}
+        <button type="submit" class="btn btn-primary">
+          {{ is_editing ? 'Save changes'|trans({}, 'Modules.Mzcproductfields.Admin') : 'Add rule'|trans({}, 'Modules.Mzcproductfields.Admin') }}
+        </button>
+        {% if is_editing %}
+          <a href="{{ path('mzc_productfields_background_rule_index') }}" class="btn btn-default">{{ 'Cancel'|trans({}, 'Modules.Mzcproductfields.Admin') }}</a>
+        {% endif %}
+      {{ form_end(mzc_background_rule_form) }}
+    </div>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>{{ 'Attribute values'|trans({}, 'Modules.Mzcproductfields.Admin') }}</th>
+          <th>{{ 'Background image'|trans({}, 'Modules.Mzcproductfields.Admin') }}</th>
+          <th>{{ 'Font'|trans({}, 'Modules.Mzcproductfields.Admin') }}</th>
+          <th>{{ 'Font size'|trans({}, 'Modules.Mzcproductfields.Admin') }}</th>
+          <th>{{ 'Vertical position'|trans({}, 'Modules.Mzcproductfields.Admin') }}</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for rule in rules %}
+          <tr>
+            <td>{{ rule.label }}</td>
+            <td>{{ rule.background_name }}</td>
+            <td>{{ rule.font_name ?: '—' }}</td>
+            <td>{{ rule.font_size ? rule.font_size ~ '%' : '—' }}</td>
+            <td>{{ rule.pos_y is not null ? rule.pos_y ~ '%' : '—' }}</td>
+            <td>
+              <a href="{{ path('mzc_productfields_background_rule_index', {edit_id: rule.id}) }}" class="btn btn-link">{{ 'Edit'|trans({}, 'Modules.Mzcproductfields.Admin') }}</a>
+              <form method="post" action="{{ path('mzc_productfields_background_rule_delete', {id: rule.id}) }}" style="display:inline" onsubmit="return confirm('{{ 'Delete this rule?'|trans({}, 'Modules.Mzcproductfields.Admin') }}');">
+                <button type="submit" class="btn btn-link">{{ 'Delete'|trans({}, 'Modules.Mzcproductfields.Admin') }}</button>
+              </form>
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="6">{{ 'No rules yet.'|trans({}, 'Modules.Mzcproductfields.Admin') }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div style="padding: 0 20px 20px;">
+      <a href="{{ manage_backgrounds_url }}" class="btn btn-default">{{ 'Manage background images'|trans({}, 'Modules.Mzcproductfields.Admin') }}</a>
+      <a href="{{ path('mzc_productfields_field_index') }}" class="btn btn-default">{{ 'Back to Product Fields'|trans({}, 'Modules.Mzcproductfields.Admin') }}</a>
+    </div>
+  </div>
+{% endblock %}

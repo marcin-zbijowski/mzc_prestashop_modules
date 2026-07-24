@@ -1,0 +1,108 @@
+mzc_productfields_field_index:
+  path: /mzcproductfields/field
+  methods: [GET]
+  defaults:
+    _controller: 'MZConsulting\MzcProductFields\Controller\FieldController::indexAction'
+    _legacy_controller: AdminMzcProductFieldsFields
+    _legacy_link: AdminMzcProductFieldsFields
+
+mzc_productfields_field_create:
+  path: /mzcproductfields/field/create
+  methods: [GET, POST]
+  defaults:
+    _controller: 'MZConsulting\MzcProductFields\Controller\FieldController::createAction'
+    _legacy_controller: AdminMzcProductFieldsFields
+
+mzc_productfields_field_edit:
+  path: /mzcproductfields/field/{id}/edit
+  methods: [GET, POST]
+  requirements:
+    id: \d+
+  defaults:
+    _controller: 'MZConsulting\MzcProductFields\Controller\FieldController::editAction'
+    _legacy_controller: AdminMzcProductFieldsFields
+
+mzc_productfields_field_delete:
+  path: /mzcproductfields/field/{id}/delete
+  methods: [POST]
+  requirements:
+    id: \d+
+  defaults:
+    _controller: 'MZConsulting\MzcProductFields\Controller\FieldController::deleteAction'
+    _legacy_controller: AdminMzcProductFieldsFields
+
+mzc_productfields_category_search:
+  path: /mzcproductfields/category-search
+  methods: [GET]
+  defaults:
+    _controller: 'MZConsulting\MzcProductFields\Controller\CategorySearchController::searchAction'
+    _legacy_controller: AdminMzcProductFieldsFields
+
+mzc_productfields_font_index:
+  path: /mzcproductfields/font
+  methods: [GET, POST]
+  defaults:
+    _controller: 'MZConsulting\MzcProductFields\Controller\FontController::indexAction'
+    _legacy_controller: AdminMzcProductFieldsFields
+
+mzc_productfields_font_delete:
+  path: /mzcproductfields/font/{id}/delete
+  methods: [POST]
+  requirements:
+    id: \d+
+  defaults:
+    _controller: 'MZConsulting\MzcProductFields\Controller\FontController::deleteAction'
+    _legacy_controller: AdminMzcProductFieldsFields
+
+mzc_productfields_background_index:
+  path: /mzcproductfields/background
+  methods: [GET, POST]
+  defaults:
+    _controller: 'MZConsulting\MzcProductFields\Controller\BackgroundController::indexAction'
+    _legacy_controller: AdminMzcProductFieldsFields
+
+mzc_productfields_background_delete:
+  path: /mzcproductfields/background/{id}/delete
+  methods: [POST]
+  requirements:
+    id: \d+
+  defaults:
+    _controller: 'MZConsulting\MzcProductFields\Controller\BackgroundController::deleteAction'
+    _legacy_controller: AdminMzcProductFieldsFields
+
+mzc_productfields_background_rule_index:
+  path: /mzcproductfields/background-rule
+  methods: [GET, POST]
+  defaults:
+    _controller: 'MZConsulting\MzcProductFields\Controller\BackgroundRuleController::indexAction'
+    _legacy_controller: AdminMzcProductFieldsFields
+
+mzc_productfields_background_rule_delete:
+  path: /mzcproductfields/background-rule/{id}/delete
+  methods: [POST]
+  requirements:
+    id: \d+
+  defaults:
+    _controller: 'MZConsulting\MzcProductFields\Controller\BackgroundRuleController::deleteAction'
+    _legacy_controller: AdminMzcProductFieldsFields
+
+mzc_productfields_migrator_index:
+  path: /mzcproductfields/migrator
+  methods: [GET]
+  defaults:
+    _controller: 'MZConsulting\MzcProductFields\Controller\MigratorController::indexAction'
+    _legacy_controller: AdminMzcProductFieldsFields
+
+mzc_productfields_migrator_archive_orders:
+  path: /mzcproductfields/migrator/archive-orders
+  methods: [POST]
+  defaults:
+    _controller: 'MZConsulting\MzcProductFields\Controller\MigratorController::archiveOrdersAction'
+    _legacy_controller: AdminMzcProductFieldsFields
+
+mzc_productfields_migrator_migrate_fields:
+  path: /mzcproductfields/migrator/migrate-fields
+  methods: [POST]
+  defaults:
+    _controller: 'MZConsulting\MzcProductFields\Controller\MigratorController::migrateFieldConfigAction'
+    _legacy_controller: AdminMzcProductFieldsFields

@@ -1,0 +1,73 @@
+services:
+  _defaults:
+    public: true
+
+  MZConsulting\MzcProductFields\Repository\FieldRepository:
+    autowire: true
+
+  MZConsulting\MzcProductFields\Repository\FontRepository:
+    autowire: true
+
+  MZConsulting\MzcProductFields\Repository\BackgroundRepository:
+    autowire: true
+
+  MZConsulting\MzcProductFields\Form\Type\FieldType:
+    class: MZConsulting\MzcProductFields\Form\Type\FieldType
+    parent: 'form.type.translatable.aware'
+    public: true
+    tags:
+      - { name: form.type }
+
+  MZConsulting\MzcProductFields\Form\Type\FontUploadType:
+    class: MZConsulting\MzcProductFields\Form\Type\FontUploadType
+    parent: 'form.type.translatable.aware'
+    public: true
+    tags:
+      - { name: form.type }
+
+  MZConsulting\MzcProductFields\Form\Type\BackgroundUploadType:
+    class: MZConsulting\MzcProductFields\Form\Type\BackgroundUploadType
+    parent: 'form.type.translatable.aware'
+    public: true
+    tags:
+      - { name: form.type }
+
+  MZConsulting\MzcProductFields\Form\Type\ProductFieldsTabType:
+    class: MZConsulting\MzcProductFields\Form\Type\ProductFieldsTabType
+    parent: 'form.type.translatable.aware'
+    public: true
+    tags:
+      - { name: form.type }
+
+  MZConsulting\MzcProductFields\Form\Type\BackgroundRuleType:
+    class: MZConsulting\MzcProductFields\Form\Type\BackgroundRuleType
+    parent: 'form.type.translatable.aware'
+    public: true
+    tags:
+      - { name: form.type }
+
+  MZConsulting\MzcProductFields\Form\Modifier\ProductFieldsFormModifier:
+    autowire: true
+    # form.form_builder_modifier is NOT autowireable by class name on PS 8.2.7
+    # (its services.yml registers only the service id, no class-name alias;
+    # PS9 registers both) — bind explicitly by id so this works on both.
+    arguments:
+      $formBuilderModifier: '@form.form_builder_modifier'
+
+  MZConsulting\MzcProductFields\Service\CustomizationPriceCalculator:
+    autowire: true
+
+  MZConsulting\MzcProductFields\Service\CustomizationFieldSynchronizer:
+    autowire: true
+
+  MZConsulting\MzcProductFields\Service\CartFieldValueWriter:
+    autowire: true
+
+  MZConsulting\MzcProductFields\Service\ProductFieldsPresenter:
+    autowire: true
+
+  MZConsulting\MzcProductFields\Service\CombinationBackgroundResolver:
+    autowire: true
+
+  MZConsulting\MzcProductFields\Service\AnvantoMigrator:
+    autowire: true

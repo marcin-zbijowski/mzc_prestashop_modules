@@ -1,0 +1,66 @@
+{% extends '@PrestaShop/Admin/layout.html.twig' %}
+
+{% block content %}
+  <div class="panel">
+    <div class="panel-heading">
+      {{ 'Product personalization fields'|trans({}, 'Modules.Mzcproductfields.Admin') }}
+      <a href="{{ path('mzc_productfields_field_create') }}" class="btn btn-primary pull-right">
+        {{ 'Add new field'|trans({}, 'Modules.Mzcproductfields.Admin') }}
+      </a>
+      <a href="{{ path('mzc_productfields_font_index') }}" class="btn btn-default pull-right" style="margin-right:8px;">
+        {{ 'Manage fonts'|trans({}, 'Modules.Mzcproductfields.Admin') }}
+      </a>
+      <a href="{{ path('mzc_productfields_background_index') }}" class="btn btn-default pull-right" style="margin-right:8px;">
+        {{ 'Manage backgrounds'|trans({}, 'Modules.Mzcproductfields.Admin') }}
+      </a>
+      <a href="{{ path('mzc_productfields_background_rule_index') }}" class="btn btn-default pull-right" style="margin-right:8px;">
+        {{ 'Background per combination'|trans({}, 'Modules.Mzcproductfields.Admin') }}
+      </a>
+      <a href="{{ path('mzc_productfields_migrator_index') }}" class="btn btn-default pull-right" style="margin-right:8px;">
+        {{ 'Migrate from Anvanto'|trans({}, 'Modules.Mzcproductfields.Admin') }}
+      </a>
+    </div>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>{{ 'ID'|trans({}, 'Modules.Mzcproductfields.Admin') }}</th>
+          <th>{{ 'Label'|trans({}, 'Modules.Mzcproductfields.Admin') }}</th>
+          <th>{{ 'Type'|trans({}, 'Modules.Mzcproductfields.Admin') }}</th>
+          <th>{{ 'Scope'|trans({}, 'Modules.Mzcproductfields.Admin') }}</th>
+          <th>{{ 'Paid'|trans({}, 'Modules.Mzcproductfields.Admin') }}</th>
+          <th>{{ 'Active'|trans({}, 'Modules.Mzcproductfields.Admin') }}</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for field in fields %}
+          <tr>
+            <td>{{ field.id_mzc_productfields_field }}</td>
+            <td>{{ field.label }}</td>
+            <td>{{ field.field_type }}</td>
+            <td>
+              {% if field.scope_type == 0 %}{{ 'All products'|trans({}, 'Modules.Mzcproductfields.Admin') }}
+              {% elseif field.scope_type == 1 %}{{ 'Category'|trans({}, 'Modules.Mzcproductfields.Admin') }} #{{ field.scope_id }}
+              {% else %}{{ '%count% product(s)'|trans({'%count%': field.product_count}, 'Modules.Mzcproductfields.Admin') }}
+              {% endif %}
+            </td>
+            <td>{{ field.is_paid ? 'Yes'|trans({}, 'Modules.Mzcproductfields.Admin') : 'No'|trans({}, 'Modules.Mzcproductfields.Admin') }}</td>
+            <td>{{ field.active ? 'Yes'|trans({}, 'Modules.Mzcproductfields.Admin') : 'No'|trans({}, 'Modules.Mzcproductfields.Admin') }}</td>
+            <td>
+              <a href="{{ path('mzc_productfields_field_edit', {id: field.id_mzc_productfields_field}) }}">
+                {{ 'Edit'|trans({}, 'Modules.Mzcproductfields.Admin') }}
+              </a>
+              <form method="post" action="{{ path('mzc_productfields_field_delete', {id: field.id_mzc_productfields_field}) }}" style="display:inline" onsubmit="return confirm('{{ 'Delete this field?'|trans({}, 'Modules.Mzcproductfields.Admin') }}');">
+                <button type="submit" class="btn btn-link">{{ 'Delete'|trans({}, 'Modules.Mzcproductfields.Admin') }}</button>
+              </form>
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="7">{{ 'No fields yet.'|trans({}, 'Modules.Mzcproductfields.Admin') }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

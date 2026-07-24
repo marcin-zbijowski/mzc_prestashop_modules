@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file original="modules/mzcproductfields/mzcproductfields.php" source-language="en" target-language="pl" datatype="plaintext">
+    <body>
+      <trans-unit id="787a6411bc6cc6e3592f604692e694a6" approved="yes">
+        <source>Please confirm your personalization</source>
+        <target state="final">Proszę potwierdzić personalizację</target>
+      </trans-unit>
+      <trans-unit id="7dce122004969d56ae2e0245cb754d35" approved="yes">
+        <source>Edit</source>
+        <target state="final">Edytuj</target>
+      </trans-unit>
+      <trans-unit id="1924b7520a1fff33e60c7ece4042b547" approved="yes">
+        <source>Confirm and add to cart</source>
+        <target state="final">Potwierdź i dodaj do koszyka</target>
+      </trans-unit>
+      <trans-unit id="8a2784d361698222a5f581ee3e875ad9" approved="yes">
+        <source>Personalization adds %price% to your order.</source>
+        <target state="final">Personalizacja dodaje %price% do zamówienia.</target>
+      </trans-unit>
+      <trans-unit id="16f9684c71a56aee20194f578a976d25" approved="yes">
+        <source>Something went wrong — please try again.</source>
+        <target state="final">Coś poszło nie tak — spróbuj ponownie.</target>
+      </trans-unit>
+      <trans-unit id="ba0e96a6c4c559d2f01b144fea7149a1" approved="yes">
+        <source>Your personalization</source>
+        <target state="final">Twoja personalizacja</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+    <name>mzcproductfields</name>
+    <displayName><![CDATA[MZC Product Fields]]></displayName>
+    <version><![CDATA[1.1.4]]></version>
+    <description><![CDATA[Configurable product personalization fields with live preview. Replaces Anvanto Product Fields.]]></description>
+    <author><![CDATA[Marcin Zbijowski Consulting]]></author>
+    <tab><![CDATA[front_office_features]]></tab>
+	<confirmUninstall><![CDATA[Are you sure you want to uninstall this module? Product field definitions will be deleted. Archived historical order personalization data is kept.]]></confirmUninstall>
+    <is_configurable>1</is_configurable>
+    <need_instance>0</need_instance>
+</module>

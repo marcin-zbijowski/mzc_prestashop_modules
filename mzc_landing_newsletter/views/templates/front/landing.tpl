@@ -50,18 +50,9 @@
                 </div>
             {/if}
 
-            {* Custom message from admin (base64-encoded to bypass Smarty escape_html) *}
-            <div class="mzc-landing-message" id="mzc-landing-message"></div>
-            <div id="mzc-landing-message-data" data-b64="{$landing_message_b64|escape:'html':'UTF-8'}" style="display:none"></div>
-            <script>
-            (function() {
-                var src = document.getElementById('mzc-landing-message-data');
-                var dst = document.getElementById('mzc-landing-message');
-                if (src && dst && src.dataset.b64) {
-                    dst.innerHTML = atob(src.dataset.b64);
-                }
-            })();
-            </script>
+            {* Custom message from admin — injected via str_replace in PHP
+               to bypass Smarty escape_html without using nofilter *}
+            <div class="mzc-landing-message"><!-- __MZC_LANDING_MSG__ --></div>
 
             {* Newsletter signup form *}
             <div class="mzc-landing-form-wrapper">

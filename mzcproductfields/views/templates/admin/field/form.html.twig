@@ -1,0 +1,87 @@
+{% extends '@PrestaShop/Admin/layout.html.twig' %}
+
+{% block javascripts %}
+  {{ parent() }}
+  <script src="{{ app.request.getSchemeAndHttpHost() }}/modules/mzcproductfields/views/js/admin-field-form.js?v=2.2.0"></script>
+{% endblock %}
+
+{% block content %}
+  <div class="panel">
+    <div class="panel-heading">
+      {% if is_edit %}
+        {{ 'Edit field'|trans({}, 'Modules.Mzcproductfields.Admin') }}
+      {% else %}
+        {{ 'New field'|trans({}, 'Modules.Mzcproductfields.Admin') }}
+      {% endif %}
+    </div>
+    {{ form_start(mzc_field_form) }}
+      {{ form_row(mzc_field_form.id) }}
+      {{ form_row(mzc_field_form.label) }}
+      {{ form_row(mzc_field_form.placeholder) }}
+      {{ form_row(mzc_field_form.field_type) }}
+      {{ form_row(mzc_field_form.scope_type) }}
+      {{ form_widget(mzc_field_form.category_id) }}
+      {{ form_widget(mzc_field_form.products_json) }}
+
+      {#
+        Custom autocomplete widgets for the category/products scope pickers,
+        placed right after "Applies to" since that's what they configure.
+        Deliberately NOT PrestaShop core's EntitySearchInputType: its client-side
+        hydration only runs on pages that load core's own page-specific webpack
+        bundle (e.g. product.bundle.js), which this Symfony page never does, and
+        `ProductSearchType` doesn't even exist as a class in PS 8.2.7. This is a
+        small, self-contained widget instead — see views/js/admin-field-form.js.
+        JS writes selections into the hidden field[category_id]/field[products_json]
+        inputs rendered just above (as bare widgets, not full rows — they're
+        HiddenType, so there's nothing to label).
+      #}
+      <div class="form-group row js-mzc-scope-category" data-mzc-search-url="{{ category_search_url }}">
+        <label class="form-control-label col-form-label">{{ 'Category'|trans({}, 'Modules.Mzcproductfields.Admin') }}</label>
+        <div class="col-sm">
+          <input type="text" class="form-control js-mzc-search-input" autocomplete="off"
+                 placeholder="{{ 'Search category (name or ID)'|trans({}, 'Modules.Mzcproductfields.Admin') }}">
+          <ul class="js-mzc-suggestions list-group" style="display:none; position:absolute; z-index:1000; max-width:400px;"></ul>
+          <div class="js-mzc-selected" style="margin-top:8px;"
+               data-initial="{{ prefill.category ? [prefill.category]|json_encode : '[]' }}"></div>
+        </div>
+      </div>
+
+      <div class="form-group row js-mzc-scope-products" data-mzc-search-url="{{ product_search_url }}">
+        <label class="form-control-label col-form-label">{{ 'Products'|trans({}, 'Modules.Mzcproductfields.Admin') }}</label>
+        <div class="col-sm">
+          <input type="text" class="form-control js-mzc-search-input" autocomplete="off"
+                 placeholder="{{ 'Search product (name, reference or ID)'|trans({}, 'Modules.Mzcproductfields.Admin') }}">
+          <ul class="js-mzc-suggestions list-group" style="display:none; position:absolute; z-index:1000; max-width:400px;"></ul>
+          <div class="js-mzc-selected" style="margin-top:8px;"
+               data-initial="{{ prefill.products|json_encode }}"></div>
+          <small class="form-text text-muted">{{ 'Search and add one or more products.'|trans({}, 'Modules.Mzcproductfields.Admin') }}</small>
+        </div>
+      </div>
+
+      {{ form_row(mzc_field_form.required) }}
+      {{ form_row(mzc_field_form.is_paid) }}
+      {{ form_row(mzc_field_form.price_type) }}
+      {{ form_row(mzc_field_form.price_amount) }}
+      {{ form_row(mzc_field_form.id_tax_rules_group) }}
+      {{ form_row(mzc_field_form.max_length) }}
+      {{ form_row(mzc_field_form.position) }}
+      {{ form_row(mzc_field_form.active) }}
+      {{ form_row(mzc_field_form.preview_pos_x) }}
+      {{ form_row(mzc_field_form.preview_pos_y) }}
+      {{ form_row(mzc_field_form.preview_font) }}
+      {{ form_row(mzc_field_form.preview_font_size) }}
+      <div class="form-group row">
+        <div class="col-sm offset-sm-3">
+          <a href="{{ path('mzc_productfields_font_index') }}">{{ 'Manage custom fonts'|trans({}, 'Modules.Mzcproductfields.Admin') }}</a>
+        </div>
+      </div>
+      {{ form_row(mzc_field_form.preview_max_width) }}
+      {{ form_row(mzc_field_form.preview_color) }}
+      {{ form_row(mzc_field_form.is_front_field) }}
+      {{ form_rest(mzc_field_form) }}
+
+      <button type="submit" class="btn btn-primary">{{ 'Save'|trans({}, 'Modules.Mzcproductfields.Admin') }}</button>
+      <a href="{{ path('mzc_productfields_field_index') }}" class="btn btn-default">{{ 'Cancel'|trans({}, 'Modules.Mzcproductfields.Admin') }}</a>
+    {{ form_end(mzc_field_form) }}
+  </div>
+{% endblock %}

@@ -1,0 +1,464 @@
+<?php
+/**
+ * MZC Product Fields
+ *
+ * Configurable product personalization fields (free or paid, scoped to all
+ * products / one category / one product), with a live preview on the product
+ * page and a content-confirmation step before add-to-cart. Replaces Anvanto
+ * Product Fields (an_productfields) on ArteDeum.pl.
+ *
+ * @author    Marcin Zbijowski Consulting
+ * @copyright 2026 Marcin Zbijowski Consulting
+ * @license   MIT
+ */
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
+require_once __DIR__ . '/classes/MzcProductFieldsInstaller.php';
+require_once __DIR__ . '/classes/MzcProductFieldsField.php';
+require_once __DIR__ . '/classes/MzcProductFieldsFieldValue.php';
+require_once __DIR__ . '/classes/MzcProductFieldsFont.php';
+require_once __DIR__ . '/classes/MzcProductFieldsBackground.php';
+require_once __DIR__ . '/classes/MzcProductFieldsOrderArchive.php';
+require_once __DIR__ . '/classes/MzcProductFieldsOrderSnapshot.php';
+
+if (is_file(__DIR__ . '/vendor/autoload.php')) {
+    require_once __DIR__ . '/vendor/autoload.php';
+}
+
+class Mzcproductfields extends Module
+{
+    public function __construct()
+    {
+        $this->name = 'mzcproductfields';
+        $this->tab = 'front_office_features';
+        $this->version = '1.1.4';
+        $this->author = 'Marcin Zbijowski Consulting';
+        $this->need_instance = 0;
+        $this->bootstrap = true;
+        $this->ps_versions_compliancy = ['min' => '8.1.0', 'max' => '9.99.99'];
+
+        parent::__construct();
+
+        $this->displayName = $this->l('MZC Product Fields');
+        $this->description = $this->l('Configurable product personalization fields with live preview. Replaces Anvanto Product Fields.');
+        $this->confirmUninstall = $this->l('Are you sure you want to uninstall this module? Product field definitions will be deleted. Archived historical order personalization data is kept.');
+    }
+
+    // -------------------------------------------------------------------------
+    // Install / uninstall
+    // -------------------------------------------------------------------------
+
+    public function install()
+    {
+        $installer = new MzcProductFieldsInstaller();
+
+        return parent::install()
+            && $installer->installDb()
+            && $this->installTab()
+            && $this->registerHook('actionProductFormBuilderModifier')
+            && $this->registerHook('actionAfterUpdateProductFormHandler')
+            && $this->registerHook('displayProductAdditionalInfo')
+            && $this->registerHook('displayHeader')
+            && $this->registerHook('displayAdminOrderMain')
+            && $this->registerHook('displayShoppingCartFooter')
+            && $this->registerHook('displayOrderConfirmation');
+    }
+
+    public function uninstall()
+    {
+        $installer = new MzcProductFieldsInstaller();
+        $this->cleanupUploadedFonts();
+        $this->cleanupUploadedBackgrounds();
+        $this->get(\MZConsulting\MzcProductFields\Service\CustomizationFieldSynchronizer::class)->removeAll();
+
+        // Deliberately not touching mzc_productfields_order_archive(+_lang) —
+        // see MzcProductFieldsOrderArchive class docblock.
+        return $installer->uninstallDb()
+            && $this->uninstallTab()
+            && parent::uninstall();
+    }
+
+    private function cleanupUploadedFonts(): void
+    {
+        foreach (glob(MzcProductFieldsFont::getUploadDir() . '*') ?: [] as $file) {
+            if (is_file($file) && basename($file) !== 'index.php') {
+                @unlink($file);
+            }
+        }
+    }
+
+    private function cleanupUploadedBackgrounds(): void
+    {
+        foreach (glob(MzcProductFieldsBackground::getUploadDir() . '*') ?: [] as $file) {
+            if (is_file($file) && basename($file) !== 'index.php') {
+                @unlink($file);
+            }
+        }
+    }
+
+    private function installTab(): bool
+    {
+        $tabId = (int) Tab::getIdFromClassName('AdminMzcProductFieldsFields');
+        $tab = new Tab($tabId ?: null);
+        $tab->active = 1;
+        $tab->class_name = 'AdminMzcProductFieldsFields';
+        $tab->route_name = 'mzc_productfields_field_index';
+        $tab->icon = 'text_fields';
+        $tab->name = [];
+        foreach (Language::getLanguages(false) as $lang) {
+            $tab->name[(int) $lang['id_lang']] = $this->trans('Product Fields', [], 'Modules.Mzcproductfields.Admin', $lang['locale']);
+        }
+        $tab->id_parent = (int) Tab::getIdFromClassName('AdminCatalog');
+        $tab->module = $this->name;
+
+        return (bool) $tab->save();
+    }
+
+    private function uninstallTab(): bool
+    {
+        $tabId = (int) Tab::getIdFromClassName('AdminMzcProductFieldsFields');
+        if (!$tabId) {
+            return true;
+        }
+
+        $tab = new Tab($tabId);
+
+        return (bool) $tab->delete();
+    }
+
+    // -------------------------------------------------------------------------
+    // Back-office entry point — the real UI lives in the Symfony controller
+    // -------------------------------------------------------------------------
+
+    public function getContent()
+    {
+        $route = $this->get('router')->generate('mzc_productfields_field_index');
+        Tools::redirectAdmin($route);
+    }
+
+    // -------------------------------------------------------------------------
+    // Product edit page integration (hook (b) from the plan) — the first real
+    // handler for actionProductFormBuilderModifier in this codebase: Anvanto
+    // registers the hook in install() but never implemented it.
+    // -------------------------------------------------------------------------
+
+    public function hookActionProductFormBuilderModifier(array $params): void
+    {
+        $productId = (int) ($params['id'] ?? 0);
+        if ($productId <= 0 || !isset($params['form_builder'])) {
+            return;
+        }
+
+        $this->get(\MZConsulting\MzcProductFields\Form\Modifier\ProductFieldsFormModifier::class)
+            ->modify($productId, $params['form_builder']);
+    }
+
+    public function hookActionAfterUpdateProductFormHandler(array $params): void
+    {
+        $productId = (int) ($params['id'] ?? 0);
+        if ($productId <= 0) {
+            return;
+        }
+
+        $tabData = $params['form_data']['mzc_product_fields'] ?? null;
+        if ($tabData === null) {
+            // The tab wasn't rendered for this product (e.g. no SCOPE_PRODUCTS
+            // fields exist yet) — nothing to sync.
+            return;
+        }
+
+        $submitted = $tabData['product_field_ids'] ?? null;
+        if ($submitted !== null) {
+            $idLang = (int) $this->context->language->id;
+            $allFieldIds = array_map(
+                static fn ($field) => (int) $field['id_mzc_productfields_field'],
+                MzcProductFieldsField::getActiveProductScopedFields($idLang)
+            );
+
+            $this->get(\MZConsulting\MzcProductFields\Repository\FieldRepository::class)
+                ->syncProductMembership($productId, array_map('intval', (array) $submitted), $allFieldIds);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Front-office rendering (plan section 4) — same hook Anvanto uses
+    // (displayProductAdditionalInfo), unchanged between PS8/PS9, rendered by
+    // every theme in scope (confirmed in both artedeum-pl's live "leon" theme
+    // and PS9's "classic" theme) with the add-to-cart form always at
+    // id="add-to-cart-or-refresh".
+    // -------------------------------------------------------------------------
+
+    /**
+     * Registers our front-office CSS/JS — must happen here, not from
+     * hookDisplayProductAdditionalInfo(): that hook fires while the body is
+     * being rendered, by which point the theme's <head> (built from an
+     * earlier, separate Smarty pass) has already been assembled, so
+     * registerStylesheet()/registerJavascript() calls made there are
+     * silently ineffective (no error — confirmed empirically: the field
+     * itself rendered correctly, but its assets never appeared in the page).
+     * displayHeader is the hook core's own modules use for exactly this
+     * (e.g. productcomments), since it fires early enough.
+     */
+    public function hookDisplayHeader(): void
+    {
+        if (!($this->context->controller instanceof ProductController)) {
+            return;
+        }
+
+        $idProduct = (int) $this->context->controller->getProduct()->id;
+        if ($idProduct <= 0 || !MzcProductFieldsField::getFieldsForProduct($idProduct, (int) $this->context->language->id)) {
+            return;
+        }
+
+        // 'version' => $this->version appends "?{version}" to each asset URL
+        // (core's own AbstractAssetManager cache-busting mechanism) so a
+        // customer's browser fetches the new file the moment this module's
+        // version changes, instead of possibly keeping an old cached copy
+        // indefinitely — confirmed as a real risk: without this, a JS/CSS fix
+        // shipped here could sit stale in a returning customer's browser
+        // cache with no way to know a newer version exists. $this->version
+        // must be bumped in the constructor whenever any of these four files
+        // change, or this has no effect.
+        $this->context->controller->registerJavascript(
+            'mzcproductfields-front',
+            'modules/' . $this->name . '/views/js/front-product-fields.js',
+            ['position' => 'bottom', 'priority' => 150, 'version' => $this->version]
+        );
+        $this->context->controller->registerJavascript(
+            'mzcproductfields-front-snapshot',
+            'modules/' . $this->name . '/views/js/front-snapshot.js',
+            ['position' => 'bottom', 'priority' => 151, 'version' => $this->version]
+        );
+        $this->context->controller->registerJavascript(
+            'mzcproductfields-front-confirmation',
+            'modules/' . $this->name . '/views/js/front-confirmation.js',
+            ['position' => 'bottom', 'priority' => 152, 'version' => $this->version]
+        );
+        $this->context->controller->registerStylesheet(
+            'mzcproductfields-front',
+            'modules/' . $this->name . '/views/css/front-product-fields.css',
+            ['position' => 'head', 'priority' => 150, 'version' => $this->version]
+        );
+    }
+
+    public function hookDisplayProductAdditionalInfo(array $params): string
+    {
+        $idProduct = (int) ($params['product']['id_product'] ?? 0);
+        if ($idProduct <= 0) {
+            return '';
+        }
+
+        // Front-office requests never boot a Symfony kernel (confirmed: `global
+        // $kernel` is null here even on PS9) — $this->get() silently returns
+        // null in that case (Module::get() swallows ContainerNotFoundException),
+        // so unlike the admin-side hooks above, this must NOT go through the DI
+        // container. Our services have no framework dependencies of their own,
+        // so plain `new` is both correct and simpler.
+        $backgroundRepository = new \MZConsulting\MzcProductFields\Repository\BackgroundRepository();
+        $presenter = new \MZConsulting\MzcProductFields\Service\ProductFieldsPresenter(
+            new \MZConsulting\MzcProductFields\Service\CustomizationPriceCalculator(),
+            $backgroundRepository,
+            new \MZConsulting\MzcProductFields\Service\CombinationBackgroundResolver($backgroundRepository)
+        );
+
+        $idLang = (int) $this->context->language->id;
+        $presented = $presenter->present($idProduct, $idLang);
+
+        if (!$presented['fields']) {
+            return '';
+        }
+
+        $this->smarty->assign([
+            'mzc_fields' => $presented['fields'],
+            'mzc_fonts' => $presented['fonts'],
+            'mzc_backgrounds' => $presented['backgrounds'],
+            'mzc_combination_rules' => $presented['combination_rules'],
+            'mzc_id_product' => $idProduct,
+            'mzc_save_customization_url' => $this->context->link->getModuleLink($this->name, 'savecustomization'),
+            'mzc_save_snapshot_url' => $this->context->link->getModuleLink($this->name, 'savesnapshot'),
+            'mzc_i18n' => $this->getConfirmationTranslations(),
+        ]);
+
+        return $this->fetch('module:mzcproductfields/views/templates/hook/product_fields.tpl');
+    }
+
+    // -------------------------------------------------------------------------
+    // Backoffice order page — shows the JPG snapshot(s) captured client-side
+    // at content-confirmation time (see views/js/front-snapshot.js), so a
+    // merchant can see exactly what the customer's personalization looked
+    // like without reopening the product with the same combination selected.
+    // Identical hook/params shape on PS 8.2.7 and 9.0.2 (confirmed: both
+    // render `{{ renderhook('displayAdminOrderMain', {id_order: ...}) }}` in
+    // the same core Sell/Order/Order/view.html.twig template) — only
+    // `id_order` is passed, never a full Order object.
+    // -------------------------------------------------------------------------
+
+    public function hookDisplayAdminOrderMain(array $params): string
+    {
+        $idOrder = (int) ($params['id_order'] ?? 0);
+        if ($idOrder <= 0) {
+            return '';
+        }
+
+        $idLang = (int) $this->context->language->id;
+        $snapshots = MzcProductFieldsOrderSnapshot::getForOrder($idOrder, $idLang);
+        $textValues = MzcProductFieldsField::getTextValuesForOrder($idOrder, $idLang);
+        if (!$snapshots && !$textValues) {
+            return '';
+        }
+
+        foreach ($snapshots as &$snapshot) {
+            $snapshot['url'] = MzcProductFieldsOrderSnapshot::getUrl($snapshot['filename']);
+        }
+        unset($snapshot);
+
+        // Grouped by product here (rather than in the template) since Smarty
+        // has no clean "group consecutive rows sharing a key" construct —
+        // one products' worth of field:value pairs rendered together, in the
+        // same order the fields were queried (product, then field id).
+        $groupedTextValues = [];
+        foreach ($textValues as $row) {
+            $idProduct = (int) $row['id_product'];
+            if (!isset($groupedTextValues[$idProduct])) {
+                $groupedTextValues[$idProduct] = ['product_name' => $row['product_name'], 'values' => []];
+            }
+            $groupedTextValues[$idProduct]['values'][] = ['label' => $row['label'], 'value' => $row['value']];
+        }
+        $groupedTextValues = array_values($groupedTextValues);
+
+        // Same reasoning as the text values above: with more than one
+        // personalized product on the order, a flat grid of thumbnails gave
+        // no way to tell which preview belongs to which product.
+        $groupedSnapshots = [];
+        foreach ($snapshots as $row) {
+            $idProduct = (int) $row['id_product'];
+            if (!isset($groupedSnapshots[$idProduct])) {
+                $groupedSnapshots[$idProduct] = ['product_name' => $row['product_name'], 'items' => []];
+            }
+            $groupedSnapshots[$idProduct]['items'][] = $row;
+        }
+        $groupedSnapshots = array_values($groupedSnapshots);
+
+        // Styled inline in the template rather than via
+        // $this->context->controller->addCSS(): unlike the front-office hooks
+        // above, this admin hook's controller is sometimes a legacy
+        // controller and sometimes a Symfony one depending on PS version, and
+        // that inconsistency isn't worth risking a fatal over for four rules
+        // of CSS.
+        $this->smarty->assign([
+            'mzc_snapshots' => $groupedSnapshots,
+            'mzc_text_values' => $groupedTextValues,
+            // Translated here via the Symfony domain catalog (same as every
+            // other admin-facing string in this module) rather than the
+            // template's own {l} tag: {l} resolves through the OLD, separate
+            // translations/{iso_code}.php catalog format, which would leave
+            // this one string needing a different translation mechanism than
+            // everything else — passing the resolved string in avoids that
+            // split entirely.
+            'mzc_snapshots_title' => $this->trans('Personalization preview', [], 'Modules.Mzcproductfields.Admin'),
+            'mzc_text_values_title' => $this->trans('Personalization values', [], 'Modules.Mzcproductfields.Admin'),
+        ]);
+
+        return $this->fetch('module:mzcproductfields/views/templates/hook/order_snapshots.tpl');
+    }
+
+    /**
+     * Shopping cart page — plain-text personalization values for whatever is
+     * currently in the cart. Core's own classic theme already shows our
+     * customizations natively (a "Product customization" link/modal per
+     * line, via Product::getAllCustomizedDatas() — confirmed NOT filtered by
+     * is_module, unlike the front-office product-page fields query), but a
+     * customized/child theme's own cart template may not have kept that
+     * block. This gives every theme a guaranteed, theme-independent way to
+     * show it, same reasoning as the admin order page's text block above.
+     */
+    public function hookDisplayShoppingCartFooter(): string
+    {
+        $idCart = (int) $this->context->cart->id;
+        if ($idCart <= 0) {
+            return '';
+        }
+
+        $idLang = (int) $this->context->language->id;
+        $textValues = MzcProductFieldsField::getTextValuesForCart($idCart, $idLang);
+        if (!$textValues) {
+            return '';
+        }
+
+        $groupedTextValues = [];
+        foreach ($textValues as $row) {
+            $idProduct = (int) $row['id_product'];
+            if (!isset($groupedTextValues[$idProduct])) {
+                $groupedTextValues[$idProduct] = ['product_name' => $row['product_name'], 'values' => []];
+            }
+            $groupedTextValues[$idProduct]['values'][] = ['label' => $row['label'], 'value' => $row['value']];
+        }
+
+        $this->smarty->assign([
+            'mzc_cart_text_values' => array_values($groupedTextValues),
+            'mzc_cart_text_values_title' => $this->trans('Your personalization', [], 'Modules.Mzcproductfields.Shop'),
+        ]);
+
+        return $this->fetch('module:mzcproductfields/views/templates/hook/cart_text_values.tpl');
+    }
+
+    /**
+     * Order confirmation ("thank you") page — the same theme-independent
+     * text summary as the cart page footer above, but for the just-placed
+     * order rather than a still-live cart (see
+     * MzcProductFieldsField::getTextValuesForOrder()). Confirmed a real gap:
+     * the classic theme's own native "Product customization" per-line detail
+     * doesn't appear on this page at all, so without this a customer placing
+     * a personalized order never sees a written confirmation of what they
+     * typed, only on the cart page they've already left behind.
+     */
+    public function hookDisplayOrderConfirmation(array $params): string
+    {
+        $order = $params['order'] ?? null;
+        if (!($order instanceof Order) || !$order->id) {
+            return '';
+        }
+
+        $idLang = (int) $this->context->language->id;
+        $textValues = MzcProductFieldsField::getTextValuesForOrder((int) $order->id, $idLang);
+        if (!$textValues) {
+            return '';
+        }
+
+        $groupedTextValues = [];
+        foreach ($textValues as $row) {
+            $idProduct = (int) $row['id_product'];
+            if (!isset($groupedTextValues[$idProduct])) {
+                $groupedTextValues[$idProduct] = ['product_name' => $row['product_name'], 'values' => []];
+            }
+            $groupedTextValues[$idProduct]['values'][] = ['label' => $row['label'], 'value' => $row['value']];
+        }
+
+        $this->smarty->assign([
+            'mzc_cart_text_values' => array_values($groupedTextValues),
+            'mzc_cart_text_values_title' => $this->trans('Your personalization', [], 'Modules.Mzcproductfields.Shop'),
+        ]);
+
+        return $this->fetch('module:mzcproductfields/views/templates/hook/cart_text_values.tpl');
+    }
+
+    /**
+     * UI strings for the content-confirmation modal (front-confirmation.js)
+     * — translated here, not hardcoded in JS, since this ships on a
+     * Polish-language shop.
+     *
+     * @return array<string,string>
+     */
+    private function getConfirmationTranslations(): array
+    {
+        return [
+            'confirmTitle' => $this->trans('Please confirm your personalization', [], 'Modules.Mzcproductfields.Shop'),
+            'edit' => $this->trans('Edit', [], 'Modules.Mzcproductfields.Shop'),
+            'confirm' => $this->trans('Confirm and add to cart', [], 'Modules.Mzcproductfields.Shop'),
+            'priceNote' => $this->trans('Personalization adds %price% to your order.', [], 'Modules.Mzcproductfields.Shop'),
+            'genericError' => $this->trans('Something went wrong — please try again.', [], 'Modules.Mzcproductfields.Shop'),
+        ];
+    }
+}

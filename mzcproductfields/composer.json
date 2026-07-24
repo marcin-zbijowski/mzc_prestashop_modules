@@ -1,0 +1,28 @@
+{
+  "name": "mzc/product-fields",
+  "description": "Configurable product personalization fields with live preview. Replaces Anvanto Product Fields.",
+  "version": "1.0.0",
+  "type": "prestashop-module",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Marcin Zbijowski Consulting",
+      "homepage": "https://zbijowski.consulting"
+    }
+  ],
+  "require": {
+    "php": ">=8.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "MZConsulting\\MzcProductFields\\": "src/"
+    },
+    "classmap": [
+      "mzcproductfields.php",
+      "classes/"
+    ]
+  },
+  "config": {
+    "prepend-autoloader": false
+  }
+}

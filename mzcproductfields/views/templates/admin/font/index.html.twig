@@ -1,0 +1,51 @@
+{% extends '@PrestaShop/Admin/layout.html.twig' %}
+
+{% block content %}
+  <div class="panel">
+    <div class="panel-heading">
+      {{ 'Custom fonts'|trans({}, 'Modules.Mzcproductfields.Admin') }}
+    </div>
+
+    <div style="padding: 0 20px 20px;">
+      {{ form_start(mzc_font_form, {attr: {enctype: 'multipart/form-data'}}) }}
+        {{ form_widget(mzc_font_form) }}
+        <button type="submit" class="btn btn-primary">{{ 'Upload'|trans({}, 'Modules.Mzcproductfields.Admin') }}</button>
+      {{ form_end(mzc_font_form) }}
+    </div>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>{{ 'ID'|trans({}, 'Modules.Mzcproductfields.Admin') }}</th>
+          <th>{{ 'Name'|trans({}, 'Modules.Mzcproductfields.Admin') }}</th>
+          <th>{{ 'font-family'|trans({}, 'Modules.Mzcproductfields.Admin') }}</th>
+          <th>{{ 'File'|trans({}, 'Modules.Mzcproductfields.Admin') }}</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for font in fonts %}
+          <tr>
+            <td>{{ font.id_font }}</td>
+            <td>{{ font.name }}</td>
+            <td><code>{{ font.font_family }}</code></td>
+            <td>{{ font.original_filename }}</td>
+            <td>
+              <form method="post" action="{{ path('mzc_productfields_font_delete', {id: font.id_font}) }}" style="display:inline" onsubmit="return confirm('{{ 'Delete this font? Fields using it will fall back to the browser default.'|trans({}, 'Modules.Mzcproductfields.Admin') }}');">
+                <button type="submit" class="btn btn-link">{{ 'Delete'|trans({}, 'Modules.Mzcproductfields.Admin') }}</button>
+              </form>
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="5">{{ 'No custom fonts uploaded yet.'|trans({}, 'Modules.Mzcproductfields.Admin') }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div style="padding: 0 20px 20px;">
+      <a href="{{ path('mzc_productfields_field_index') }}" class="btn btn-default">{{ 'Back to Product Fields'|trans({}, 'Modules.Mzcproductfields.Admin') }}</a>
+    </div>
+  </div>
+{% endblock %}

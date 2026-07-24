@@ -1,0 +1,47 @@
+{% extends '@PrestaShop/Admin/TwigTemplateForm/prestashop_ui_kit_base.html.twig' %}
+
+{% block product_fields_tab_widget %}
+  <div {{ block('widget_attributes') }}>
+    <div class="alert alert-info">
+      {{ 'Full field authoring (create, edit, assign to categories) happens on the'|trans({}, 'Modules.Mzcproductfields.Admin') }}
+      <a href="{{ manage_fields_url }}" target="_blank">{{ 'Product Fields screen'|trans({}, 'Modules.Mzcproductfields.Admin') }}</a>.
+    </div>
+
+    <h4>{{ 'Fields that apply to this product'|trans({}, 'Modules.Mzcproductfields.Admin') }}</h4>
+    {% if resolved_fields is empty %}
+      <p>{{ 'No personalization fields apply to this product yet.'|trans({}, 'Modules.Mzcproductfields.Admin') }}</p>
+    {% else %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th>{{ 'Label'|trans({}, 'Modules.Mzcproductfields.Admin') }}</th>
+            <th>{{ 'Type'|trans({}, 'Modules.Mzcproductfields.Admin') }}</th>
+            <th>{{ 'Applies via'|trans({}, 'Modules.Mzcproductfields.Admin') }}</th>
+            <th>{{ 'Paid'|trans({}, 'Modules.Mzcproductfields.Admin') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for field in resolved_fields %}
+            <tr>
+              <td>{{ field.label }} (#{{ field.id_mzc_productfields_field }})</td>
+              <td>{{ field.field_type }}</td>
+              <td>
+                {% if field.scope_type == 0 %}{{ 'All products'|trans({}, 'Modules.Mzcproductfields.Admin') }}
+                {% elseif field.scope_type == 1 %}{{ 'Category'|trans({}, 'Modules.Mzcproductfields.Admin') }}
+                {% else %}{{ 'This product specifically'|trans({}, 'Modules.Mzcproductfields.Admin') }}
+                {% endif %}
+              </td>
+              <td>{{ field.is_paid ? 'Yes'|trans({}, 'Modules.Mzcproductfields.Admin') : 'No'|trans({}, 'Modules.Mzcproductfields.Admin') }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endif %}
+
+    {% if has_product_scoped_fields %}
+      <h4>{{ 'Quick override: include this product in these fields'|trans({}, 'Modules.Mzcproductfields.Admin') }}</h4>
+      <p class="help-block">{{ 'Only fields scoped to "Specific products" are listed here — category/all-products fields are managed on the Product Fields screen.'|trans({}, 'Modules.Mzcproductfields.Admin') }}</p>
+      {{ form_widget(form.product_field_ids) }}
+    {% endif %}
+  </div>
+{% endblock %}

@@ -1,0 +1,623 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file original="modules/mzcproductfields/mzcproductfields.php" source-language="en" target-language="pl" datatype="plaintext">
+    <body>
+      <trans-unit id="12056e1b87dd867e44ce326e5c54c46f" approved="yes">
+        <source>Product Fields</source>
+        <target state="final">Pola personalizacji</target>
+      </trans-unit>
+      <trans-unit id="2f9d88c7ea212b47fb992cd719ceb8fa" approved="yes">
+        <source>Personalization preview</source>
+        <target state="final">Podgląd personalizacji</target>
+      </trans-unit>
+      <trans-unit id="b021df6aac4654c454f46c77646e745f" approved="yes">
+        <source>Label</source>
+        <target state="final">Etykieta</target>
+      </trans-unit>
+      <trans-unit id="a6e7f8af348455a508faf1f76209dd7a" approved="yes">
+        <source>Shown to the customer on the product page.</source>
+        <target state="final">Widoczne dla klienta na stronie produktu.</target>
+      </trans-unit>
+      <trans-unit id="68753d36ec0c4d7768b20993268d68d1" approved="yes">
+        <source>Placeholder</source>
+        <target state="final">Tekst zastępczy</target>
+      </trans-unit>
+      <trans-unit id="d742cb277ac01a0fc2738a3394b0b33b" approved="yes">
+        <source>Field type</source>
+        <target state="final">Typ pola</target>
+      </trans-unit>
+      <trans-unit id="9dffbf69ffba8bc38bc4e01abf4b1675" approved="yes">
+        <source>Text</source>
+        <target state="final">Tekst</target>
+      </trans-unit>
+      <trans-unit id="80c9379f5bc0f2b7a6650a0b898dfc94" approved="yes">
+        <source>Text area</source>
+        <target state="final">Pole tekstowe (wieloliniowe)</target>
+      </trans-unit>
+      <trans-unit id="44749712dbec183e983dcd78a7736c41" approved="yes">
+        <source>Date</source>
+        <target state="final">Data</target>
+      </trans-unit>
+      <trans-unit id="4f8222964f9a317cef99dddc23a121bd" approved="yes">
+        <source>Checkbox</source>
+        <target state="final">Pole wyboru (checkbox)</target>
+      </trans-unit>
+      <trans-unit id="8bd90a6d76a77fe0b160e8abd85c8590" approved="yes">
+        <source>Radio buttons</source>
+        <target state="final">Przyciski radiowe</target>
+      </trans-unit>
+      <trans-unit id="2290c8bc3d08442d7d9853fd70e0460b" approved="yes">
+        <source>Select (dropdown)</source>
+        <target state="final">Lista rozwijana</target>
+      </trans-unit>
+      <trans-unit id="03fffbbcb3f39f54850e54f01190c352" approved="yes">
+        <source>Multi-select</source>
+        <target state="final">Wielokrotny wybór</target>
+      </trans-unit>
+      <trans-unit id="f5ccadfc7734d3a5818e229f8fd28f0d" approved="yes">
+        <source>Applies to</source>
+        <target state="final">Dotyczy</target>
+      </trans-unit>
+      <trans-unit id="40dec546414c1ebdfde8d9858f0938c3" approved="yes">
+        <source>All products</source>
+        <target state="final">Wszystkich produktów</target>
+      </trans-unit>
+      <trans-unit id="3807df937e1fc8b1f3398dd220539cc4" approved="yes">
+        <source>One category</source>
+        <target state="final">Jednej kategorii</target>
+      </trans-unit>
+      <trans-unit id="0134930cd8de5ba2ea50e5a843bea37d" approved="yes">
+        <source>Specific products</source>
+        <target state="final">Wybranych produktów</target>
+      </trans-unit>
+      <trans-unit id="b651efdb98a5d6bd2b3935d0c3f4a5e2" approved="yes">
+        <source>Required</source>
+        <target state="final">Wymagane</target>
+      </trans-unit>
+      <trans-unit id="bafd7322c6e97d25b6299b5d6fe8920b" approved="yes">
+        <source>No</source>
+        <target state="final">Nie</target>
+      </trans-unit>
+      <trans-unit id="93cba07454f06a4a960172bbd6e2a435" approved="yes">
+        <source>Yes</source>
+        <target state="final">Tak</target>
+      </trans-unit>
+      <trans-unit id="1b64684cefff2e60ee0a227b7a824a49" approved="yes">
+        <source>Paid field</source>
+        <target state="final">Pole płatne</target>
+      </trans-unit>
+      <trans-unit id="b24ce0cd392a5b0b8dedc66c25213594" approved="yes">
+        <source>Free</source>
+        <target state="final">Bezpłatne</target>
+      </trans-unit>
+      <trans-unit id="e0010a0a1a3259ab5c06a19bad532851" approved="yes">
+        <source>Paid</source>
+        <target state="final">Płatne</target>
+      </trans-unit>
+      <trans-unit id="ccaf8e79445684231a1719050bb949db" approved="yes">
+        <source>Price entered as</source>
+        <target state="final">Cena podana jako</target>
+      </trans-unit>
+      <trans-unit id="5baf9e43b554126508dd5760c2a6b8fe" approved="yes">
+        <source>Tax excluded (net)</source>
+        <target state="final">Netto (bez VAT)</target>
+      </trans-unit>
+      <trans-unit id="b70e27c60e8817d2f90101467cf55c82" approved="yes">
+        <source>Tax included (gross)</source>
+        <target state="final">Brutto (z VAT)</target>
+      </trans-unit>
+      <trans-unit id="9aa326343c066a0d4232c071d1174070" approved="yes">
+        <source>Price amount</source>
+        <target state="final">Kwota ceny</target>
+      </trans-unit>
+      <trans-unit id="18519b09f083c00f086fe9c152de78f6" approved="yes">
+        <source>Up to 6 decimal places, to avoid rounding drift when converting net/gross.</source>
+        <target state="final">Do 6 miejsc po przecinku, aby uniknąć błędów zaokrągleń przy przeliczaniu netto/brutto.</target>
+      </trans-unit>
+      <trans-unit id="930af443ae4af2d3b925c4f6d8b1f94f" approved="yes">
+        <source>Price amount is required for a paid field.</source>
+        <target state="final">Kwota ceny jest wymagana dla pola płatnego.</target>
+      </trans-unit>
+      <trans-unit id="0f648c07cf948de03a815a4ad875ebc9" approved="yes">
+        <source>Tax rule group</source>
+        <target state="final">Grupa reguł podatkowych</target>
+      </trans-unit>
+      <trans-unit id="63dc56bea26b7c66e3202a463e674223" approved="yes">
+        <source>Leave as "no tax" for a free field. Can differ from the parent product's own tax rule.</source>
+        <target state="final">Zostaw "brak podatku" dla pola bezpłatnego. Może różnić się od reguły podatkowej produktu nadrzędnego.</target>
+      </trans-unit>
+      <trans-unit id="94f0e608658539187d65dddeea593677" approved="yes">
+        <source>Maximum length</source>
+        <target state="final">Maksymalna długość</target>
+      </trans-unit>
+      <trans-unit id="c262432fcc8378a935ecbb7943d2ea96" approved="yes">
+        <source>Show character counter</source>
+        <target state="final">Pokaż licznik znaków</target>
+      </trans-unit>
+      <trans-unit id="5b010fe7f7c90c9f9b5c761211ec3db3" approved="yes">
+        <source>Shows a "typed/max" counter under the field on the product page — only has an effect when a maximum length is set above.</source>
+        <target state="final">Pokazuje licznik "wpisano/max" pod polem na stronie produktu — działa tylko, gdy powyżej ustawiono maksymalną długość.</target>
+      </trans-unit>
+      <trans-unit id="9fd320386d30339b33938d679482c38c" approved="yes">
+        <source>Display position</source>
+        <target state="final">Pozycja wyświetlania</target>
+      </trans-unit>
+      <trans-unit id="4d3d769b812b6faa6b76e1a8abaece2d" approved="yes">
+        <source>Active</source>
+        <target state="final">Aktywne</target>
+      </trans-unit>
+      <trans-unit id="e1868de32ddbd1e84a41fe591259d248" approved="yes">
+        <source>Preview position X (%)</source>
+        <target state="final">Pozycja podglądu X (%)</target>
+      </trans-unit>
+      <trans-unit id="bfdc4aa571b3c9192e931e76d44794be" approved="yes">
+        <source>Preview position Y (%)</source>
+        <target state="final">Pozycja podglądu Y (%)</target>
+      </trans-unit>
+      <trans-unit id="b52bb97664795e5e4e3ffea045f7b2b0" approved="yes">
+        <source>Preview font</source>
+        <target state="final">Czcionka podglądu</target>
+      </trans-unit>
+      <trans-unit id="8523f58a8e2dd3c95b95c656ae2e84a6" approved="yes">
+        <source>Upload custom fonts on the "Manage fonts" screen (linked below).</source>
+        <target state="final">Wgraj własne czcionki na ekranie "Zarządzaj czcionkami" (link poniżej).</target>
+      </trans-unit>
+      <trans-unit id="ff8a259dae6267d3a703221cfda706f4" approved="yes">
+        <source>No custom fonts uploaded yet</source>
+        <target state="final">Nie wgrano jeszcze żadnych czcionek</target>
+      </trans-unit>
+      <trans-unit id="da9e9d8c52ecc8d2707e860594ac2d72" approved="yes">
+        <source>Browser default</source>
+        <target state="final">Domyślna czcionka przeglądarki</target>
+      </trans-unit>
+      <trans-unit id="a7a2625d9d2cf725779cb73e0ecd7881" approved="yes">
+        <source>Preview font size (%)</source>
+        <target state="final">Rozmiar czcionki podglądu (%)</target>
+      </trans-unit>
+      <trans-unit id="3fc003a2d6139d2d1d56f02697035fe2" approved="yes">
+        <source>As a percentage of the preview image's width, so it scales correctly at any size. Default 6.</source>
+        <target state="final">Jako procent szerokości obrazu podglądu, dzięki czemu skaluje się poprawnie w każdym rozmiarze. Domyślnie 6.</target>
+      </trans-unit>
+      <trans-unit id="ba92be9fecfe316abac128262d79da3d" approved="yes">
+        <source>Preview max width (%)</source>
+        <target state="final">Maksymalna szerokość podglądu (%)</target>
+      </trans-unit>
+      <trans-unit id="5714348f16db2cda9c19b38a48dbe4c0" approved="yes">
+        <source>Wraps the preview text sooner than the full available width, as a percentage of the preview image's width. Leave empty to use the full width.</source>
+        <target state="final">Zawija tekst podglądu wcześniej niż przy pełnej dostępnej szerokości, jako procent szerokości obrazu podglądu. Zostaw puste, aby użyć pełnej szerokości.</target>
+      </trans-unit>
+      <trans-unit id="69cda84a4f9352a324a58bdec9ef4cc0" approved="yes">
+        <source>Front field</source>
+        <target state="final">Pole frontowe</target>
+      </trans-unit>
+      <trans-unit id="35a6ef78175df861eb02b10e390b6c5c" approved="yes">
+        <source>On: this field always overlays the product's own photo, exactly like a field with no background configured — the right choice for personalization printed on the front of the item. Off: renders on the background image below instead (its own default, or whichever image an active combination rule points to) — use this for a field meant for the back/reverse (e.g. engraving on the back of a frame). A product with both a front and a back field must have the back one set to Off, or both would render on the same background the moment a combination rule matches.</source>
+        <target state="final">Włączone: to pole zawsze nakłada się na własne zdjęcie produktu, dokładnie tak jak pole bez skonfigurowanego tła — właściwy wybór dla personalizacji drukowanej na froncie produktu. Wyłączone: renderuje się na obrazie tła poniżej (jego własne domyślne tło, albo dowolny obraz wskazany przez aktywną regułę kombinacji) — użyj tego dla pola przeznaczonego na tył/rewers (np. grawer na tylnej stronie ramki). Jeśli produkt ma zarówno pole frontowe, jak i tylne, pole tylne musi mieć to ustawione na Wyłączone, inaczej oba wyrenderują się na tym samym tle w momencie dopasowania reguły kombinacji.</target>
+      </trans-unit>
+      <trans-unit id="96b5ae8d9d2be1c222eb4a3488970a46" approved="yes">
+        <source>Preview background image</source>
+        <target state="final">Obraz tła podglądu</target>
+      </trans-unit>
+      <trans-unit id="91993e4ae4f2bc43a233a9f903495c75" approved="yes">
+        <source>Only used when "Front field" above is Off. Sets this field's own default background — upload images on the "Manage backgrounds" screen (linked below). A combination rule (configured separately) can still switch it to a different image dynamically.</source>
+        <target state="final">Używane tylko, gdy "Pole frontowe" powyżej jest wyłączone. Ustawia domyślne tło tego pola — wgraj obrazy na ekranie "Zarządzaj tłami" (link poniżej). Reguła kombinacji (konfigurowana osobno) nadal może dynamicznie przełączyć je na inny obraz.</target>
+      </trans-unit>
+      <trans-unit id="87c8aa68879f92f1d4e0cc2d18336574" approved="yes">
+        <source>None — rely on a combination rule only</source>
+        <target state="final">Brak — polegaj wyłącznie na regule kombinacji</target>
+      </trans-unit>
+      <trans-unit id="8acdb21246085f17ac038ccf93fe2b60" approved="yes">
+        <source>Anchors the live preview to a dedicated uploaded image (e.g. "Front"/"Back") instead of the product's own photo — upload images on the "Manage backgrounds" screen (linked below).</source>
+        <target state="final">Osadza podgląd na żywo na dedykowanym, wgranym obrazie (np. "Przód"/"Tył") zamiast na własnym zdjęciu produktu — wgraj obrazy na ekranie "Zarządzaj tłami" (link poniżej).</target>
+      </trans-unit>
+      <trans-unit id="ae235f54956f5fc5987443329d71f8a6" approved="yes">
+        <source>No background images uploaded yet</source>
+        <target state="final">Nie wgrano jeszcze żadnych obrazów tła</target>
+      </trans-unit>
+      <trans-unit id="8f7b5d12d5182b32ad741235cd7546b0" approved="yes">
+        <source>None — overlay on the product photo</source>
+        <target state="final">Brak — nakładka na zdjęcie produktu</target>
+      </trans-unit>
+      <trans-unit id="d8023b8b5f326b43a4a5707f2df7574f" approved="yes">
+        <source>Preview text color</source>
+        <target state="final">Kolor tekstu podglądu</target>
+      </trans-unit>
+      <trans-unit id="9097cc41afdcf658e60c28a3c827aaf7" approved="yes">
+        <source>Attribute values (all must be selected together)</source>
+        <target state="final">Wartości atrybutów (wszystkie muszą być wybrane razem)</target>
+      </trans-unit>
+      <trans-unit id="69ee1afc9b3d02e53d9f733c1993b568" approved="yes">
+        <source>Background image</source>
+        <target state="final">Obraz tła</target>
+      </trans-unit>
+      <trans-unit id="49ee3087348e8d44e1feda1917443987" approved="yes">
+        <source>Name</source>
+        <target state="final">Nazwa</target>
+      </trans-unit>
+      <trans-unit id="5143adbbbc92444c1bf855752edf3326" approved="yes">
+        <source>E.g. "Front", "Back" — shown in the "Preview background image" dropdown when configuring a field.</source>
+        <target state="final">Np. "Przód", "Tył" — widoczne na liście "Obraz tła podglądu" podczas konfiguracji pola.</target>
+      </trans-unit>
+      <trans-unit id="1eb8d1b77740a7eac81c5cbd86df92c3" approved="yes">
+        <source>Image file</source>
+        <target state="final">Plik obrazu</target>
+      </trans-unit>
+      <trans-unit id="e9eb2e8264cbd8a91bd8192d84d578eb" approved="yes">
+        <source>Allowed: %extensions% — max 5 MB.</source>
+        <target state="final">Dozwolone: %extensions% — maks. 5 MB.</target>
+      </trans-unit>
+      <trans-unit id="a3818b7f43b37f100ccf5f8426fad187" approved="yes">
+        <source>Shown in the "Preview font" dropdown when configuring a field.</source>
+        <target state="final">Widoczne na liście "Czcionka podglądu" podczas konfiguracji pola.</target>
+      </trans-unit>
+      <trans-unit id="8dc21e5ce9a3c43e8e6190bc59839243" approved="yes">
+        <source>Font file</source>
+        <target state="final">Plik czcionki</target>
+      </trans-unit>
+      <trans-unit id="fefc73f07a34c1055e2c74d5cc9dd72f" approved="yes">
+        <source>Allowed: %extensions% — max 2 MB.</source>
+        <target state="final">Dozwolone: %extensions% — maks. 2 MB.</target>
+      </trans-unit>
+      <trans-unit id="4fed3293cfefe3d23aafe6c24013787f" approved="yes">
+        <source>Personalization fields</source>
+        <target state="final">Pola personalizacji</target>
+      </trans-unit>
+      <trans-unit id="cccd220e31868accefafd7bc33b770a2" approved="yes">
+        <source>Field deleted.</source>
+        <target state="final">Pole zostało usunięte.</target>
+      </trans-unit>
+      <trans-unit id="a896e3ec793760ff0f5caf4c90c259a7" approved="yes">
+        <source>Could not delete field.</source>
+        <target state="final">Nie udało się usunąć pola.</target>
+      </trans-unit>
+      <trans-unit id="0ba3983255ef7ab59981a3986985dd94" approved="yes">
+        <source>Field saved.</source>
+        <target state="final">Pole zostało zapisane.</target>
+      </trans-unit>
+      <trans-unit id="78417bb6794afb07b079297f34aaf9f7" approved="yes">
+        <source>Could not save field.</source>
+        <target state="final">Nie udało się zapisać pola.</target>
+      </trans-unit>
+      <trans-unit id="6f3455d187a23443796efdcbe044096b" approved="yes">
+        <source>No tax</source>
+        <target state="final">Brak podatku</target>
+      </trans-unit>
+      <trans-unit id="7105b9a63cc98969290125ee8f2e0486" approved="yes">
+        <source>Font uploaded.</source>
+        <target state="final">Czcionka została wgrana.</target>
+      </trans-unit>
+      <trans-unit id="705228e82036cee8467c4cca5dc91fb2" approved="yes">
+        <source>Font deleted.</source>
+        <target state="final">Czcionka została usunięta.</target>
+      </trans-unit>
+      <trans-unit id="115b60d100f0f8e25e456dd4a36481c7" approved="yes">
+        <source>Could not delete font.</source>
+        <target state="final">Nie udało się usunąć czcionki.</target>
+      </trans-unit>
+      <trans-unit id="77ebd23510f12d07e4124df0d5744acf" approved="yes">
+        <source>Background image uploaded.</source>
+        <target state="final">Obraz tła został wgrany.</target>
+      </trans-unit>
+      <trans-unit id="ba78ec19a93ab7b7edbc58687453399e" approved="yes">
+        <source>Background image deleted.</source>
+        <target state="final">Obraz tła został usunięty.</target>
+      </trans-unit>
+      <trans-unit id="1214883218f5750c7bfa76502bef9975" approved="yes">
+        <source>Could not delete background image.</source>
+        <target state="final">Nie udało się usunąć obrazu tła.</target>
+      </trans-unit>
+      <trans-unit id="383e62de58491ffdd618305ec75e4828" approved="yes">
+        <source>Rule saved.</source>
+        <target state="final">Reguła została zapisana.</target>
+      </trans-unit>
+      <trans-unit id="7f854d16f972fd7fe27c45e513a47526" approved="yes">
+        <source>Could not save rule.</source>
+        <target state="final">Nie udało się zapisać reguły.</target>
+      </trans-unit>
+      <trans-unit id="4ab29a90f0def1f02993dcff0f0b1934" approved="yes">
+        <source>Rule deleted.</source>
+        <target state="final">Reguła została usunięta.</target>
+      </trans-unit>
+      <trans-unit id="e47961412b5329814a273060ff104c8c" approved="yes">
+        <source>Could not delete rule.</source>
+        <target state="final">Nie udało się usunąć reguły.</target>
+      </trans-unit>
+      <trans-unit id="5379d4d0316eb6078695ad150c0ce1d9" approved="yes">
+        <source>No Anvanto order data found on this environment.</source>
+        <target state="final">Nie znaleziono danych zamówień Anvanto w tym środowisku.</target>
+      </trans-unit>
+      <trans-unit id="e70674acba21d0bdbe8b34567aae4d7a" approved="yes">
+        <source>Archived %inserted% order row(s), skipped %skipped% already-archived (of %total% total).</source>
+        <target state="final">Zarchiwizowano %inserted% wiersz(y) zamówień, pominięto %skipped% już zarchiwizowanych (z %total% łącznie).</target>
+      </trans-unit>
+      <trans-unit id="a8549c7adb78511ce923973d655e4ae5" approved="yes">
+        <source>Please enter a valid category id.</source>
+        <target state="final">Podaj prawidłowe ID kategorii.</target>
+      </trans-unit>
+      <trans-unit id="9db038a2df18971e5773013deab5e49d" approved="yes">
+        <source>No Anvanto field data found on this environment.</source>
+        <target state="final">Nie znaleziono danych pól Anvanto w tym środowisku.</target>
+      </trans-unit>
+      <trans-unit id="4a3f12638ada4a76e5a6421f76cbfcb5" approved="yes">
+        <source>Category "%category%": created %created% field(s), skipped %skipped% already migrated.</source>
+        <target state="final">Kategoria "%category%": utworzono %created% pole/pól, pominięto %skipped% już zmigrowanych.</target>
+      </trans-unit>
+      <trans-unit id="0c49f0a221d420aadb25ec32ed33af5f" approved="yes">
+        <source>Product personalization fields</source>
+        <target state="final">Pola personalizacji produktu</target>
+      </trans-unit>
+      <trans-unit id="be59f3154959c4958b2554645502b30f" approved="yes">
+        <source>Add new field</source>
+        <target state="final">Dodaj nowe pole</target>
+      </trans-unit>
+      <trans-unit id="9b16749a698da433b2a90d108e9d24f1" approved="yes">
+        <source>Manage fonts</source>
+        <target state="final">Zarządzaj czcionkami</target>
+      </trans-unit>
+      <trans-unit id="e5f78ce71dc4b531513448ea5a90e9ab" approved="yes">
+        <source>Manage backgrounds</source>
+        <target state="final">Zarządzaj tłami</target>
+      </trans-unit>
+      <trans-unit id="414f5e61818b9b042c111ef6f34d1486" approved="yes">
+        <source>Background per combination</source>
+        <target state="final">Tło wg kombinacji</target>
+      </trans-unit>
+      <trans-unit id="34d636a445f70670feaf0eb8ba2cc84e" approved="yes">
+        <source>Migrate from Anvanto</source>
+        <target state="final">Migruj z Anvanto</target>
+      </trans-unit>
+      <trans-unit id="b718adec73e04ce3ec720dd11a06a308" approved="yes">
+        <source>ID</source>
+        <target state="final">ID</target>
+      </trans-unit>
+      <trans-unit id="a1fa27779242b4902f7ae3bdd5c6d508" approved="yes">
+        <source>Type</source>
+        <target state="final">Typ</target>
+      </trans-unit>
+      <trans-unit id="5d113f2038d289f391614c39043629e8" approved="yes">
+        <source>Scope</source>
+        <target state="final">Zakres</target>
+      </trans-unit>
+      <trans-unit id="3adbdb3ac060038aa0e6e6c138ef9873" approved="yes">
+        <source>Category</source>
+        <target state="final">Kategoria</target>
+      </trans-unit>
+      <trans-unit id="3f0dcef125f62178147849ce7595f78b" approved="yes">
+        <source>%count% product(s)</source>
+        <target state="final">%count% produkt(ów)</target>
+      </trans-unit>
+      <trans-unit id="7dce122004969d56ae2e0245cb754d35" approved="yes">
+        <source>Edit</source>
+        <target state="final">Edytuj</target>
+      </trans-unit>
+      <trans-unit id="bf5eacd1dc78d5b1f4af009ae53c5c87" approved="yes">
+        <source>Delete this field?</source>
+        <target state="final">Usunąć to pole?</target>
+      </trans-unit>
+      <trans-unit id="f2a6c498fb90ee345d997f888fce3b18" approved="yes">
+        <source>Delete</source>
+        <target state="final">Usuń</target>
+      </trans-unit>
+      <trans-unit id="603d2fbb139b456b42913608f9adf8da" approved="yes">
+        <source>No fields yet.</source>
+        <target state="final">Brak pól.</target>
+      </trans-unit>
+      <trans-unit id="1ff0e4b245c1e64d81d5caa77015e290" approved="yes">
+        <source>Preview background images</source>
+        <target state="final">Obrazy tła podglądu</target>
+      </trans-unit>
+      <trans-unit id="91412465ea9169dfd901dd5e7c96dd99" approved="yes">
+        <source>Upload</source>
+        <target state="final">Wgraj</target>
+      </trans-unit>
+      <trans-unit id="31fde7b05ac8952dacf4af8a704074ec" approved="yes">
+        <source>Preview</source>
+        <target state="final">Podgląd</target>
+      </trans-unit>
+      <trans-unit id="0b27918290ff5323bea1e3b78a9cf04e" approved="yes">
+        <source>File</source>
+        <target state="final">Plik</target>
+      </trans-unit>
+      <trans-unit id="9ece0fb137a005762e64340c2f4c4637" approved="yes">
+        <source>Delete this background image? Fields using it will fall back to no background.</source>
+        <target state="final">Usunąć ten obraz tła? Pola, które go używają, przełączą się na brak tła.</target>
+      </trans-unit>
+      <trans-unit id="79b4f3cb87b9f0914bc667569ecaa46b" approved="yes">
+        <source>No background images uploaded yet.</source>
+        <target state="final">Nie wgrano jeszcze żadnych obrazów tła.</target>
+      </trans-unit>
+      <trans-unit id="cca827cf59780af3e052087c61e841e8" approved="yes">
+        <source>Back to Product Fields</source>
+        <target state="final">Wróć do pól personalizacji</target>
+      </trans-unit>
+      <trans-unit id="d8e1f42bf8249273ed2a6d0268959e38" approved="yes">
+        <source>Custom fonts</source>
+        <target state="final">Własne czcionki</target>
+      </trans-unit>
+      <trans-unit id="1c0d3f7faf5852ffab31860e58b58fd2" approved="yes">
+        <source>font-family</source>
+        <target state="final">font-family</target>
+      </trans-unit>
+      <trans-unit id="fac204a17574e6a62da57f50e0a9e5a6" approved="yes">
+        <source>Delete this font? Fields using it will fall back to the browser default.</source>
+        <target state="final">Usunąć tę czcionkę? Pola, które jej używają, przełączą się na domyślną czcionkę przeglądarki.</target>
+      </trans-unit>
+      <trans-unit id="aa86e14120f5061495799054bfd173c0" approved="yes">
+        <source>No custom fonts uploaded yet.</source>
+        <target state="final">Nie wgrano jeszcze żadnych własnych czcionek.</target>
+      </trans-unit>
+      <trans-unit id="c9c2e6d7321603820bc0d017862e7d6b" approved="yes">
+        <source>Background per combination / attribute value</source>
+        <target state="final">Tło wg kombinacji / wartości atrybutu</target>
+      </trans-unit>
+      <trans-unit id="23c22f5fb8b535acd560b50f24eeae24" approved="yes">
+        <source>Switches a field's live-preview background image based on what the customer has currently selected, on any product that offers these attribute values — e.g. a different photo for "Canvas" than for "Paper", or for "30x40cm" than for "21x30cm". Pick just one attribute value for a rule that applies regardless of any other choice (e.g. "21x30cm" alone), or several together for a more specific rule (e.g. "Canvas" AND "30x40cm").</source>
+        <target state="final">Zmienia obraz tła podglądu na żywo w zależności od tego, co klient aktualnie wybrał, na każdym produkcie oferującym te wartości atrybutów — np. inne zdjęcie dla "Płótno" niż dla "Papier", albo dla "30x40cm" niż dla "21x30cm". Wybierz jedną wartość atrybutu dla reguły obowiązującej niezależnie od innych wyborów (np. samo "21x30cm"), albo kilka razem dla bardziej szczegółowej reguły (np. "Płótno" ORAZ "30x40cm").</target>
+      </trans-unit>
+      <trans-unit id="9b5e7fc14b157afb268b71b01d397eef" approved="yes">
+        <source>Add rule</source>
+        <target state="final">Dodaj regułę</target>
+      </trans-unit>
+      <trans-unit id="6119bb24f6b4e3efcffc2bf252287507" approved="yes">
+        <source>Attribute values</source>
+        <target state="final">Wartości atrybutów</target>
+      </trans-unit>
+      <trans-unit id="d83490a51968f985617f4dd6a2989aa2" approved="yes">
+        <source>Delete this rule?</source>
+        <target state="final">Usunąć tę regułę?</target>
+      </trans-unit>
+      <trans-unit id="08b0a32720bf841e1ee7f573f453338d" approved="yes">
+        <source>No rules yet.</source>
+        <target state="final">Brak reguł.</target>
+      </trans-unit>
+      <trans-unit id="9fb9daa82adc279ebe0ef7622f467799" approved="yes">
+        <source>Manage background images</source>
+        <target state="final">Zarządzaj obrazami tła</target>
+      </trans-unit>
+      <trans-unit id="1ff771aa06ff1c614dfb6596f872e2fe" approved="yes">
+        <source>Migrate from Anvanto Product Fields</source>
+        <target state="final">Migruj z Anvanto Product Fields</target>
+      </trans-unit>
+      <trans-unit id="ce7934d909ba1ed3e4330277df0472ef" approved="yes">
+        <source>Back to fields</source>
+        <target state="final">Wróć do pól</target>
+      </trans-unit>
+      <trans-unit id="7f351dcaa9c0529f766823ee05ec0c2b" approved="yes">
+        <source>No Anvanto Product Fields tables were found on this environment — nothing to migrate here.</source>
+        <target state="final">Nie znaleziono tabel Anvanto Product Fields w tym środowisku — nie ma nic do migracji.</target>
+      </trans-unit>
+      <trans-unit id="f430b74fff320421a625d108a8827e4c" approved="yes">
+        <source>This never modifies or deletes Anvanto's own data — it only reads from it.</source>
+        <target state="final">To nigdy nie modyfikuje ani nie usuwa danych Anvanto — tylko je odczytuje.</target>
+      </trans-unit>
+      <trans-unit id="760942769e1bfc2a8e193b253fa62775" approved="yes">
+        <source>1. Archive historical order data</source>
+        <target state="final">1. Archiwizuj historyczne dane zamówień</target>
+      </trans-unit>
+      <trans-unit id="ca4b2c9d5ec95daabbea00666c68038c" approved="yes">
+        <source>Copies Anvanto's historical personalization order data into a permanent archive this module's own uninstall never touches. Do this before ever considering uninstalling Anvanto — its own uninstaller drops that data.</source>
+        <target state="final">Kopiuje historyczne dane personalizacji zamówień Anvanto do trwałego archiwum, którego dezinstalacja tego modułu nigdy nie narusza. Zrób to, zanim rozważysz dezinstalację Anvanto — jego własny deinstalator usuwa te dane.</target>
+      </trans-unit>
+      <trans-unit id="0749fb94ef8a49bf74d8f4fa0163e18f" approved="yes">
+        <source>Archive order data now</source>
+        <target state="final">Archiwizuj dane zamówień teraz</target>
+      </trans-unit>
+      <trans-unit id="affc3f7006f70159542a0c62b459e6cc" approved="yes">
+        <source>2. Migrate field configuration for one category</source>
+        <target state="final">2. Migruj konfigurację pól dla jednej kategorii</target>
+      </trans-unit>
+      <trans-unit id="1d7e5e6fa28d501f1e4694625ef3143e" approved="yes">
+        <source>Creates our own field definitions from Anvanto's active fields that apply to a category (directly, or via one of its products). Safe to run again later for another category — already-migrated fields are never duplicated.</source>
+        <target state="final">Tworzy własne definicje pól na podstawie aktywnych pól Anvanto przypisanych do kategorii (bezpośrednio lub przez jeden z jej produktów). Bezpiecznie można uruchomić ponownie później dla innej kategorii — już zmigrowane pola nigdy nie są duplikowane.</target>
+      </trans-unit>
+      <trans-unit id="62efa0889707c10f7c66be4093d3e989" approved="yes">
+        <source>Search by name...</source>
+        <target state="final">Szukaj po nazwie...</target>
+      </trans-unit>
+      <trans-unit id="1d538e942ea86d150292b28bf0bb9e8a" approved="yes">
+        <source>Migrate this category</source>
+        <target state="final">Migruj tę kategorię</target>
+      </trans-unit>
+      <trans-unit id="20a1f2f8fd50ee3b803eafc3aa55ada1" approved="yes">
+        <source>Edit field</source>
+        <target state="final">Edytuj pole</target>
+      </trans-unit>
+      <trans-unit id="dfb0c566cd0aa3d5848eab6d0f383560" approved="yes">
+        <source>New field</source>
+        <target state="final">Nowe pole</target>
+      </trans-unit>
+      <trans-unit id="08f0fa9f98cb5bba3b025eca57a6ec8d" approved="yes">
+        <source>Search category (name or ID)</source>
+        <target state="final">Szukaj kategorii (nazwa lub ID)</target>
+      </trans-unit>
+      <trans-unit id="068f80c7519d0528fb08e82137a72131" approved="yes">
+        <source>Products</source>
+        <target state="final">Produkty</target>
+      </trans-unit>
+      <trans-unit id="80dfb25f1c9e2cb426a5930f49b4b9d1" approved="yes">
+        <source>Search product (name, reference or ID)</source>
+        <target state="final">Szukaj produktu (nazwa, indeks lub ID)</target>
+      </trans-unit>
+      <trans-unit id="7017998c789d9866f7863f4353657217" approved="yes">
+        <source>Search and add one or more products.</source>
+        <target state="final">Wyszukaj i dodaj jeden lub więcej produktów.</target>
+      </trans-unit>
+      <trans-unit id="ed2a658b07096d03f4c8cb637ac4b280" approved="yes">
+        <source>Manage custom fonts</source>
+        <target state="final">Zarządzaj własnymi czcionkami</target>
+      </trans-unit>
+      <trans-unit id="c9cc8cce247e49bae79f15173ce97354" approved="yes">
+        <source>Save</source>
+        <target state="final">Zapisz</target>
+      </trans-unit>
+      <trans-unit id="ea4788705e6873b424c65e91c2846b19" approved="yes">
+        <source>Cancel</source>
+        <target state="final">Anuluj</target>
+      </trans-unit>
+      <trans-unit id="1f226d4b01c37690a210a41c2e287339" approved="yes">
+        <source>Full field authoring (create, edit, assign to categories) happens on the</source>
+        <target state="final">Pełna edycja pól (tworzenie, edycja, przypisywanie do kategorii) odbywa się na ekranie</target>
+      </trans-unit>
+      <trans-unit id="0be451a094a88da8c33f4b58dc7d1ccc" approved="yes">
+        <source>Product Fields screen</source>
+        <target state="final">Pola personalizacji</target>
+      </trans-unit>
+      <trans-unit id="48e7102f0ce53a9c808fcd34e193703c" approved="yes">
+        <source>Fields that apply to this product</source>
+        <target state="final">Pola dotyczące tego produktu</target>
+      </trans-unit>
+      <trans-unit id="2ca96fb441e77a7d6c3b63c9cb603425" approved="yes">
+        <source>No personalization fields apply to this product yet.</source>
+        <target state="final">Żadne pola personalizacji nie dotyczą jeszcze tego produktu.</target>
+      </trans-unit>
+      <trans-unit id="cb713ca92f1011bf42e1f2ce44dc3ba3" approved="yes">
+        <source>Applies via</source>
+        <target state="final">Dotyczy przez</target>
+      </trans-unit>
+      <trans-unit id="ad5793c522a02e25ced2f9e06ccb0442" approved="yes">
+        <source>This product specifically</source>
+        <target state="final">Konkretnie ten produkt</target>
+      </trans-unit>
+      <trans-unit id="33fb399113192bf2ef052353fc2e7e7f" approved="yes">
+        <source>Quick override: include this product in these fields</source>
+        <target state="final">Szybka zmiana: uwzględnij ten produkt w tych polach</target>
+      </trans-unit>
+      <trans-unit id="63cd3373d11f9c44388a43fca876c09f" approved="yes">
+        <source>Only fields scoped to "Specific products" are listed here — category/all-products fields are managed on the Product Fields screen.</source>
+        <target state="final">Tutaj wymienione są tylko pola o zakresie "Wybrane produkty" — pola dla kategorii/wszystkich produktów zarządzane są na ekranie Pola personalizacji.</target>
+      </trans-unit>
+      <trans-unit id="8d13bbb9d40efd7711ea70eddc8d7d31" approved="yes">
+        <source>On: this field always overlays the product's own photo — the right choice for personalization printed on the front of the item. Off: renders on a background image instead, chosen entirely by a matching combination rule (configure those on the "Background per combination / attribute value" screen) — use this for a field meant for the back/reverse (e.g. engraving on the back of a frame). A product with both a front and a back field must have the back one set to Off, or both would render on the same background the moment a rule matches.</source>
+        <target state="final">Włączone: to pole zawsze nakłada się na własne zdjęcie produktu — odpowiedni wybór dla personalizacji drukowanej na przodzie przedmiotu. Wyłączone: renderuje się na obrazie tła, wybieranym wyłącznie przez pasującą regułę kombinacji (konfigurowaną na ekranie "Tło wg kombinacji / wartości atrybutu") — użyj tego dla pola dotyczącego tyłu/rewersu (np. grawer na tyle ramki). Produkt z polem frontowym i tylnym musi mieć to tylne ustawione na Wyłączone, inaczej oba wyrenderują się na tym samym tle w chwili dopasowania reguły.</target>
+      </trans-unit>
+      <trans-unit id="194f5394ae2e9c74dc3c441b92862d1d" approved="yes">
+        <source>Font</source>
+        <target state="final">Czcionka</target>
+      </trans-unit>
+      <trans-unit id="c4943062b634c56348c67fdebba808eb" approved="yes">
+        <source>Font size</source>
+        <target state="final">Rozmiar czcionki</target>
+      </trans-unit>
+      <trans-unit id="092f5d1f5d66ee52d158726984c2812e" approved="yes">
+        <source>Font size (%)</source>
+        <target state="final">Rozmiar czcionki (%)</target>
+      </trans-unit>
+      <trans-unit id="a9179199cfa74cf0d213ffd5bd0c4a94" approved="yes">
+        <source>Field default</source>
+        <target state="final">Domyślne pola</target>
+      </trans-unit>
+      <trans-unit id="eaff548e513475b705b04668d79baf69" approved="yes">
+        <source>Overrides whichever field ends up rendering on this rule's background image. Leave as "Field default" to keep using each field's own font.</source>
+        <target state="final">Nadpisuje czcionkę dla dowolnego pola renderowanego na obrazie tła tej reguły. Pozostaw jako "Domyślne pola", aby zachować własną czcionkę każdego pola.</target>
+      </trans-unit>
+      <trans-unit id="39ba7c868a59fb7616da931495fef3e6" approved="yes">
+        <source>As a percentage of the background image's width. Leave empty to keep using the field's own font size.</source>
+        <target state="final">Jako procent szerokości obrazu tła. Pozostaw puste, aby używać własnego rozmiaru czcionki pola.</target>
+      </trans-unit>
+      <trans-unit id="c19851bf1df44acc2d7916a0f86fd518" approved="yes">
+        <source>Personalization values</source>
+        <target state="final">Wartości personalizacji</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

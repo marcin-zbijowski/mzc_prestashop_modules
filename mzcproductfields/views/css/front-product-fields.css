@@ -1,0 +1,258 @@
+.mzc-product-fields {
+  margin: 20px 0;
+}
+
+.mzc-field {
+  margin-bottom: 16px;
+}
+
+/* Both of these are qualified with the `.mzc-product-fields` ancestor
+   (instead of a bare `.mzc-field__label`/`.mzc-field__option`) specifically
+   to OUTRANK the theme's own `.product-additional-info label` rule on
+   specificity (two classes vs one class + one type selector) — confirmed as
+   a real bug on artedeum-pl's "leon" theme: our own `color: #232323` was
+   silently losing to that rule (rendering at a washed-out rgb(185,185,185)
+   instead), since a bare single-class selector can't outrank it regardless
+   of stylesheet load order. */
+.mzc-product-fields .mzc-field__label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: #232323;
+  text-align: left;
+  margin-bottom: 4px;
+}
+
+.mzc-field__required {
+  color: #d9534f;
+  margin-left: 2px;
+}
+
+.mzc-field__price {
+  font-weight: 400;
+  color: #6b7280;
+  margin-left: 8px;
+  font-size: 0.9em;
+}
+
+.mzc-field__input {
+  width: 100%;
+  max-width: 420px;
+  padding: 8px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font: inherit;
+}
+
+textarea.mzc-field__input {
+  resize: vertical;
+}
+
+/* Overlaid inside the input's own top-right corner (matching Anvanto's own
+   layout), not as a separate line below it — needs its own positioning
+   context distinct from .mzc-field (which also wraps the <label> above),
+   so the counter's absolute position is relative only to the input. */
+.mzc-field__input-wrapper {
+  position: relative;
+  max-width: 420px;
+}
+
+.mzc-field__input--has-counter {
+  /* Room for the counter so typed text never runs under it. */
+  padding-right: 48px;
+}
+
+.mzc-field__counter {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  font-size: 0.75rem;
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+.mzc-field__options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* .mzc-product-fields-qualified for the same specificity reason as
+   .mzc-field__label above — this is a real <label> too (radio/checkbox
+   option text), so it's just as exposed to the theme's washed-out
+   `.product-additional-info label` color. */
+.mzc-product-fields .mzc-field__option {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 400;
+  color: #232323;
+  cursor: pointer;
+}
+
+/* Live preview overlay — a fixed, full-viewport, click-through layer; each
+   preview text node is positioned in viewport pixel coordinates computed in
+   JS from the product image's getBoundingClientRect(), so it tracks the
+   image through scrolling/resizing without being inserted into the theme's
+   own (very different, per-theme) image/carousel markup. */
+.mzc-preview-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.mzc-preview-text {
+  position: absolute;
+  /* X (preview_pos_x) stays the horizontal CENTER of the text — translateX(-50%)
+     centers it on that point. Y (preview_pos_y) is the TOP edge where the
+     personalization starts, not its vertical center, so no translateY. */
+  transform: translate(-50%, 0);
+  white-space: pre-wrap;
+  word-break: break-word;
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* Dedicated preview boxes for fields with a "Preview background image"
+   assigned (e.g. one for "Front", one for "Back") — self-contained, plain
+   part of the page flow (no viewport tracking needed, unlike the floating
+   overlay above), so their own text nodes are positioned with simple CSS
+   percentages against .mzc-bg-preview__overlay, which is inset from
+   .mzc-bg-preview__image's edges (not flush against them — see below). */
+.mzc-bg-previews {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.mzc-bg-preview {
+  /* Deliberately just max-width, no width/overflow here: as a flex item
+     (see .mzc-bg-previews) with flex-basis:auto, this sizes itself to its
+     image's intrinsic width capped at max-width — giving IT overflow other
+     than visible resets a flex item's automatic minimum size to 0 per spec,
+     which (confirmed empirically) collapsed the whole box to 0x0 instead.
+     Clipping instead lives on .mzc-bg-preview__clip below, a plain (non-flex-item)
+     block child, which sidesteps that quirk entirely. */
+  max-width: 320px;
+}
+
+.mzc-bg-preview__clip {
+  position: relative;
+  /* A customer can type far more text than the mockup was designed for —
+     without this, long text overflows past the image's own edges into
+     whatever page content follows (confirmed: it visibly spilled over the
+     "Share"/quantity UI). Clipping here is the hard backstop; the inset
+     margin below on the overlay is what actually keeps normal-length text
+     looking intentional, off the image's physical border. */
+  overflow: hidden;
+}
+
+.mzc-bg-preview__image {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+
+.mzc-bg-preview__overlay {
+  position: absolute;
+  /* Inset from the image's edges rather than flush (inset: 0) — gives the
+     preview text a consistent internal margin so it never touches/crosses
+     the mockup's own border, independently of whatever preview_pos_x/y a
+     field happens to use. */
+  inset: 6%;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* Content-confirmation modal (shown before add-to-cart when the customer
+   has typed/selected any personalization) and its error box. */
+.mzc-confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 16px;
+}
+
+.mzc-confirm-modal {
+  background: #fff;
+  border-radius: 6px;
+  padding: 24px;
+  max-width: 480px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.mzc-confirm-modal__title {
+  margin: 0 0 16px;
+  font-size: 1.1rem;
+}
+
+.mzc-confirm-modal__list {
+  margin: 0 0 16px;
+}
+
+.mzc-confirm-modal__list dt {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #232323;
+}
+
+.mzc-confirm-modal__list dd {
+  margin: 0 0 12px;
+  color: #4b5563;
+}
+
+.mzc-confirm-modal__price {
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.mzc-confirm-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.mzc-confirm-modal__edit,
+.mzc-confirm-modal__confirm {
+  padding: 10px 16px;
+  border-radius: 4px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  cursor: pointer;
+  font: inherit;
+}
+
+.mzc-confirm-modal__confirm {
+  background: #232323;
+  color: #fff;
+  border-color: #232323;
+}
+
+.mzc-confirm-errors {
+  background: #fdecea;
+  border: 1px solid #f5c2c0;
+  color: #a12622;
+  border-radius: 4px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+}
+
+.mzc-confirm-errors p {
+  margin: 0;
+}
+
+.mzc-confirm-errors p + p {
+  margin-top: 4px;
+}

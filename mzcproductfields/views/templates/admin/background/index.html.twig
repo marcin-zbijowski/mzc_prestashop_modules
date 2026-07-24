@@ -1,0 +1,53 @@
+{% extends '@PrestaShop/Admin/layout.html.twig' %}
+
+{% block content %}
+  <div class="panel">
+    <div class="panel-heading">
+      {{ 'Preview background images'|trans({}, 'Modules.Mzcproductfields.Admin') }}
+    </div>
+
+    <div style="padding: 0 20px 20px;">
+      {{ form_start(mzc_background_form, {attr: {enctype: 'multipart/form-data'}}) }}
+        {{ form_widget(mzc_background_form) }}
+        <button type="submit" class="btn btn-primary">{{ 'Upload'|trans({}, 'Modules.Mzcproductfields.Admin') }}</button>
+      {{ form_end(mzc_background_form) }}
+    </div>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>{{ 'ID'|trans({}, 'Modules.Mzcproductfields.Admin') }}</th>
+          <th>{{ 'Preview'|trans({}, 'Modules.Mzcproductfields.Admin') }}</th>
+          <th>{{ 'Name'|trans({}, 'Modules.Mzcproductfields.Admin') }}</th>
+          <th>{{ 'File'|trans({}, 'Modules.Mzcproductfields.Admin') }}</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for background in backgrounds %}
+          <tr>
+            <td>{{ background.id_background }}</td>
+            <td>
+              <img src="/modules/mzcproductfields/views/backgrounds/uploads/{{ background.filename }}" alt="{{ background.name }}" style="max-width:80px;max-height:80px;">
+            </td>
+            <td>{{ background.name }}</td>
+            <td>{{ background.original_filename }}</td>
+            <td>
+              <form method="post" action="{{ path('mzc_productfields_background_delete', {id: background.id_background}) }}" style="display:inline" onsubmit="return confirm('{{ 'Delete this background image? Fields using it will fall back to no background.'|trans({}, 'Modules.Mzcproductfields.Admin') }}');">
+                <button type="submit" class="btn btn-link">{{ 'Delete'|trans({}, 'Modules.Mzcproductfields.Admin') }}</button>
+              </form>
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="5">{{ 'No background images uploaded yet.'|trans({}, 'Modules.Mzcproductfields.Admin') }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div style="padding: 0 20px 20px;">
+      <a href="{{ path('mzc_productfields_field_index') }}" class="btn btn-default">{{ 'Back to Product Fields'|trans({}, 'Modules.Mzcproductfields.Admin') }}</a>
+    </div>
+  </div>
+{% endblock %}

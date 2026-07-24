@@ -30,6 +30,7 @@ services:
       - ./mzccarrierattribute:/var/www/html/modules/mzccarrierattribute
       - ./mzcga4gtm:/var/www/html/modules/mzcga4gtm
       - ./mzcmailcontent:/var/www/html/modules/mzcmailcontent
+      - ./mzcproductfields:/var/www/html/modules/mzcproductfields
     networks:
       - prestashop-net
     depends_on:

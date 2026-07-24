@@ -582,7 +582,7 @@ class Mzc_landing_newsletter extends Module
             return;
         }
 
-        // Skip for admin users and whitelisted IPs
+        // Skip for whitelisted IPs
         if ($this->isAdminOrWhitelisted()) {
             return;
         }
@@ -644,7 +644,6 @@ class Mzc_landing_newsletter extends Module
             'meta_title' => $metaTitle,
             'meta_description' => $metaDescription,
             'meta_keywords' => $metaKeywords,
-            'landing_message_b64' => base64_encode($message),
             'custom_css' => Configuration::get('MZC_LANDING_CSS') ?: '',
             'id_module' => (int) $this->id,
             'gdpr_consent' => $gdprConsent ?: '',
@@ -659,17 +658,22 @@ class Mzc_landing_newsletter extends Module
 
         // Send 503 + render the landing page
         header('HTTP/1.1 503 Service Temporarily Unavailable');
+        header('Content-Type: text/html; charset=utf-8');
         header('Retry-After: 3600');
         header("Content-Security-Policy: default-src 'none'; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; font-src 'self' https:; connect-src 'self'; frame-src 'self'");
 
-        echo $this->context->smarty->fetch(
+        $html = $this->context->smarty->fetch(
             $this->getLocalPath() . 'views/templates/front/landing.tpl'
         );
+
+        // Inject landing message HTML after Smarty rendering to bypass
+        // escape_html auto-escaping without using the nofilter modifier
+        echo str_replace('<!-- __MZC_LANDING_MSG__ -->', $message, $html);
         exit;
     }
 
     /**
-     * Check if the current visitor is an admin or has a whitelisted IP
+     * Check if the current visitor has a whitelisted IP
      */
     private function isAdminOrWhitelisted()
     {
@@ -685,18 +689,6 @@ class Mzc_landing_newsletter extends Module
                     return true;
                 }
             } elseif (in_array($currentIp, $ips)) {
-                return true;
-            }
-        }
-
-        // Check if an employee is logged in via the back-office cookie.
-        // Note: $this->context->employee is NOT populated in front-office context,
-        // so we read the admin cookie directly — matching PrestaShop's own maintenance bypass.
-        // Default to true if PS_MAINTENANCE_ALLOW_ADMINS is not set (fail-open for admins).
-        $allowAdmins = Configuration::get('PS_MAINTENANCE_ALLOW_ADMINS');
-        if ($allowAdmins === false || $allowAdmins) {
-            $adminCookie = new Cookie('psAdmin', '', (int) Configuration::get('PS_COOKIE_LIFETIME_BO'));
-            if ($adminCookie->id_employee) {
                 return true;
             }
         }
