@@ -123,7 +123,22 @@
     return true;
   }
 
-  function findProductImage() {
+  /**
+   * @param {Element} [container] when given, an image marked
+   *        `data-mzc-preview-image` inside it wins over the theme-wide
+   *        selectors below. The home-page showcase renders its own photo and
+   *        has no product carousel for IMAGE_SELECTORS to find; scoping also
+   *        keeps several showcases on one page from all anchoring to the
+   *        first one's image.
+   */
+  function findProductImage(container) {
+    if (container) {
+      var scoped = container.querySelector('[data-mzc-preview-image]');
+      if (scoped && isVisible(scoped)) {
+        return scoped;
+      }
+    }
+
     for (var i = 0; i < IMAGE_SELECTORS.length; i++) {
       var candidates = document.querySelectorAll(IMAGE_SELECTORS[i]);
       for (var j = 0; j < candidates.length; j++) {
@@ -379,7 +394,7 @@
       // system entirely (see initCharCounters' docblock) and must still work.
       initCharCounters(container);
 
-      return;
+      return null;
     }
 
     function placeInline(entry, box, activeRule) {
@@ -405,7 +420,7 @@
       if (entry.el.parentElement !== floatingOverlay) {
         floatingOverlay.appendChild(entry.el);
       }
-      var image = findProductImage();
+      var image = findProductImage(container);
       if (!image) {
         return;
       }
@@ -668,7 +683,7 @@
             var boxImg = box.querySelector('.mzc-bg-preview__image');
             imageUrl = boxImg ? boxImg.src : null;
           } else {
-            var productImage = findProductImage();
+            var productImage = findProductImage(container);
             imageUrl = productImage ? productImage.src : null;
           }
           if (!imageUrl) {
@@ -749,32 +764,87 @@
 
     window.addEventListener('scroll', repositionAll, { passive: true });
     window.addEventListener('resize', repositionAll);
-    setInterval(repositionAll, RECOMPUTE_POLL_MS);
+    var pollTimer = setInterval(repositionAll, RECOMPUTE_POLL_MS);
     repositionAll();
+
+    // Returned so the caller can drop this container's global hooks when it is
+    // replaced (product page: every combination change re-renders the block;
+    // home page: the pattern switcher). Without it each re-init left another
+    // scroll/resize listener and another 400 ms interval running forever
+    // against a container no longer in the document.
+    return function teardown() {
+      window.removeEventListener('scroll', repositionAll);
+      window.removeEventListener('resize', repositionAll);
+      clearInterval(pollTimer);
+    };
   }
 
-  function watchForReplacement() {
-    var current = document.querySelector('.mzc-product-fields');
+  // Every container currently initialised, with its teardown. An array rather
+  // than a WeakMap because this has to be walked to prune detached entries.
+  var active = [];
 
-    var scheduleReinit = debounce(function () {
-      var latest = document.querySelector('.mzc-product-fields');
-      if (latest && latest !== current) {
-        current = latest;
-        initContainer(latest);
+  function syncContainers() {
+    // Drop containers the page has thrown away (product page: the block is
+    // re-rendered wholesale on every combination change).
+    active = active.filter(function (entry) {
+      if (document.contains(entry.el)) {
+        return true;
       }
-    }, REINIT_DEBOUNCE_MS);
+      if (entry.teardown) {
+        entry.teardown();
+      }
 
-    new MutationObserver(scheduleReinit).observe(document.body, { childList: true, subtree: true });
+      return false;
+    });
+
+    document.querySelectorAll('.mzc-product-fields').forEach(function (el) {
+      var known = active.some(function (entry) {
+        return entry.el === el;
+      });
+      if (known) {
+        return;
+      }
+
+      active.push({ el: el, teardown: initContainer(el) });
+    });
   }
 
   function init() {
-    var container = document.querySelector('.mzc-product-fields');
-    if (!container) {
+    syncContainers();
+
+    if (!active.length) {
       return;
     }
 
-    initContainer(container);
-    watchForReplacement();
+    applyPrefill();
+
+    new MutationObserver(debounce(syncContainers, REINIT_DEBOUNCE_MS))
+      .observe(document.body, { childList: true, subtree: true });
+  }
+
+  /**
+   * Seeds a field from `?mzc_prefill_{id_field}=...`, which is how the
+   * home-page showcase hands a half-typed dedication over to the product
+   * page. Applied once, on load: after this the input is the source of truth,
+   * so a customer editing it is never fought by the URL.
+   */
+  function applyPrefill() {
+    var params = new URLSearchParams(window.location.search);
+
+    params.forEach(function (value, key) {
+      if (key.indexOf('mzc_prefill_') !== 0 || !value) {
+        return;
+      }
+
+      var fieldId = key.slice('mzc_prefill_'.length);
+      var input = document.querySelector('[data-mzc-preview-source="' + CSS.escape(fieldId) + '"]');
+      if (!input || input.value) {
+        return;
+      }
+
+      input.value = value;
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    });
   }
 
   if (document.readyState !== 'loading') {

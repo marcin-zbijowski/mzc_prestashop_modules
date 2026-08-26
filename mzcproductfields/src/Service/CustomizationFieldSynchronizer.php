@@ -45,6 +45,8 @@ final class CustomizationFieldSynchronizer
      */
     public function getOrCreate(MzcProductFieldsField $field, int $idProduct): int
     {
+        $this->ensureProductMarkedCustomizable($idProduct);
+
         $existingId = $this->getMappedId((int) $field->id, $idProduct);
         if ($existingId !== null) {
             return $existingId;
@@ -67,6 +69,48 @@ final class CustomizationFieldSynchronizer
         ]);
 
         return $idCustomizationField;
+    }
+
+    /**
+     * Creating a `customization_field` row through the native admin product
+     * form always flips the product's own `customizable` flag to 1 alongside
+     * it — we create these rows programmatically instead, bypassing that, so
+     * we have to set the flag ourselves. Confirmed a real, shipped bug via
+     * direct production reproduction: with `customizable` left at 0, core's
+     * `Cart::updateQty()` skips its own `_updateCustomizationQuantity()` call
+     * entirely (it's gated on `if ($product->customizable)`), so the
+     * `customization` row our own `_addCustomization()` creates — with
+     * quantity intentionally 0 as a placeholder, expecting that later core
+     * call to fill in the real quantity — never gets updated and stays at
+     * quantity 0 forever. That in turn breaks `Cart::getProducts()`'s own
+     * customization JOIN and the front-office's presented `id_customization`
+     * for the product, which cascades into `Cart::deleteProduct()`'s
+     * `cart_product` DELETE never matching the real row — the underlying
+     * cause of "can't remove a personalized product from the cart" on
+     * PS 8.2.7 production. A cheap, idempotent UPDATE (only writes when
+     * still 0) run on every call rather than only on first-creation, so
+     * products created before this fix existed get repaired the next time
+     * their fields are touched, not just brand-new ones.
+     *
+     * Both `product` AND `product_shop` carry their own `customizable`
+     * column (confirmed on this multistore-capable install) — the `Product`
+     * object resolves the property a running request actually reads from
+     * `product_shop`, not `product`, so setting only the former silently
+     * has no effect at all. Both must be kept in sync.
+     */
+    private function ensureProductMarkedCustomizable(int $idProduct): void
+    {
+        Db::getInstance()->update(
+            'product',
+            ['customizable' => 1],
+            '`id_product` = ' . $idProduct . ' AND `customizable` = 0'
+        );
+
+        Db::getInstance()->update(
+            'product_shop',
+            ['customizable' => 1],
+            '`id_product` = ' . $idProduct . ' AND `customizable` = 0'
+        );
     }
 
     /**

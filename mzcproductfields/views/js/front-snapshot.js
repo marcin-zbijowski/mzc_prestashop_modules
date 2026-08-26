@@ -154,19 +154,47 @@
       return;
     }
 
+    var groups = container.mzcGetSnapshotGroups();
+
     // Custom @font-face fonts (see product_fields.tpl) must be fully loaded
     // before the canvas draws text with them, or it silently falls back to a
-    // default font — document.fonts.ready resolves once all fonts the page
-    // has requested so far have finished loading.
-    var fontsReady = window.document.fonts ? document.fonts.ready : Promise.resolve();
-
-    fontsReady.then(function () {
-      container.mzcGetSnapshotGroups().forEach(function (group) {
-        drawGroup(group).then(function (blob) {
-          upload(saveUrl, idCustomization, blob);
+    // default font. Merely setting ctx.font to a family never triggers the
+    // browser to fetch it — only a real, rendered DOM element using that
+    // font does, which is what document.fonts.ready actually waits on.
+    // Confirmed a real, shipped bug: if the customer confirms before the
+    // live preview box that owns this font has ever actually painted with
+    // it (e.g. a background rule's font override that a different box was
+    // showing a moment ago), the browser never started loading it at all,
+    // so document.fonts.ready resolves as a no-op and the snapshot silently
+    // falls back to a generic serif font instead of the configured one.
+    // Explicitly requesting every font this snapshot actually needs — not
+    // just waiting on whatever the DOM happened to have already
+    // triggered — is the only reliable fix.
+    var loadPromises = [];
+    if (window.document.fonts) {
+      var requested = {};
+      groups.forEach(function (group) {
+        group.fields.forEach(function (field) {
+          var fontFamily = field.fontFamily || 'sans-serif';
+          if (!requested[fontFamily]) {
+            requested[fontFamily] = true;
+            loadPromises.push(document.fonts.load('16px ' + fontFamily).catch(function () {}));
+          }
         });
       });
-    });
+    }
+
+    Promise.all(loadPromises)
+      .then(function () {
+        return window.document.fonts ? document.fonts.ready : Promise.resolve();
+      })
+      .then(function () {
+        groups.forEach(function (group) {
+          drawGroup(group).then(function (blob) {
+            upload(saveUrl, idCustomization, blob);
+          });
+        });
+      });
   }
 
   window.MzcProductFieldsSnapshot = { captureAndUpload: captureAndUpload };

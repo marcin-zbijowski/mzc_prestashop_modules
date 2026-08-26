@@ -256,3 +256,48 @@ textarea.mzc-field__input {
 .mzc-confirm-errors p + p {
   margin-top: 4px;
 }
+
+/* ---------------------------------------------------------------------------
+   Home-page showcase (renderWidget / home_preview.tpl).
+
+   Deliberately structural only — sizing and stacking, no look. The preview
+   text itself is positioned in viewport coordinates by placeFloating(), so all
+   this has to guarantee is that the photo is laid out and measurable. Themes
+   are expected to style .mzc-home-preview__* to match their own design.
+   --------------------------------------------------------------------------- */
+
+.mzc-home-preview__item[hidden] {
+  display: none;
+}
+
+.mzc-home-preview__media {
+  position: relative;
+  width: 100%;
+}
+
+.mzc-home-preview__image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.mzc-home-preview__patterns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.mzc-home-preview__pattern {
+  padding: 0;
+  border: 1px solid transparent;
+  background: none;
+  cursor: pointer;
+  line-height: 0;
+}
+
+.mzc-home-preview__pattern img {
+  display: block;
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
