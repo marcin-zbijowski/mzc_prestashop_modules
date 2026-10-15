@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file original="Modules.Mzcga4gtm.Admin.xlf" source-language="en" target-language="pl" datatype="plaintext">
+    <body>
+      <trans-unit id="49802a81bb321ab1806eb068bf5f0b3c" approved="yes">
+        <source>For example GTM-XXXXXXX. Leave empty to load nothing — the right choice on a staging copy.</source>
+        <target state="final">Na przykład GTM-XXXXXXX. Puste pole oznacza, że nic się nie ładuje — to właściwy wybór na kopii stagingowej.</target>
+      </trans-unit>
+      <trans-unit id="7cc2c252596115ed383859def6e38a6f" approved="yes">
+        <source>GTM container ID</source>
+        <target state="final">ID kontenera GTM</target>
+      </trans-unit>
+      <trans-unit id="1d3c65b2b03ef35e14df6b163ea3a1f6" approved="yes">
+        <source>Google Tag Manager</source>
+        <target state="final">Google Tag Manager</target>
+      </trans-unit>
+      <trans-unit id="824038a658a936ba8f5defc3d27f5a3f" approved="yes">
+        <source>Load GTM</source>
+        <target state="final">Ładuj GTM</target>
+      </trans-unit>
+      <trans-unit id="74f48c17814ec0631afc9985cc94c209" approved="yes">
+        <source>Loading is switched on, but no container ID is set, so nothing is loaded.</source>
+        <target state="final">Ładowanie jest włączone, ale nie podano ID kontenera, więc nic się nie ładuje.</target>
+      </trans-unit>
+      <trans-unit id="76ea9e8d34a3143ec3078a53b567d35f" approved="yes">
+        <source>Loads Google Tag Manager and pushes structured GA4 events to dataLayer.</source>
+        <target state="final">Ładuje Google Tag Manager i wysyła ustrukturyzowane zdarzenia GA4 do dataLayer.</target>
+      </trans-unit>
+      <trans-unit id="8cddfcb01e95c5d3eeb7c0cd35ea092c" approved="yes">
+        <source>MZC GA4 / GTM DataLayer</source>
+        <target state="final">MZC GA4 / GTM DataLayer</target>
+      </trans-unit>
+      <trans-unit id="bafd7322c6e97d25b6299b5d6fe8920b" approved="yes">
+        <source>No</source>
+        <target state="final">Nie</target>
+      </trans-unit>
+      <trans-unit id="c9cc8cce247e49bae79f15173ce97354" approved="yes">
+        <source>Save</source>
+        <target state="final">Zapisz</target>
+      </trans-unit>
+      <trans-unit id="9a7e58ee13cb727cb7c4acc68f4cafe5" approved="yes">
+        <source>Settings saved.</source>
+        <target state="final">Ustawienia zostały zapisane.</target>
+      </trans-unit>
+      <trans-unit id="8ec230c886ed700e0020c463ef1780f2" approved="yes">
+        <source>The consent module (%module%) is not active. Google Tag Manager starts with all consents denied and nothing will ever grant them.</source>
+        <target state="final">Moduł zgód (%module%) nie jest aktywny. Google Tag Manager startuje z odrzuconymi wszystkimi zgodami i nic ich nie przyzna.</target>
+      </trans-unit>
+      <trans-unit id="1d67d540b89cab7612b453b52c5789d0" approved="yes">
+        <source>The container ID must look like GTM-XXXXXXX: "GTM-" followed by letters and digits.</source>
+        <target state="final">ID kontenera musi wyglądać jak GTM-XXXXXXX: „GTM-” i litery lub cyfry.</target>
+      </trans-unit>
+      <trans-unit id="0e4af18aa772325b4d2f23b30e1dea61" approved="yes">
+        <source>The container loads only when this is on and the ID is valid. It never loads in an administrator's preview. Consent Mode defaults and updates come from %module%, not from this module.</source>
+        <target state="final">Kontener ładuje się tylko wtedy, gdy to jest włączone, a ID jest poprawne. Nigdy nie ładuje się w podglądzie administratora. Domyślne zgody i ich aktualizacje pochodzą z modułu %module%, nie z tego modułu.</target>
+      </trans-unit>
+      <trans-unit id="591f812bb20a3954034ab0459e21bc99" approved="yes">
+        <source>This is the production container (%id%), but this shop is not on %host%. Visits here will be counted in the production data.</source>
+        <target state="final">To jest kontener produkcyjny (%id%), ale ten sklep nie działa na domenie %host%. Wizyty tutaj zostaną zliczone w danych produkcyjnych.</target>
+      </trans-unit>
+      <trans-unit id="93cba07454f06a4a960172bbd6e2a435" approved="yes">
+        <source>Yes</source>
+        <target state="final">Tak</target>
+      </trans-unit>
+      <trans-unit id="efb77d52765402e22558c953bc50bc45" approved="yes">
+        <source>ps_googleanalytics is still active. Disable it: this module is the only place for analytics, and two of them count every visit twice.</source>
+        <target state="final">ps_googleanalytics jest nadal aktywny. Wyłącz go: ten moduł jest jedynym miejscem analityki, a dwa naraz liczą każdą wizytę podwójnie.</target>
+      </trans-unit>
+      <trans-unit id="c9e5ec3a9603ba0445b899fe264ac1b7" approved="yes">
+        <source>The header script of %module% would run after Google Tag Manager starts, so the container would start before the consent defaults. Save the settings to fix the order.</source>
+        <target state="final">Skrypt nagłówka modułu %module% wykonałby się po starcie Google Tag Manager, więc kontener wystartowałby przed domyślnymi zgodami. Zapisz ustawienia, aby naprawić kolejność.</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
