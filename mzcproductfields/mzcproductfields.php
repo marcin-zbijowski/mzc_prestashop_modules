@@ -36,7 +36,7 @@ class Mzcproductfields extends Module implements \PrestaShop\PrestaShop\Core\Mod
     {
         $this->name = 'mzcproductfields';
         $this->tab = 'front_office_features';
-        $this->version = '1.2.0';
+        $this->version = '1.2.3';
         $this->author = 'Marcin Zbijowski Consulting';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -265,15 +265,58 @@ class Mzcproductfields extends Module implements \PrestaShop\PrestaShop\Core\Mod
      * in both the classic and Hummingbird themes, i.e. *after* the add-to-cart
      * button. A theme that wants the personalization higher up — above the
      * combination pickers, where it belongs when it is the main reason someone
-     * is on the page — declares this custom hook, hooks us onto it and unhooks
-     * us from displayProductAdditionalInfo. Same block either way.
+     * is on the page — declares this custom hook and hooks us onto it. Unhooking
+     * us from displayProductAdditionalInfo in the same theme.yml is tidier, but
+     * not required: being hooked here is what suppresses the other placement.
+     * Same block either way, and never both.
      */
     public function hookDisplayProductPersonalisation(array $params): string
     {
-        return $this->hookDisplayProductAdditionalInfo($params);
+        return $this->renderProductFields($params);
     }
 
     public function hookDisplayProductAdditionalInfo(array $params): string
+    {
+        // A theme that declares displayProductPersonalisation places this block
+        // itself, and is meant to unhook us from here in its theme.yml. That
+        // unhook only runs when the theme is applied, though: reinstalling or
+        // resetting this module re-registers displayProductAdditionalInfo (see
+        // install()) and the block silently renders twice on every product page
+        // — two copies of the same form, the second one below add-to-cart.
+        // Deciding from the hook table instead of trusting theme.yml makes the
+        // placement contract hold whatever order those two things happen in.
+        if ($this->themeDrivesPersonalisationPlacement()) {
+            return '';
+        }
+
+        return $this->renderProductFields($params);
+    }
+
+    /**
+     * True when the active theme both declares displayProductPersonalisation and
+     * has us hooked onto it, i.e. it has taken over placing the block.
+     */
+    private function themeDrivesPersonalisationPlacement(): bool
+    {
+        static $result = null;
+        if ($result !== null) {
+            return $result;
+        }
+
+        $idHook = (int) Hook::getIdByName('displayProductPersonalisation');
+        if ($idHook <= 0 || !$this->id) {
+            return $result = false;
+        }
+
+        return $result = (bool) Db::getInstance()->getValue(
+            'SELECT 1 FROM `' . _DB_PREFIX_ . 'hook_module`
+             WHERE `id_hook` = ' . $idHook . '
+               AND `id_module` = ' . (int) $this->id . '
+               AND `id_shop` = ' . (int) $this->context->shop->id
+        );
+    }
+
+    private function renderProductFields(array $params): string
     {
         $idProduct = (int) ($params['product']['id_product'] ?? 0);
         if ($idProduct <= 0) {
@@ -378,11 +421,22 @@ class Mzcproductfields extends Module implements \PrestaShop\PrestaShop\Core\Mod
 
             $presented = $this->presentProductFields($idProduct);
 
-            // Only the first free-text field is offered here. The point is one
-            // obvious "type your dedication" box, not a second copy of the
+            // Only the first free-text FRONT field is offered here. The point is
+            // one obvious "type your dedication" box, not a second copy of the
             // product page's full field set.
+            //
+            // is_front_field is not a detail: the showcase previews the text on
+            // the product's cover photo, i.e. the front of the poster. A back
+            // field (typically "engraving on the reverse", separately priced and
+            // drawn onto its own background image) would be previewed on the
+            // wrong side of the object, and the teaser carries no pricing to
+            // explain the surcharge either.
             $field = null;
             foreach ($presented['fields'] as $candidate) {
+                if (!$candidate['is_front_field']) {
+                    continue;
+                }
+
                 if (in_array($candidate['type'], [MzcProductFieldsField::TYPE_TEXT, MzcProductFieldsField::TYPE_TEXTAREA], true)) {
                     $field = $candidate;
                     break;
@@ -442,9 +496,11 @@ class Mzcproductfields extends Module implements \PrestaShop\PrestaShop\Core\Mod
      * ps_featuredproducts uses, so the showcase follows the home page without
      * anyone having to maintain a second list.
      *
-     * Returns candidates, not the final list: a candidate still has to have a
-     * free-text field and a cover image, so the SHOWCASE_LIMIT cap is applied
-     * by the callers once they know which ones actually qualify.
+     * Returns candidates, not the final list: the SHOWCASE_LIMIT cap is applied
+     * by the callers once they know which ones actually qualify. The Home
+     * fallback is already narrowed to products a free-text front field applies
+     * to (see homeCategoryCandidates()); a pinned or passed-in id is not, and
+     * the callers' own checks reject it if it does not qualify.
      *
      * @return array<int,int>
      */
@@ -465,14 +521,118 @@ class Mzcproductfields extends Module implements \PrestaShop\PrestaShop\Core\Mod
         }
 
         if (!$candidates) {
-            $idLang = (int) $this->context->language->id;
-            $home = new Category((int) Configuration::get('PS_HOME_CATEGORY'), $idLang);
-            foreach ($home->getProducts($idLang, 1, 30, 'position', 'asc') ?: [] as $row) {
-                $candidates[] = (int) $row['id_product'];
-            }
+            $candidates = $this->homeCategoryCandidates();
         }
 
         return array_values(array_unique(array_filter($candidates)));
+    }
+
+    /** How many Home products to hand on as candidates. Only a safety cap now: they all qualify. */
+    const HOME_CANDIDATES = 30;
+
+    /**
+     * The Home category's products that CAN be shown — in the order the home page lists them.
+     *
+     * This used to be "the first 30 products of Home by position", with the free-text
+     * front field checked afterwards. On a shop whose Home category holds hundreds of
+     * products (artedeum.pl: 232) that is a fixed window onto the top of the list. If
+     * none of those 30 has such a field, the band falls back to its static placeholder
+     * and stays there, however many products further down do — and a product added
+     * later lands at the END of the list, so it never gets a look. Nothing says so; the
+     * product simply does not appear.
+     *
+     * So the field test moves into the query. Of the active, catalogue-visible Home
+     * products with a cover photo, only those a free-text FRONT field applies to are
+     * returned, by position. That is the same rule getFieldsForProduct() applies — a
+     * field covers every product, the products picked for it, or the products of its
+     * category — written as one SELECT instead of one presenter run per product.
+     *
+     * The per-candidate checks in getWidgetVariables() stay: they are the single source
+     * of truth for what a field is, and with this pre-filter they almost never reject.
+     *
+     * @return array<int,int>
+     */
+    private function homeCategoryCandidates(): array
+    {
+        static $cache = [];
+
+        $idShop = (int) $this->context->shop->id;
+        $idHome = (int) Configuration::get('PS_HOME_CATEGORY');
+        $key = $idShop . ':' . $idHome;
+
+        // hookDisplayHeader and renderWidget() both ask, on the same request.
+        if (isset($cache[$key])) {
+            return $cache[$key];
+        }
+
+        $db = Db::getInstance();
+        $types = array_map('pSQL', [MzcProductFieldsField::TYPE_TEXT, MzcProductFieldsField::TYPE_TEXTAREA]);
+
+        $fields = $db->executeS(
+            'SELECT `id_mzc_productfields_field` AS id, `scope_type`, `scope_id`
+             FROM `' . _DB_PREFIX_ . 'mzc_productfields_field`
+             WHERE `active` = 1 AND `is_front_field` = 1 AND `field_type` IN (\'' . implode('\',\'', $types) . '\')'
+        ) ?: [];
+
+        if (!$fields) {
+            return $cache[$key] = [];
+        }
+
+        $anyProduct = false;
+        $fieldIds = [];
+        $categoryIds = [];
+
+        foreach ($fields as $field) {
+            switch ((int) $field['scope_type']) {
+                case MzcProductFieldsField::SCOPE_ALL:
+                    $anyProduct = true;
+                    break;
+                case MzcProductFieldsField::SCOPE_PRODUCTS:
+                    $fieldIds[] = (int) $field['id'];
+                    break;
+                case MzcProductFieldsField::SCOPE_CATEGORY:
+                    $categoryIds[] = (int) $field['scope_id'];
+                    break;
+            }
+        }
+
+        $applies = [];
+
+        if ($anyProduct) {
+            $applies[] = '1 = 1';
+        }
+
+        if ($fieldIds) {
+            $applies[] = 'cp.`id_product` IN (
+                SELECT fp.`id_product` FROM `' . _DB_PREFIX_ . 'mzc_productfields_field_product` fp
+                WHERE fp.`id_mzc_productfields_field` IN (' . implode(',', $fieldIds) . '))';
+        }
+
+        if ($categoryIds) {
+            $applies[] = 'cp.`id_product` IN (
+                SELECT cpf.`id_product` FROM `' . _DB_PREFIX_ . 'category_product` cpf
+                WHERE cpf.`id_category` IN (' . implode(',', array_filter($categoryIds)) . '))';
+        }
+
+        if (!$applies) {
+            return $cache[$key] = [];
+        }
+
+        $rows = $db->executeS(
+            'SELECT cp.`id_product`
+             FROM `' . _DB_PREFIX_ . 'category_product` cp
+             INNER JOIN `' . _DB_PREFIX_ . 'product_shop` ps
+                 ON ps.`id_product` = cp.`id_product` AND ps.`id_shop` = ' . $idShop . '
+                 AND ps.`active` = 1 AND ps.`visibility` IN (\'both\', \'catalog\')
+             INNER JOIN `' . _DB_PREFIX_ . 'image_shop` ims
+                 ON ims.`id_product` = cp.`id_product` AND ims.`id_shop` = ' . $idShop . ' AND ims.`cover` = 1
+             WHERE cp.`id_category` = ' . $idHome . ' AND (' . implode(' OR ', $applies) . ')
+             GROUP BY cp.`id_product`
+             ORDER BY MIN(cp.`position`) ASC, cp.`id_product` ASC
+             LIMIT ' . (int) self::HOME_CANDIDATES
+        ) ?: [];
+
+        return $cache[$key] = array_map('intval', array_column($rows, 'id_product'));
     }
 
     /**
