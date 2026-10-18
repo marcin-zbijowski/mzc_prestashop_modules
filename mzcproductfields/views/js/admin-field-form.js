@@ -1,7 +1,7 @@
 /**
  * MZC Product Fields — admin field form.
  *
- * Two small, self-contained pieces:
+ * Three small, self-contained pieces:
  *
  * 1. Shows only the scope row relevant to the selected "Applies to" value:
  *    SCOPE_ALL (0) shows neither, SCOPE_CATEGORY (1) shows .js-mzc-scope-category,
@@ -10,6 +10,11 @@
  * 2. A minimal search-and-select autocomplete for both rows, writing into the
  *    hidden `field[category_id]` / `field[products_json]` inputs that
  *    FieldRepository reads on submit.
+ *
+ * 3. The same product picker on the field list screen, for the products shown in the
+ *    home page's live-personalisation section (.js-mzc-showcase-products): ordered,
+ *    capped at data-mzc-max, and a product the home page would skip (an entry with a
+ *    `warning`) is flagged rather than refused.
  *
  * This does NOT use PrestaShop core's EntitySearchInputType/ProductSearchType:
  * `ProductSearchType` doesn't exist as a class in PS 8.2.7 (confirmed), and
@@ -64,6 +69,9 @@
     var suggestions = row.querySelector('.js-mzc-suggestions');
     var selectedContainer = row.querySelector('.js-mzc-selected');
     var searchUrl = row.getAttribute('data-mzc-search-url');
+    // 0 = unlimited. Only the home page section sets a limit.
+    var max = parseInt(row.getAttribute('data-mzc-max') || '0', 10) || 0;
+    var counter = row.querySelector('.js-mzc-count');
 
     var initial = [];
     try {
@@ -81,15 +89,27 @@
       }
     }
 
+    function atLimit() {
+      return max > 0 && selected.length >= max;
+    }
+
     function renderSelected() {
       selectedContainer.innerHTML = '';
+      if (counter) {
+        counter.textContent = max > 0 ? selected.length + ' / ' + max + '.' : '';
+      }
+      searchInput.disabled = atLimit();
       selected.forEach(function (item) {
         var chip = document.createElement('span');
-        chip.className = 'badge badge-info';
+        // A warning (the product exists but would not be shown) is amber and says why.
+        chip.className = item.warning ? 'badge badge-warning' : 'badge badge-info';
+        if (item.warning) {
+          chip.title = item.warning;
+        }
         chip.style.marginRight = '6px';
         chip.style.display = 'inline-block';
         chip.style.padding = '4px 8px';
-        chip.textContent = item.name + ' ';
+        chip.textContent = (item.warning ? '\u26A0 ' : '') + item.name + ' ';
 
         var remove = document.createElement('a');
         remove.href = '#';
@@ -115,7 +135,7 @@
 
     function selectItem(item) {
       if (multiple) {
-        if (!selected.some(function (s) { return s.id === item.id; })) {
+        if (!selected.some(function (s) { return s.id === item.id; }) && !atLimit()) {
           selected.push(item);
         }
       } else {
@@ -202,6 +222,12 @@
     var productsHidden = document.getElementById('field_products_json');
     if (productsRow && productsHidden) {
       initPicker(productsRow, true, productsHidden);
+    }
+
+    var showcaseRow = document.querySelector('.js-mzc-showcase-products');
+    var showcaseHidden = document.getElementById('mzc_showcase_products');
+    if (showcaseRow && showcaseHidden) {
+      initPicker(showcaseRow, true, showcaseHidden);
     }
   }
 

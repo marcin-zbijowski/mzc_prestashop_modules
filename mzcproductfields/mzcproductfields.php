@@ -36,7 +36,7 @@ class Mzcproductfields extends Module implements \PrestaShop\PrestaShop\Core\Mod
     {
         $this->name = 'mzcproductfields';
         $this->tab = 'front_office_features';
-        $this->version = '1.2.3';
+        $this->version = '1.2.4';
         $this->author = 'Marcin Zbijowski Consulting';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -392,8 +392,13 @@ class Mzcproductfields extends Module implements \PrestaShop\PrestaShop\Core\Mod
     /** Configuration key holding a comma-separated list of pinned product ids. */
     const CONFIG_SHOWCASE_PRODUCTS = 'MZCPF_SHOWCASE_PRODUCTS';
 
-    /** How many products the home-page pattern switcher offers at most. */
-    const SHOWCASE_LIMIT = 4;
+    /**
+     * How many products the home-page pattern switcher offers at most — and how many
+     * the back office lets the merchant pin. The switcher's thumbnails wrap onto a
+     * second row beyond five or six, so this is a ceiling for the layout as much as
+     * for the page weight: each product also loads its own full-size photo.
+     */
+    const SHOWCASE_LIMIT = 8;
 
     public function renderWidget($hookName = null, array $configuration = [])
     {
@@ -419,43 +424,15 @@ class Mzcproductfields extends Module implements \PrestaShop\PrestaShop\Core\Mod
                 break;
             }
 
+            // The same verdict the back office shows next to each pinned product.
+            if ($this->getShowcaseRejection($idProduct) !== null) {
+                continue;
+            }
+
             $presented = $this->presentProductFields($idProduct);
-
-            // Only the first free-text FRONT field is offered here. The point is
-            // one obvious "type your dedication" box, not a second copy of the
-            // product page's full field set.
-            //
-            // is_front_field is not a detail: the showcase previews the text on
-            // the product's cover photo, i.e. the front of the poster. A back
-            // field (typically "engraving on the reverse", separately priced and
-            // drawn onto its own background image) would be previewed on the
-            // wrong side of the object, and the teaser carries no pricing to
-            // explain the surcharge either.
-            $field = null;
-            foreach ($presented['fields'] as $candidate) {
-                if (!$candidate['is_front_field']) {
-                    continue;
-                }
-
-                if (in_array($candidate['type'], [MzcProductFieldsField::TYPE_TEXT, MzcProductFieldsField::TYPE_TEXTAREA], true)) {
-                    $field = $candidate;
-                    break;
-                }
-            }
-
-            if ($field === null) {
-                continue;
-            }
-
+            $field = $this->showcaseField($presented);
             $product = new Product($idProduct, false, $idLang);
-            if (!Validate::isLoadedObject($product) || !$product->active) {
-                continue;
-            }
-
             $cover = Image::getCover($idProduct);
-            if (!$cover) {
-                continue;
-            }
 
             $showcases[] = [
                 'id_product' => $idProduct,
@@ -487,6 +464,124 @@ class Mzcproductfields extends Module implements \PrestaShop\PrestaShop\Core\Mod
     }
 
     /**
+     * The one field the showcase offers for a product: the first free-text FRONT field.
+     *
+     * The point is one obvious "type your dedication" box, not a second copy of the
+     * product page's full field set.
+     *
+     * is_front_field is not a detail: the showcase previews the text on the product's
+     * cover photo, i.e. the front of the poster. A back field (typically "engraving on
+     * the reverse", separately priced and drawn onto its own background image) would be
+     * previewed on the wrong side of the object, and the teaser carries no pricing to
+     * explain the surcharge either.
+     *
+     * @param array $presented what presentProductFields() returned
+     */
+    private function showcaseField(array $presented): ?array
+    {
+        foreach ($presented['fields'] as $candidate) {
+            if (!$candidate['is_front_field']) {
+                continue;
+            }
+
+            if (in_array($candidate['type'], [MzcProductFieldsField::TYPE_TEXT, MzcProductFieldsField::TYPE_TEXTAREA], true)) {
+                return $candidate;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Why a product cannot be shown in the home page's showcase, or null when it can.
+     *
+     * The single source of that decision: the widget skips every product this rejects,
+     * and the back office prints the same reason beside a pinned product, so a pin that
+     * does nothing never looks like it works.
+     *
+     * @return string|null 'not_found' | 'no_front_field' | 'inactive' | 'no_cover'
+     */
+    public function getShowcaseRejection(int $idProduct): ?string
+    {
+        $product = new Product($idProduct, false, (int) $this->context->language->id);
+
+        if (!Validate::isLoadedObject($product)) {
+            return 'not_found';
+        }
+
+        if ($this->showcaseField($this->presentProductFields($idProduct)) === null) {
+            return 'no_front_field';
+        }
+
+        if (!$product->active) {
+            return 'inactive';
+        }
+
+        if (!Image::getCover($idProduct)) {
+            return 'no_cover';
+        }
+
+        return null;
+    }
+
+    /**
+     * The product ids the merchant pinned for the showcase, in the order chosen.
+     *
+     * @return array<int,int>
+     */
+    public function getPinnedShowcaseProducts(): array
+    {
+        $ids = [];
+
+        foreach (explode(',', (string) Configuration::get(self::CONFIG_SHOWCASE_PRODUCTS)) as $raw) {
+            $id = (int) trim($raw);
+
+            if ($id > 0 && !in_array($id, $ids, true)) {
+                $ids[] = $id;
+            }
+        }
+
+        return $ids;
+    }
+
+    /**
+     * Saves the pinned products. An empty list removes the pin, and the showcase goes
+     * back to choosing from the Home category by itself.
+     *
+     * Ids are cast, deduplicated, checked against the catalogue and cut at
+     * SHOWCASE_LIMIT, keeping the order given — the first pinned product is the one
+     * the home page shows before anyone clicks a thumbnail. A product that exists but
+     * cannot be shown (no front field, inactive, no photo) is still saved: that is the
+     * merchant's call, the back office flags it, and it may well be fixed tomorrow.
+     *
+     * @param array<int|string,mixed> $ids
+     *
+     * @return array<int,int> what was saved
+     */
+    public function savePinnedShowcaseProducts(array $ids): array
+    {
+        $clean = [];
+
+        foreach ($ids as $raw) {
+            $id = (int) $raw;
+
+            if ($id <= 0 || in_array($id, $clean, true) || !Product::existsInDatabase($id, 'product')) {
+                continue;
+            }
+
+            $clean[] = $id;
+
+            if (count($clean) >= self::SHOWCASE_LIMIT) {
+                break;
+            }
+        }
+
+        Configuration::updateValue(self::CONFIG_SHOWCASE_PRODUCTS, implode(',', $clean));
+
+        return $clean;
+    }
+
+    /**
      * Which products the home-page showcase offers, in order.
      *
      * Priority: an explicit `id_products` widget parameter, then the
@@ -511,13 +606,7 @@ class Mzcproductfields extends Module implements \PrestaShop\PrestaShop\Core\Mod
         if (!empty($configuration['id_products'])) {
             $candidates = array_map('intval', (array) $configuration['id_products']);
         } else {
-            $pinned = (string) Configuration::get(self::CONFIG_SHOWCASE_PRODUCTS);
-            foreach (explode(',', $pinned) as $raw) {
-                $id = (int) trim($raw);
-                if ($id > 0) {
-                    $candidates[] = $id;
-                }
-            }
+            $candidates = $this->getPinnedShowcaseProducts();
         }
 
         if (!$candidates) {
