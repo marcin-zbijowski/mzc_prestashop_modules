@@ -1,5 +1,10 @@
 {% extends '@PrestaShop/Admin/layout.html.twig' %}
 
+{% block javascripts %}
+  {{ parent() }}
+  <script src="{{ app.request.getSchemeAndHttpHost() }}/modules/mzcproductfields/views/js/admin-field-form.js?v=2.3.0"></script>
+{% endblock %}
+
 {% block content %}
   <div class="panel">
     <div class="panel-heading">
@@ -63,4 +68,34 @@
       </tbody>
     </table>
   </div>
+
+  {% if showcase.limit > 0 %}
+    <div class="panel">
+      <div class="panel-heading">
+        {{ 'Home page: live personalization section'|trans({}, 'Modules.Mzcproductfields.Admin') }}
+      </div>
+      <form method="post" action="{{ path('mzc_productfields_showcase_save') }}">
+        <input type="hidden" name="showcase_products" id="mzc_showcase_products" value="[]">
+
+        <div class="js-mzc-showcase-products" data-mzc-search-url="{{ showcase.search_url }}" data-mzc-max="{{ showcase.limit }}">
+          <p class="text-muted">
+            {{ 'Products offered in the "live personalization" section of the home page, in this order — the first one is shown before a visitor clicks anything. Only products with a text field for the front, an active status and a photo can appear.'|trans({}, 'Modules.Mzcproductfields.Admin') }}
+          </p>
+          <input type="text" class="form-control js-mzc-search-input" autocomplete="off"
+                 placeholder="{{ 'Search product (name, reference or ID)'|trans({}, 'Modules.Mzcproductfields.Admin') }}">
+          <ul class="js-mzc-suggestions list-group" style="display:none; position:absolute; z-index:1000; max-width:400px;"></ul>
+          <div class="js-mzc-selected" style="margin-top:8px;"
+               data-initial="{{ showcase.entries|json_encode }}"></div>
+          <small class="form-text text-muted">
+            <span class="js-mzc-count"></span>
+            {{ 'Leave empty to choose automatically from the Home category.'|trans({}, 'Modules.Mzcproductfields.Admin') }}
+          </small>
+        </div>
+
+        <div style="margin-top:12px;">
+          <button type="submit" class="btn btn-primary">{{ 'Save'|trans({}, 'Modules.Mzcproductfields.Admin') }}</button>
+        </div>
+      </form>
+    </div>
+  {% endif %}
 {% endblock %}

@@ -282,21 +282,29 @@ final class FieldRepository
      */
     private function getProductEntriesForField(int $idField, int $idLang): array
     {
-        $productIds = $this->getProductIdsForField($idField);
-        if (!$productIds) {
-            return [];
-        }
+        return $this->getProductEntries($this->getProductIdsForField($idField), $idLang);
+    }
 
+    /**
+     * Autocomplete-widget entries for a list of product ids, in the order given;
+     * ids that no longer exist are dropped.
+     *
+     * @param array<int,int> $productIds
+     *
+     * @return array<int,array{id:int,name:string,image:string}>
+     */
+    public function getProductEntries(array $productIds, int $idLang): array
+    {
         $entries = [];
         foreach ($productIds as $idProduct) {
-            $product = new Product($idProduct, false, $idLang);
+            $product = new Product((int) $idProduct, false, $idLang);
             if (!Validate::isLoadedObject($product)) {
                 continue;
             }
             $entries[] = [
-                'id' => $idProduct,
+                'id' => (int) $idProduct,
                 'name' => $product->name,
-                'image' => $this->getProductImageUrl($idProduct),
+                'image' => $this->getProductImageUrl((int) $idProduct),
             ];
         }
 

@@ -618,6 +618,46 @@
         <source>Personalization values</source>
         <target state="final">Wartości personalizacji</target>
       </trans-unit>
+      <trans-unit id="e2c93fe2d68fa6d964cb0148abc69d80" approved="yes">
+        <source>Home page: live personalization section</source>
+        <target state="final">Strona główna: sekcja „Personalizacja na żywo”</target>
+      </trans-unit>
+      <trans-unit id="b2c13a5033987124a3e2c8ee2afd3fb6" approved="yes">
+        <source>Products offered in the "live personalization" section of the home page, in this order — the first one is shown before a visitor clicks anything. Only products with a text field for the front, an active status and a photo can appear.</source>
+        <target state="final">Produkty oferowane w sekcji „Personalizacja na żywo” na stronie głównej, w tej kolejności — pierwszy jest widoczny, zanim odwiedzający cokolwiek kliknie. Pojawić się mogą tylko produkty z polem tekstowym na awersie, aktywne i ze zdjęciem.</target>
+      </trans-unit>
+      <trans-unit id="3d4c88e884bcbf8413b7f08396b11469" approved="yes">
+        <source>Leave empty to choose automatically from the Home category.</source>
+        <target state="final">Zostaw puste, aby produkty były wybierane automatycznie z kategorii Strona główna.</target>
+      </trans-unit>
+      <trans-unit id="f47cf189d0d8c57d002abf9811002392" approved="yes">
+        <source>This product no longer exists.</source>
+        <target state="final">Ten produkt już nie istnieje.</target>
+      </trans-unit>
+      <trans-unit id="fb34c1ab0e76d0d7d6bd2cd221443cb9" approved="yes">
+        <source>No text field for the front applies to this product, so it will not be shown.</source>
+        <target state="final">Do tego produktu nie ma zastosowania żadne pole tekstowe na awersie, więc nie zostanie wyświetlony.</target>
+      </trans-unit>
+      <trans-unit id="bee7a2253d33f47b8a003ab3c52a5af8" approved="yes">
+        <source>This product is disabled, so it will not be shown.</source>
+        <target state="final">Ten produkt jest wyłączony, więc nie zostanie wyświetlony.</target>
+      </trans-unit>
+      <trans-unit id="6c02962c11d177d8bca32f6b61ac856d" approved="yes">
+        <source>This product has no photo, so it will not be shown.</source>
+        <target state="final">Ten produkt nie ma zdjęcia, więc nie zostanie wyświetlony.</target>
+      </trans-unit>
+      <trans-unit id="ffcab9a52de045eca4dde388ed894199" approved="yes">
+        <source>Could not save the home page products.</source>
+        <target state="final">Nie udało się zapisać produktów strony głównej.</target>
+      </trans-unit>
+      <trans-unit id="72d4ab5aa2ca58ee93869f1bc39542a1" approved="yes">
+        <source>Home page products saved.</source>
+        <target state="final">Zapisano produkty strony głównej.</target>
+      </trans-unit>
+      <trans-unit id="b0f5867af7e195c46adf18b19e865d62" approved="yes">
+        <source>Home page products cleared — the section picks them from the Home category again.</source>
+        <target state="final">Wyczyszczono produkty strony głównej — sekcja znów wybiera je z kategorii Strona główna.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

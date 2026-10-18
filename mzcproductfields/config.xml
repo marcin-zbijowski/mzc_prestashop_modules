@@ -2,7 +2,7 @@
 <module>
     <name>mzcproductfields</name>
     <displayName><![CDATA[MZC Product Fields]]></displayName>
-    <version><![CDATA[1.2.3]]></version>
+    <version><![CDATA[1.2.4]]></version>
     <description><![CDATA[Configurable product personalization fields with live preview. Replaces Anvanto Product Fields.]]></description>
     <author><![CDATA[Marcin Zbijowski Consulting]]></author>
     <tab><![CDATA[front_office_features]]></tab>

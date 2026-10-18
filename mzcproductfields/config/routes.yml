@@ -106,3 +106,10 @@ mzc_productfields_migrator_migrate_fields:
   defaults:
     _controller: 'MZConsulting\MzcProductFields\Controller\MigratorController::migrateFieldConfigAction'
     _legacy_controller: AdminMzcProductFieldsFields
+
+mzc_productfields_showcase_save:
+  path: /mzcproductfields/showcase
+  methods: [POST]
+  defaults:
+    _controller: 'MZConsulting\MzcProductFields\Controller\ShowcaseController::saveAction'
+    _legacy_controller: AdminMzcProductFieldsFields

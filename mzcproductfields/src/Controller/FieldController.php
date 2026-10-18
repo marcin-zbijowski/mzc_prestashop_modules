@@ -10,6 +10,7 @@ use MZConsulting\MzcProductFields\Repository\FontRepository;
 use PrestaShopBundle\Controller\Admin\FrameworkBundleAdminController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Mzcproductfields;
 use TaxRulesGroup;
 
 /**
@@ -34,6 +35,7 @@ class FieldController extends FrameworkBundleAdminController
 
         return $this->render('@Modules/mzcproductfields/views/templates/admin/field/index.html.twig', [
             'fields' => $repository->findAllForGrid($idLang),
+            'showcase' => $this->getShowcaseViewData($repository, $idLang),
         ]);
     }
 
@@ -98,6 +100,45 @@ class FieldController extends FrameworkBundleAdminController
                 'query' => '__QUERY__',
             ]),
         ]);
+    }
+
+    /**
+     * What the "products in the home page section" panel needs: the pinned products,
+     * each with the reason it would not be shown (if any), and the limit.
+     *
+     * The reasons come from the module itself, the same test the home page widget
+     * applies, so the warning here can never disagree with what the visitor sees.
+     *
+     * @return array{limit:int,entries:array<int,array<string,mixed>>,search_url:string}
+     */
+    private function getShowcaseViewData(FieldRepository $repository, int $idLang): array
+    {
+        $module = \Module::getInstanceByName('mzcproductfields');
+
+        $messages = [
+            'not_found' => $this->trans('This product no longer exists.', 'Modules.Mzcproductfields.Admin'),
+            'no_front_field' => $this->trans('No text field for the front applies to this product, so it will not be shown.', 'Modules.Mzcproductfields.Admin'),
+            'inactive' => $this->trans('This product is disabled, so it will not be shown.', 'Modules.Mzcproductfields.Admin'),
+            'no_cover' => $this->trans('This product has no photo, so it will not be shown.', 'Modules.Mzcproductfields.Admin'),
+        ];
+
+        $entries = [];
+        if ($module) {
+            foreach ($repository->getProductEntries($module->getPinnedShowcaseProducts(), $idLang) as $entry) {
+                $reason = $module->getShowcaseRejection($entry['id']);
+                $entry['warning'] = $reason !== null ? ($messages[$reason] ?? $reason) : '';
+                $entries[] = $entry;
+            }
+        }
+
+        return [
+            'limit' => $module ? (int) Mzcproductfields::SHOWCASE_LIMIT : 0,
+            'entries' => $entries,
+            'search_url' => $this->generateUrl('admin_products_search_products_for_association', [
+                'languageCode' => $this->getContext()->language->iso_code,
+                'query' => '__QUERY__',
+            ]),
+        ];
     }
 
     /**
