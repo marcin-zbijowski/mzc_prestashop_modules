@@ -20,6 +20,10 @@ rm -f "$OUTPUT"
 zip -r "$OUTPUT" "$MODULE" \
     -x "${MODULE}/.git/*" \
     -x "${MODULE}/node_modules/*" \
+    -x "${MODULE}/vendor-dev/*" \
+    -x "${MODULE}/tests/*" \
+    -x "${MODULE}/.phpunit.cache/*" \
+    -x "${MODULE}/phpunit.xml.dist" \
     -x "${MODULE}/.DS_Store" \
     -x "*/.DS_Store"
 

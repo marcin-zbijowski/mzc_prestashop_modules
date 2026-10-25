@@ -1,0 +1,535 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file original="Modules.Mzcbrevo.Admin.xlf" source-language="en" target-language="pl" datatype="plaintext">
+    <body>
+      <trans-unit id="58c89fc8b7bf1fb154e59da10a65df09" approved="yes">
+        <source>%count% job(s) are back in the queue.</source>
+        <target state="final">Zadania wróciły do kolejki: %count%.</target>
+      </trans-unit>
+      <trans-unit id="eb6a179db3a0865d99a0847bdf945382" approved="yes">
+        <source>%count% job(s) gave up after every retry. See the Queue tab.</source>
+        <target state="final">Zadania porzucone po wszystkich ponowieniach: %count%. Zobacz zakładkę Kolejka.</target>
+      </trans-unit>
+      <trans-unit id="95f3472b73a74a33deeea1263f2be3d8" approved="yes">
+        <source>A Brevo template with the "double opt-in" tag, in Polish.</source>
+        <target state="final">Szablon Brevo z tagiem „double opt-in”, po polsku.</target>
+      </trans-unit>
+      <trans-unit id="17784e2e9901112b026af1305217a58b" approved="yes">
+        <source>A key is stored (ending in …%end%). Leave empty to keep it.</source>
+        <target state="final">Klucz jest zapisany (kończy się na …%end%). Zostaw puste, żeby go zachować.</target>
+      </trans-unit>
+      <trans-unit id="2119343a26b737379df3dd3e0044a271" approved="yes">
+        <source>A test job is in the queue. The next worker run sends it; see the Queue tab.</source>
+        <target state="final">Zadanie testowe jest w kolejce. Wyśle je najbliższe uruchomienie workera; zobacz zakładkę Kolejka.</target>
+      </trans-unit>
+      <trans-unit id="656a6828d7ef1bb791e42087c4b5ee6e" approved="yes">
+        <source>API key</source>
+        <target state="final">Klucz API</target>
+      </trans-unit>
+      <trans-unit id="6e4f750959174f05639a003b7fbadc75" approved="yes">
+        <source>Abandoned after</source>
+        <target state="final">Porzucony po</target>
+      </trans-unit>
+      <trans-unit id="6bcde6286f8d1b76063ee52104a240cf" approved="yes">
+        <source>Abandoned carts</source>
+        <target state="final">Porzucone koszyki</target>
+      </trans-unit>
+      <trans-unit id="37ee042876d67c4df8a73be9e055b7f8" approved="yes">
+        <source>Accounts, consent changes, footer sign-ups, unsubscribes, deletions.</source>
+        <target state="final">Konta, zmiany zgód, zapisy ze stopki, wypisy, usunięcia.</target>
+      </trans-unit>
+      <trans-unit id="7ba3b8236d48d4f4c5ec03c3fe6b75a9" approved="yes">
+        <source>Attempts</source>
+        <target state="final">Próby</target>
+      </trans-unit>
+      <trans-unit id="b40cf16c7d64587d8b71658595353465" approved="yes">
+        <source>Attributes synchronized.</source>
+        <target state="final">Atrybuty zsynchronizowane.</target>
+      </trans-unit>
+      <trans-unit id="086247a9b57fde6eefee2a0c4752242d" approved="yes">
+        <source>Automatic</source>
+        <target state="final">Automatycznie</target>
+      </trans-unit>
+      <trans-unit id="2f7d1802b02ec9d23f0871fb3b17fac5" approved="yes">
+        <source>Batch results</source>
+        <target state="final">Wyniki batchy</target>
+      </trans-unit>
+      <trans-unit id="e102d25de690b520bb1136f4175d4570" approved="yes">
+        <source>Brevo</source>
+        <target state="final">Brevo</target>
+      </trans-unit>
+      <trans-unit id="13a51aa024a344dace3e1be82155b2c9" approved="yes">
+        <source>Brevo could not be reached: %error%</source>
+        <target state="final">Brak połączenia z Brevo: %error%</target>
+      </trans-unit>
+      <trans-unit id="97b0cdc643b2d4036de4c6f44246be47" approved="yes">
+        <source>Brevo refused the request: %error%</source>
+        <target state="final">Brevo odrzuciło żądanie: %error%</target>
+      </trans-unit>
+      <trans-unit id="0b8d2b2fc79cb53a0c4cbafa8e15a802" approved="yes">
+        <source>Brevo → SMTP &amp; API → API keys. Stored encrypted.</source>
+        <target state="final">Brevo → SMTP &amp; API → API keys. Przechowywany w postaci zaszyfrowanej.</target>
+      </trans-unit>
+      <trans-unit id="1fc115880d4bea90593e2ae5a740fcdb" approved="yes">
+        <source>Brevo → Settings → Webhooks → Marketing, event "Unsubscribed". Sets newsletter = 0 in the shop.</source>
+        <target state="final">Brevo → Ustawienia → Webhooki → Marketing, zdarzenie „Unsubscribed”. Ustawia newsletter = 0 w sklepie.</target>
+      </trans-unit>
+      <trans-unit id="fc26e55e0993a75e892175deb02aae15" approved="yes">
+        <source>Carts</source>
+        <target state="final">Koszyki</target>
+      </trans-unit>
+      <trans-unit id="a8567ec8887eb41c7870b3a624524a46" approved="yes">
+        <source>Catalogue</source>
+        <target state="final">Katalog</target>
+      </trans-unit>
+      <trans-unit id="14fac3b773dac02ff20e2637632b71da" approved="yes">
+        <source>Category → occasion</source>
+        <target state="final">Kategoria → okazja</target>
+      </trans-unit>
+      <trans-unit id="fd5d51c366a44729a061a37a22d19959" approved="yes">
+        <source>Connected to the Brevo account %email% (%company%). Plan: %plan%.</source>
+        <target state="final">Połączono z kontem Brevo %email% (%company%). Plan: %plan%.</target>
+      </trans-unit>
+      <trans-unit id="c2cc7082a89c1ad6631a2f66af5f00c0" approved="yes">
+        <source>Connection</source>
+        <target state="final">Połączenie</target>
+      </trans-unit>
+      <trans-unit id="e6f432d4018ea30c772e65a9d66a1f1a" approved="yes">
+        <source>Contact ext_id prefix</source>
+        <target state="final">Prefiks ext_id kontaktu</target>
+      </trans-unit>
+      <trans-unit id="9aa698f602b1e5694855cee73a683488" approved="yes">
+        <source>Contacts</source>
+        <target state="final">Kontakty</target>
+      </trans-unit>
+      <trans-unit id="cefb24b0f1dee6e983044a05f503e644" approved="yes">
+        <source>Contacts are switched on, but the newsletter and customers list ids are not both set.</source>
+        <target state="final">Kontakty są włączone, ale nie ustawiono obu list (newsletter i klienci).</target>
+      </trans-unit>
+      <trans-unit id="1db5307e18be1af42c7e13fd9a227ecf" approved="yes">
+        <source>Contacts with marketing consent only.</source>
+        <target state="final">Tylko kontakty ze zgodą marketingową.</target>
+      </trans-unit>
+      <trans-unit id="880053f1514eb8f3347667e1c3cde270" approved="yes">
+        <source>Contacts, orders and cart events to Brevo, server-side through a queue. Replaces the official Brevo plugin.</source>
+        <target state="final">Kontakty, zamówienia i zdarzenia koszyka do Brevo, po stronie serwera przez kolejkę. Zastępuje oficjalną wtyczkę Brevo.</target>
+      </trans-unit>
+      <trans-unit id="f15c1cae7882448b3fb0404682e17e61" approved="yes">
+        <source>Content</source>
+        <target state="final">Treść</target>
+      </trans-unit>
+      <trans-unit id="abaad1debd98444765657c91be043c69" approved="yes">
+        <source>Cron, every minute</source>
+        <target state="final">Cron, co minutę</target>
+      </trans-unit>
+      <trans-unit id="5449d86b99dbbeb34e1dee4085a84eee" approved="yes">
+        <source>Customers list id</source>
+        <target state="final">ID listy klienci</target>
+      </trans-unit>
+      <trans-unit id="3ec365dd533ddb7ef3d1c111186ce872" approved="yes">
+        <source>Details</source>
+        <target state="final">Szczegóły</target>
+      </trans-unit>
+      <trans-unit id="49ff9d389590f6311240fd8ec6d1a1f7" approved="yes">
+        <source>Detected automatically: %occasion% (from the %source%).</source>
+        <target state="final">Wykryto automatycznie: %occasion% (źródło: %source%).</target>
+      </trans-unit>
+      <trans-unit id="38a9ca5237c225bc72054a1cdc685f72" approved="yes">
+        <source>Double opt-in for account consent</source>
+        <target state="final">Double opt-in dla zgody w koncie</target>
+      </trans-unit>
+      <trans-unit id="342c79c98f8d2d6f6d15cddb7d2e44f4" approved="yes">
+        <source>Double opt-in template id</source>
+        <target state="final">ID szablonu double opt-in</target>
+      </trans-unit>
+      <trans-unit id="034c327c81b9f2ba87cb7206222b7676" approved="yes">
+        <source>Empty for one shop per Brevo account. Changing it later makes Brevo see a new catalogue.</source>
+        <target state="final">Puste przy jednym sklepie na konto Brevo. Zmiana później sprawi, że Brevo zobaczy nowy katalog.</target>
+      </trans-unit>
+      <trans-unit id="2e8574bda44aee8572d731706064055c" approved="yes">
+        <source>End the pause now (%seconds% s left)</source>
+        <target state="final">Zakończ pauzę teraz (zostało %seconds% s)</target>
+      </trans-unit>
+      <trans-unit id="902b0d55fddef6f8d651fe1035b7d4bd" approved="yes">
+        <source>Error</source>
+        <target state="final">Błąd</target>
+      </trans-unit>
+      <trans-unit id="60471316df72f8b40a9d236f4dd72122" approved="yes">
+        <source>Every customer, for segments and exclusions. Never use it to send marketing.</source>
+        <target state="final">Wszyscy klienci, do segmentów i wykluczeń. Nigdy nie wysyłaj na nią marketingu.</target>
+      </trans-unit>
+      <trans-unit id="da9d9bbaafa6cadcf4d30a5e6ddca4c7" approved="yes">
+        <source>Failed and dead jobs</source>
+        <target state="final">Zadania failed i dead</target>
+      </trans-unit>
+      <trans-unit id="0c89e61f688a09af07e07db05f4b5ae6" approved="yes">
+        <source>Identifiers and webhooks</source>
+        <target state="final">Identyfikatory i webhooki</target>
+      </trans-unit>
+      <trans-unit id="d626102cfc2416a570fc0dc582a9b771" approved="yes">
+        <source>Kind</source>
+        <target state="final">Rodzaj</target>
+      </trans-unit>
+      <trans-unit id="a2bb6735c371a6a0a7e11007f2af9195" approved="yes">
+        <source>Lists and double opt-in</source>
+        <target state="final">Listy i double opt-in</target>
+      </trans-unit>
+      <trans-unit id="480c3aaaa3d58a8595b23f14ed8311ce" approved="yes">
+        <source>MZC Brevo</source>
+        <target state="final">MZC Brevo</target>
+      </trans-unit>
+      <trans-unit id="0014f8b96d996135614c21355a053994" approved="yes">
+        <source>Mapping</source>
+        <target state="final">Mapowanie</target>
+      </trans-unit>
+      <trans-unit id="e51641731bbc0cadcb147f58f667ef20" approved="yes">
+        <source>Mapping saved.</source>
+        <target state="final">Mapowanie zapisane.</target>
+      </trans-unit>
+      <trans-unit id="7df8ed21f4626089fbbc6381b3b29594" approved="yes">
+        <source>Minimum cart value</source>
+        <target state="final">Minimalna wartość koszyka</target>
+      </trans-unit>
+      <trans-unit id="a83de9013ad824c01659eaa46abbd37c" approved="yes">
+        <source>Newsletter list id</source>
+        <target state="final">ID listy newsletter</target>
+      </trans-unit>
+      <trans-unit id="bafd7322c6e97d25b6299b5d6fe8920b" approved="yes">
+        <source>No</source>
+        <target state="final">Nie</target>
+      </trans-unit>
+      <trans-unit id="f7148764eecc1e36eff91080c0650df9" approved="yes">
+        <source>No API key yet: nothing is sent to Brevo.</source>
+        <target state="final">Brak klucza API: nic nie jest wysyłane do Brevo.</target>
+      </trans-unit>
+      <trans-unit id="92f3bbfdd17a546489602eddd22e5b35" approved="yes">
+        <source>No product has an occasion yet.</source>
+        <target state="final">Żaden produkt nie ma jeszcze okazji.</target>
+      </trans-unit>
+      <trans-unit id="fe1b224594c4a9f87a917fa011e8fdeb" approved="yes">
+        <source>None (not an occasion product)</source>
+        <target state="final">Brak (produkt nie jest okazjonalny)</target>
+      </trans-unit>
+      <trans-unit id="63bd34f1308e37824df5b8129ba1397e" approved="yes">
+        <source>None yet.</source>
+        <target state="final">Jeszcze nic.</target>
+      </trans-unit>
+      <trans-unit id="983e45d9f14c8e4b92b207877e7cabb0" approved="yes">
+        <source>None.</source>
+        <target state="final">Brak.</target>
+      </trans-unit>
+      <trans-unit id="98150da2135df048362f787865805c5c" approved="yes">
+        <source>Nothing detected automatically: this product sets no occasion on the customer's contact.</source>
+        <target state="final">Nic nie wykryto automatycznie: ten produkt nie ustawia okazji w kontakcie klienta.</target>
+      </trans-unit>
+      <trans-unit id="96f6ff446d6f0cbb51ac8f45868fe92a" approved="yes">
+        <source>Nothing is waiting.</source>
+        <target state="final">Nic nie czeka.</target>
+      </trans-unit>
+      <trans-unit id="e378b41208f045c44d397dbd78a9eb59" approved="yes">
+        <source>Object id</source>
+        <target state="final">ID obiektu</target>
+      </trans-unit>
+      <trans-unit id="bfcf5ac4d0be13e280ec412cb22b6d9f" approved="yes">
+        <source>Occasion</source>
+        <target state="final">Okazja</target>
+      </trans-unit>
+      <trans-unit id="c3fc64498516b4a831cd4d64e399cf05" approved="yes">
+        <source>Occasions</source>
+        <target state="final">Okazje</target>
+      </trans-unit>
+      <trans-unit id="fe5d6fef2039680579768bd40f57619c" approved="yes">
+        <source>Occasions in the catalogue</source>
+        <target state="final">Okazje w katalogu</target>
+      </trans-unit>
+      <trans-unit id="bf54ed829f51426525cc9dc03b09b9fe" approved="yes">
+        <source>Off: the newsletter box ticked at registration or checkout adds the contact to the newsletter list directly. On: it sends the double opt-in e-mail instead. The footer form always uses double opt-in.</source>
+        <target state="final">Wyłączone: zaznaczona zgoda w rejestracji lub checkoucie od razu dodaje kontakt do listy newsletter. Włączone: zamiast tego wysyłany jest e-mail double opt-in. Formularz w stopce zawsze używa double opt-in.</target>
+      </trans-unit>
+      <trans-unit id="54fe8feafc20ed627f2cc07ca77fd812" approved="yes">
+        <source>Oldest job waiting for its first attempt: %minutes% min.</source>
+        <target state="final">Najstarsze zadanie czekające na pierwszą próbę: %minutes% min.</target>
+      </trans-unit>
+      <trans-unit id="18d55f278020ebcea9b8e1d821c55a6d" approved="yes">
+        <source>Only with marketing consent</source>
+        <target state="final">Tylko przy zgodzie marketingowej</target>
+      </trans-unit>
+      <trans-unit id="f7dc4bacee04cee07eb78c29f0905d7f" approved="yes">
+        <source>Order state → Brevo status</source>
+        <target state="final">Status zamówienia → status Brevo</target>
+      </trans-unit>
+      <trans-unit id="7442e29d7d53e549b78d93c46b8cdcfc" approved="yes">
+        <source>Orders</source>
+        <target state="final">Zamówienia</target>
+      </trans-unit>
+      <trans-unit id="d6890e70d9504621402d1ee56a56ee85" approved="yes">
+        <source>Orders, status changes, order_completed and order_status_changed events.</source>
+        <target state="final">Zamówienia, zmiany statusów, zdarzenia order_completed i order_status_changed.</target>
+      </trans-unit>
+      <trans-unit id="a4c988757e1101c23b8c78c609d768a8" approved="yes">
+        <source>Part of the webhook URLs below. Changing it breaks the webhooks set up in Brevo until they are updated.</source>
+        <target state="final">Część poniższych adresów webhooków. Zmiana psuje webhooki ustawione w Brevo, dopóki ich nie zaktualizujesz.</target>
+      </trans-unit>
+      <trans-unit id="f0970ab55504780cab735a84bc5913e7" approved="yes">
+        <source>Passed by the historical import as notifyUrl; nothing to set up in Brevo.</source>
+        <target state="final">Przekazywany przez import historii jako notifyUrl; nic nie trzeba ustawiać w Brevo.</target>
+      </trans-unit>
+      <trans-unit id="d59b2190878622749beb6cb92e27eada" approved="yes">
+        <source>Prefixes may contain only letters, digits, "_" and "-", at most 20 characters.</source>
+        <target state="final">Prefiksy mogą zawierać tylko litery, cyfry, „_” i „-”, maksymalnie 20 znaków.</target>
+      </trans-unit>
+      <trans-unit id="deb10517653c255364175796ace3553f" approved="yes">
+        <source>Product</source>
+        <target state="final">Produkt</target>
+      </trans-unit>
+      <trans-unit id="a739c073c66309fea7c63ebb9e64fcd0" approved="yes">
+        <source>Product, category and order id prefix</source>
+        <target state="final">Prefiks id produktów, kategorii i zamówień</target>
+      </trans-unit>
+      <trans-unit id="274dd1a254b993b753f1c243534e8e40" approved="yes">
+        <source>Products and categories, for product blocks in e-mails.</source>
+        <target state="final">Produkty i kategorie, do bloków produktowych w mailach.</target>
+      </trans-unit>
+      <trans-unit id="c561befcecc24f8d291437ac651d98a1" approved="yes">
+        <source>Products incl. tax, without shipping. 0 = any cart.</source>
+        <target state="final">Produkty brutto, bez wysyłki. 0 = każdy koszyk.</target>
+      </trans-unit>
+      <trans-unit id="722ad2d05ecf4868b00c5484b82fd808" approved="yes">
+        <source>Queue</source>
+        <target state="final">Kolejka</target>
+      </trans-unit>
+      <trans-unit id="34c57ce4ef648e2e4048d25fb6b12f4c" approved="yes">
+        <source>Queue a test job</source>
+        <target state="final">Dodaj zadanie testowe</target>
+      </trans-unit>
+      <trans-unit id="ac5bb077c33753116b5e91ff1766e7bc" approved="yes">
+        <source>Received</source>
+        <target state="final">Otrzymano</target>
+      </trans-unit>
+      <trans-unit id="7df84bbf86cf43c7803fb235bc138a89" approved="yes">
+        <source>Recommended. In Poland an abandoned-cart e-mail is usually treated as commercial information. Sending without consent is a legal decision, not a technical one.</source>
+        <target state="final">Zalecane. W Polsce mail o porzuconym koszyku traktuje się zwykle jako informację handlową. Wysyłka bez zgody to decyzja prawna, nie techniczna.</target>
+      </trans-unit>
+      <trans-unit id="e47012651199607610fd77c750791a28" approved="yes">
+        <source>Redirect after confirmation</source>
+        <target state="final">Przekierowanie po potwierdzeniu</target>
+      </trans-unit>
+      <trans-unit id="63d5049791d9d79d86e9a108b0a999ca" approved="yes">
+        <source>Reference</source>
+        <target state="final">Indeks</target>
+      </trans-unit>
+      <trans-unit id="ee423303a249fb898db9838a273b44b3" approved="yes">
+        <source>Remove the stored key</source>
+        <target state="final">Usuń zapisany klucz</target>
+      </trans-unit>
+      <trans-unit id="f81b335aa8cdecfbdd4ba0234ffadda9" approved="yes">
+        <source>Reports from Brevo</source>
+        <target state="final">Raporty z Brevo</target>
+      </trans-unit>
+      <trans-unit id="6327b4e59f58137083214a1fec358855" approved="yes">
+        <source>Retry</source>
+        <target state="final">Ponów</target>
+      </trans-unit>
+      <trans-unit id="aaed160aafda58388e8842a695d82845" approved="yes">
+        <source>Retry all failed and dead</source>
+        <target state="final">Ponów wszystkie failed i dead</target>
+      </trans-unit>
+      <trans-unit id="c9cc8cce247e49bae79f15173ce97354" approved="yes">
+        <source>Save</source>
+        <target state="final">Zapisz</target>
+      </trans-unit>
+      <trans-unit id="dbce474b57fb091a09f395b6db3507fa" approved="yes">
+        <source>Save an API key first.</source>
+        <target state="final">Najpierw zapisz klucz API.</target>
+      </trans-unit>
+      <trans-unit id="d143f8134947e7c96d0850dca7277726" approved="yes">
+        <source>Sent jobs are kept for 30 days.</source>
+        <target state="final">Wysłane zadania są przechowywane 30 dni.</target>
+      </trans-unit>
+      <trans-unit id="bf002dca75aece487db98c14e9041d6e" approved="yes">
+        <source>Set by hand. Choose "Automatic" to let the category mapping and the product name decide.</source>
+        <target state="final">Ustawione ręcznie. Wybierz „Automatycznie”, żeby decydowało mapowanie kategorii i nazwa produktu.</target>
+      </trans-unit>
+      <trans-unit id="f4f70727dc34561dfde1a3c529b6205c" approved="yes">
+        <source>Settings</source>
+        <target state="final">Ustawienia</target>
+      </trans-unit>
+      <trans-unit id="9a7e58ee13cb727cb7c4acc68f4cafe5" approved="yes">
+        <source>Settings saved.</source>
+        <target state="final">Ustawienia zapisane.</target>
+      </trans-unit>
+      <trans-unit id="62583a31143cd9a464bcae55d8ded901" approved="yes">
+        <source>Show all products</source>
+        <target state="final">Pokaż wszystkie produkty</target>
+      </trans-unit>
+      <trans-unit id="9efdc1916fe89fd944c2a98fc6e8d649" approved="yes">
+        <source>Show only products with an occasion</source>
+        <target state="final">Pokaż tylko produkty z okazją</target>
+      </trans-unit>
+      <trans-unit id="d9472734abde521e2fa3e81c410a6acb" approved="yes">
+        <source>Some attributes could not be synchronized.</source>
+        <target state="final">Części atrybutów nie udało się zsynchronizować.</target>
+      </trans-unit>
+      <trans-unit id="f31bbdd1b3e85bccd652680e16935819" approved="yes">
+        <source>Source</source>
+        <target state="final">Źródło</target>
+      </trans-unit>
+      <trans-unit id="ec53a8c4f07baed5d8825072c89799be" approved="yes">
+        <source>Status</source>
+        <target state="final">Status</target>
+      </trans-unit>
+      <trans-unit id="de162223fd728f078cb588d0d7154802" approved="yes">
+        <source>Step 2 of the occasion detection. A product's default category is checked first, then its other categories. A manual choice on the product page wins over this; the product name is checked only when no category matches.</source>
+        <target state="final">Krok 2 wykrywania okazji. Najpierw sprawdzana jest domyślna kategoria produktu, potem pozostałe. Ręczny wybór na karcie produktu ma pierwszeństwo; nazwa produktu jest sprawdzana tylko wtedy, gdy żadna kategoria nie pasuje.</target>
+      </trans-unit>
+      <trans-unit id="21b3cb64e5310225472b9fa9ad3e1ee3" approved="yes">
+        <source>Streams</source>
+        <target state="final">Strumienie</target>
+      </trans-unit>
+      <trans-unit id="a85dd55450646e74eabed629308d5bb3" approved="yes">
+        <source>Switch the streams on one at a time, after the historical import: contacts, then orders, then carts. A stream that is off queues nothing.</source>
+        <target state="final">Włączaj strumienie po kolei, po imporcie historii: kontakty, potem zamówienia, potem koszyki. Wyłączony strumień niczego nie kolejkuje.</target>
+      </trans-unit>
+      <trans-unit id="1fc9074b5c890714e4b7dd89032546da" approved="yes">
+        <source>Synchronize attributes</source>
+        <target state="final">Synchronizuj atrybuty</target>
+      </trans-unit>
+      <trans-unit id="1d2dcc63566881363c454a5e2c822de4" approved="yes">
+        <source>Synchronize attributes creates the contact attributes this module writes (ORDERS_COUNT, OCCASION_TYPE, ...) in Brevo. Run it once after saving the key, and again after adding a customer group. The test job goes through the queue and the worker, without any shop data.</source>
+        <target state="final">„Synchronizuj atrybuty” tworzy w Brevo atrybuty kontaktu, które zapisuje ten moduł (ORDERS_COUNT, OCCASION_TYPE, ...). Uruchom raz po zapisaniu klucza i ponownie po dodaniu grupy klientów. Zadanie testowe przechodzi przez kolejkę i worker, bez żadnych danych sklepu.</target>
+      </trans-unit>
+      <trans-unit id="39838db537c95bc8df810c5601601d5b" approved="yes">
+        <source>Test connection</source>
+        <target state="final">Test połączenia</target>
+      </trans-unit>
+      <trans-unit id="d082968096a7512b3754be9f5e0cdafe" approved="yes">
+        <source>The double opt-in redirect must be a full URL, starting with https://.</source>
+        <target state="final">Przekierowanie po double opt-in musi być pełnym adresem URL, zaczynającym się od https://.</target>
+      </trans-unit>
+      <trans-unit id="4a4be9e953f20fe62e41b276182d329f" approved="yes">
+        <source>The job is back in the queue.</source>
+        <target state="final">Zadanie wróciło do kolejki.</target>
+      </trans-unit>
+      <trans-unit id="656c7048744192b8eb87b7d603dd0767" approved="yes">
+        <source>The official Brevo plugin (sendinblue) is still active. Disable it before switching streams on here, or every contact and order is sent twice.</source>
+        <target state="final">Oficjalna wtyczka Brevo (sendinblue) jest nadal aktywna. Wyłącz ją przed włączeniem strumieni tutaj, inaczej każdy kontakt i zamówienie pójdą dwa razy.</target>
+      </trans-unit>
+      <trans-unit id="f7edad79d0d63664ca90354eb6734da8" approved="yes">
+        <source>The oldest job has been waiting for %minutes% minutes. Is the cron running? It should run "%command%" every minute.</source>
+        <target state="final">Najstarsze zadanie czeka od %minutes% min. Czy cron działa? Powinien co minutę uruchamiać „%command%”.</target>
+      </trans-unit>
+      <trans-unit id="5390182d7d6a16a4747704f21c6da424" approved="yes">
+        <source>The shop's thank-you page, e.g. a CMS page.</source>
+        <target state="final">Strona podziękowania w sklepie, np. strona CMS.</target>
+      </trans-unit>
+      <trans-unit id="e49c1502dcd8265810b116be673ee845" approved="yes">
+        <source>The webhook secret must be at least 16 characters long.</source>
+        <target state="final">Sekret webhooka musi mieć co najmniej 16 znaków.</target>
+      </trans-unit>
+      <trans-unit id="013525ab4555bdcaa7e9e032ad508ead" approved="yes">
+        <source>The worker is no longer paused.</source>
+        <target state="final">Worker nie jest już wstrzymany.</target>
+      </trans-unit>
+      <trans-unit id="c4ec45c68911398c2831b666561c6220" approved="yes">
+        <source>The worker is paused for another %seconds% s after Brevo answered with a rate limit, an outage or a refused key. See the Queue tab.</source>
+        <target state="final">Worker jest wstrzymany jeszcze przez %seconds% s, bo Brevo odpowiedziało limitem zapytań, awarią albo odrzuciło klucz. Zobacz zakładkę Kolejka.</target>
+      </trans-unit>
+      <trans-unit id="8625e1de7be14c39b1d14dc03d822497" approved="yes">
+        <source>Tools</source>
+        <target state="final">Narzędzia</target>
+      </trans-unit>
+      <trans-unit id="a1fa27779242b4902f7ae3bdd5c6d508" approved="yes">
+        <source>Type</source>
+        <target state="final">Typ</target>
+      </trans-unit>
+      <trans-unit id="fa18cf1ff9b12b88cd224fa28ba2bd74" approved="yes">
+        <source>Uninstalling deletes the queue, including jobs not sent yet, and the manual occasions of products. Data already in Brevo stays there.</source>
+        <target state="final">Odinstalowanie usuwa kolejkę, także zadania jeszcze niewysłane, oraz ręcznie ustawione okazje produktów. Dane, które są już w Brevo, zostają tam.</target>
+      </trans-unit>
+      <trans-unit id="4f1378e58c8cc37ecad00c155830a1a5" approved="yes">
+        <source>Unsubscribes</source>
+        <target state="final">Wypisy</target>
+      </trans-unit>
+      <trans-unit id="ff0a3b7f3daef040faf89a88fdac01b7" approved="yes">
+        <source>Updated</source>
+        <target state="final">Zaktualizowano</target>
+      </trans-unit>
+      <trans-unit id="141182f10dde801d35fdb51d802230eb" approved="yes">
+        <source>Webhook URLs</source>
+        <target state="final">Adresy webhooków</target>
+      </trans-unit>
+      <trans-unit id="fa538cc4be3ae6dc7deb0eebe354db1e" approved="yes">
+        <source>Webhook secret</source>
+        <target state="final">Sekret webhooka</target>
+      </trans-unit>
+      <trans-unit id="a5649f42381ee47681a7273a3ff4dd2d" approved="yes">
+        <source>What Brevo posted back to the webhook: results of order batches and contact imports, unsubscribes.</source>
+        <target state="final">Co Brevo odesłało na webhook: wyniki batchy zamówień i importów kontaktów, wypisy.</target>
+      </trans-unit>
+      <trans-unit id="c606198f4528b834a57ecb8835da31ac" approved="yes">
+        <source>Where each occasion comes from: a manual choice on the product page (Brevo tab), the category mapping (Mapping tab), or a keyword in the product name (chrz, komuni, bierzmowan, slub, wesel, zaslubin). Correct a wrong one on the product page; "None" there overrides the name and the category.</source>
+        <target state="final">Skąd pochodzi okazja: ręczny wybór na karcie produktu (zakładka Brevo), mapowanie kategorii (zakładka Mapowanie) albo słowo kluczowe w nazwie (chrz, komuni, bierzmowan, slub, wesel, zaslubin). Błędną popraw na karcie produktu; „Brak” nadpisuje nazwę i kategorię.</target>
+      </trans-unit>
+      <trans-unit id="787c1d69ee2933d1faa21115c60168a1" approved="yes">
+        <source>Without a change and without an order. At least 5.</source>
+        <target state="final">Bez zmian i bez zamówienia. Co najmniej 5.</target>
+      </trans-unit>
+      <trans-unit id="93cba07454f06a4a960172bbd6e2a435" approved="yes">
+        <source>Yes</source>
+        <target state="final">Tak</target>
+      </trans-unit>
+      <trans-unit id="2665b5265d2bae59a905806245fb57e3" approved="yes">
+        <source>a scheduled task in Dokploy, in the shop's root directory:</source>
+        <target state="final">zaplanowane zadanie w Dokploy, w katalogu głównym sklepu:</target>
+      </trans-unit>
+      <trans-unit id="c3f0126b3595cf6702cee8298a990f82" approved="yes">
+        <source>cart_updated and cart_abandoned events.</source>
+        <target state="final">Zdarzenia cart_updated i cart_abandoned.</target>
+      </trans-unit>
+      <trans-unit id="7db9e6f82bcc9ab7c3874ae5a0d2210c" approved="yes">
+        <source>category mapping</source>
+        <target state="final">mapowanie kategorii</target>
+      </trans-unit>
+      <trans-unit id="5f49bd3da5961d19a17303450da5d805" approved="yes">
+        <source>ext_id = prefix + id_customer, e.g. ps_123. Different per shop when two shops share one Brevo account.</source>
+        <target state="final">ext_id = prefiks + id_customer, np. ps_123. Inny dla każdego sklepu, jeśli dwa sklepy dzielą jedno konto Brevo.</target>
+      </trans-unit>
+      <trans-unit id="ecdcdc07abc4f5e03a129ca2c793bf4a" approved="yes">
+        <source>failed: Brevo refused the data (4xx), a retry only helps once the cause is fixed. dead: still failing after 6 attempts over about 7.5 hours (Brevo down, network, a bad key).</source>
+        <target state="final">failed: Brevo odrzuciło dane (4xx), ponowienie pomoże dopiero po usunięciu przyczyny. dead: błąd po 6 próbach w ciągu ok. 7,5 h (awaria Brevo, sieć, zły klucz).</target>
+      </trans-unit>
+      <trans-unit id="da02f873797f576b12785f4322ef6379" approved="yes">
+        <source>manual choice</source>
+        <target state="final">wybór ręczny</target>
+      </trans-unit>
+      <trans-unit id="640fd0cc0ffa0316ae087652871f4486" approved="yes">
+        <source>minutes</source>
+        <target state="final">min</target>
+      </trans-unit>
+      <trans-unit id="3c6a7d7a064eb2b49c1e716bb6e4ac00" approved="yes">
+        <source>no occasion</source>
+        <target state="final">bez okazji</target>
+      </trans-unit>
+      <trans-unit id="8049f2cd277669fd0daab69a607b7f0e" approved="yes">
+        <source>product name</source>
+        <target state="final">nazwa produktu</target>
+      </trans-unit>
+      <trans-unit id="f760a91eca31ffa3713520c3303dd28e" approved="yes">
+        <source>ps_emailsubscription sends its own verification e-mail, and Brevo sends the double opt-in: a footer sign-up is confirmed twice. Switch off "Would you like to send a verification email after subscription?" in ps_emailsubscription.</source>
+        <target state="final">ps_emailsubscription wysyła własny e-mail weryfikacyjny, a Brevo wysyła double opt-in: zapis ze stopki jest potwierdzany dwa razy. Wyłącz w ps_emailsubscription opcję wysyłania e-maila weryfikacyjnego po zapisie.</target>
+      </trans-unit>
+      <trans-unit id="e17cfe8c313f78bc4e2a511715c50fe5" approved="yes">
+        <source>— do not send —</source>
+        <target state="final">— nie wysyłaj —</target>
+      </trans-unit>
+      <trans-unit id="29fb57e50899ca970fcb63d1d1732d04" approved="yes">
+        <source>— none —</source>
+        <target state="final">— brak —</target>
+      </trans-unit>
+      <trans-unit id="9561146f233f4f70d51574b88b09bb18" approved="yes">
+        <source>✓ marks paid states. Brevo does not document its status values: check the revenue in Brevo's eCommerce dashboard on the test account before relying on this. Customer statistics (ORDERS_COUNT, TOTAL_SPENT) count paid orders whatever is chosen here.</source>
+        <target state="final">✓ oznacza statusy opłacone. Brevo nie dokumentuje swoich wartości statusów: sprawdź przychód w panelu eCommerce Brevo na koncie testowym, zanim na tym polegasz. Statystyki klienta (ORDERS_COUNT, TOTAL_SPENT) liczą opłacone zamówienia niezależnie od wyboru tutaj.</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

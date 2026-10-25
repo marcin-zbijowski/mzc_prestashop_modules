@@ -1,0 +1,14 @@
+# Loaded by the admin kernel, which is the one bin/console boots by default.
+# Only the console commands live in the container: hooks and front controllers run
+# without a Symfony kernel and build what they need with `new`.
+services:
+  _defaults:
+    public: true
+
+  Mzc\Brevo\Command\WorkerCommand:
+    tags:
+      - { name: 'console.command' }
+
+  Mzc\Brevo\Command\ImportCommand:
+    tags:
+      - { name: 'console.command' }

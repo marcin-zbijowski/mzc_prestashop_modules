@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+    <name>mzcbrevo</name>
+    <displayName><![CDATA[MZC Brevo]]></displayName>
+    <version><![CDATA[1.0.0]]></version>
+    <description><![CDATA[Kontakty, zamówienia i zdarzenia koszyka do Brevo, po stronie serwera przez kolejkę. Zastępuje oficjalną wtyczkę Brevo.]]></description>
+    <author><![CDATA[Marcin Zbijowski Consulting]]></author>
+    <tab><![CDATA[emailing]]></tab>
+    <confirmUninstall><![CDATA[Odinstalowanie usuwa kolejkę, także zadania jeszcze niewysłane, oraz ręcznie ustawione okazje produktów. Dane, które są już w Brevo, zostają tam.]]></confirmUninstall>
+    <is_configurable>1</is_configurable>
+    <need_instance>0</need_instance>
+</module>
