@@ -2,7 +2,7 @@
 <module>
     <name>mzcnewsletterguard</name>
     <displayName><![CDATA[MZC Newsletter Guard]]></displayName>
-    <version><![CDATA[1.1.0]]></version>
+    <version><![CDATA[1.1.1]]></version>
     <description><![CDATA[Ochrona zapisu do newslettera i formularza kontaktowego przed botami (Cloudflare Turnstile, honeypot, limity). Nie blokuje zakupów.]]></description>
     <author><![CDATA[Marcin Zbijowski Consulting]]></author>
     <tab><![CDATA[front_office_features]]></tab>
