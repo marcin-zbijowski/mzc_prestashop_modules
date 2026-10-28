@@ -80,7 +80,7 @@ class AttributeSynchronizer
                         continue;
                     }
 
-                    $update = $this->client->put('contacts/attributes/normal/' . $name, ['enumeration' => $enumeration]);
+                    $update = $this->client->put('contacts/attributes/' . self::categoryOf($type) . '/' . $name, ['enumeration' => $enumeration]);
                     $ok = $ok && $update->isSuccess();
                     $lines[] = $name . ': ' . ($update->isSuccess() ? 'values updated' : $update->errorMessage());
 
@@ -93,7 +93,7 @@ class AttributeSynchronizer
                     $body['enumeration'] = $enumeration;
                 }
 
-                $create = $this->client->post('contacts/attributes/normal/' . $name, $body);
+                $create = $this->client->post('contacts/attributes/' . self::categoryOf($type) . '/' . $name, $body);
                 $ok = $ok && $create->isSuccess();
                 $lines[] = $name . ': ' . ($create->isSuccess() ? 'created (' . $type . ')' : $create->errorMessage());
             }
@@ -102,6 +102,17 @@ class AttributeSynchronizer
         }
 
         return ['ok' => $ok, 'lines' => $lines];
+    }
+
+    /**
+     * The "attribute category" segment of Brevo's URL, which is not the same thing as the type.
+     * A category-typed attribute (a fixed list of values) lives under .../attributes/category/;
+     * posted to .../attributes/normal/ Brevo answers 400 "Invalid attribute type for category:
+     * normal". Text, number, date and boolean attributes are "normal".
+     */
+    private static function categoryOf(string $type): string
+    {
+        return $type === 'category' ? 'category' : 'normal';
     }
 
     /**
