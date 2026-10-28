@@ -138,6 +138,7 @@ php bin/console mzcbrevo:import --step=orders --since=2025-01-01
 - Kategorie i produkty: batch po 100, upsert.
 - Kontakty: `/v3/contacts/import`, wszyscy na listę klienci, ze zgodą (i zapisani tylko w stopce) na newsletter. Atrybuty ze statystykami i okazją. `ext_id` dopina pierwsza synchronizacja na żywo.
 - Zamówienia: batch po 1000, `historical: true` (nie odpala automatyzacji), wynik każdego batcha wraca na webhook i jest widoczny w zakładce Kolejka.
+- `--since=RRRR-MM-DD` zawęża import do tego, co aktualne: zamówienia złożone od tej daty oraz klientów, **których konto zmieniło się albo którzy złożyli zamówienie od tej daty**. **Każdy klient ze zgodą marketingową wchodzi zawsze**, bez względu na wiek konta (inaczej subskrybent z nieruszanym od dwóch lat kontem odpadłby z newslettera). Zapisani tylko w stopce idą zawsze. Przydatne przy planie Brevo z limitem kontaktów (darmowy: 2000): przed importem policz kontakty zapytaniem o unikalne adresy i zostaw zapas na nowe zapisy.
 - Idempotentne: ponowne uruchomienie nadpisuje, nie dubluje. Na końcu komenda wypisuje liczbę zamówień i sumę kwot do porównania z panelem eCommerce Brevo.
 
 ### 4. Strumienie na żywo

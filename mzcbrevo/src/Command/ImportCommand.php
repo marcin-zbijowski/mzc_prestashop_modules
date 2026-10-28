@@ -61,7 +61,7 @@ class ImportCommand extends Command
             ->setName('mzcbrevo:import')
             ->setDescription('One-off import of categories, products, contacts and historical orders to Brevo.')
             ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Write the request bodies to JSON files instead of sending them')
-            ->addOption('since', null, InputOption::VALUE_REQUIRED, 'Only orders placed / customers changed on or after this date (YYYY-MM-DD)')
+            ->addOption('since', null, InputOption::VALUE_REQUIRED, 'Orders placed on or after this date (YYYY-MM-DD), and customers who changed or ordered since then — plus every customer with marketing consent, however old')
             ->addOption('step', null, InputOption::VALUE_REQUIRED, 'Comma-separated steps: ' . implode(',', self::STEPS), implode(',', self::STEPS))
             ->addOption('shop', null, InputOption::VALUE_REQUIRED, 'Shop id', (string) \Configuration::get('PS_SHOP_DEFAULT'))
             ->addOption('output', null, InputOption::VALUE_REQUIRED, 'Directory for --dry-run files (default: var/mzcbrevo-import-<date>)');
