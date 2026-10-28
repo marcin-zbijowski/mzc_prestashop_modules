@@ -88,19 +88,47 @@ class ShopData
     /**
      * Customer ids for the historical import, oldest first.
      *
+     * With $since, the import is limited to who matters now — but never at the expense of
+     * somebody the newsletter has to reach. See customerIdsQuery().
+     *
      * @return int[]
      */
     public function customerIds(?string $since = null, int $afterId = 0, int $limit = 1000): array
     {
-        $rows = $this->db->executeS(
-            'SELECT `id_customer` FROM `' . _DB_PREFIX_ . 'customer`
-            WHERE `id_shop` = ' . $this->idShop . ' AND `deleted` = 0 AND `id_customer` > ' . $afterId . '
-            AND `email` NOT LIKE \'%' . pSQL(self::ANONYMOUS_EMAIL_SUFFIX) . '\''
-            . ($since !== null ? ' AND `date_upd` >= \'' . pSQL($since) . '\'' : '')
-            . ' ORDER BY `id_customer` ASC LIMIT ' . $limit
-        ) ?: [];
+        $rows = $this->db->executeS(self::customerIdsQuery($this->idShop, $since, $afterId, $limit)) ?: [];
 
         return array_map('intval', array_column($rows, 'id_customer'));
+    }
+
+    /**
+     * The SQL behind customerIds(), a static function so that the rule can be tested without a
+     * database.
+     *
+     * Without $since every customer qualifies. With it, a customer qualifies if ANY of these holds:
+     *   - the account row changed on or after $since (`date_upd`),
+     *   - the customer has marketing consent (`newsletter` = 1), whatever the age of the account: a
+     *     plan that caps the contact count must still keep everyone who can be mailed,
+     *   - the customer placed an order on or after $since. `date_upd` is when the row was last saved,
+     *     not when the customer last bought, so an account untouched since a purchase last spring
+     *     would otherwise drop out.
+     * The three conditions are one parenthesised group; the shop, deleted and anonymised filters
+     * apply to all of them.
+     */
+    public static function customerIdsQuery(int $idShop, ?string $since, int $afterId, int $limit): string
+    {
+        $period = '';
+
+        if ($since !== null) {
+            $date = pSQL($since);
+            $period = ' AND (`date_upd` >= \'' . $date . '\' OR `newsletter` = 1'
+                . ' OR `id_customer` IN (SELECT `id_customer` FROM `' . _DB_PREFIX_ . 'orders` WHERE `date_add` >= \'' . $date . '\'))';
+        }
+
+        return 'SELECT `id_customer` FROM `' . _DB_PREFIX_ . 'customer`
+            WHERE `id_shop` = ' . $idShop . ' AND `deleted` = 0 AND `id_customer` > ' . $afterId . '
+            AND `email` NOT LIKE \'%' . pSQL(self::ANONYMOUS_EMAIL_SUFFIX) . '\''
+            . $period
+            . ' ORDER BY `id_customer` ASC LIMIT ' . $limit;
     }
 
     public function customerIdByEmail(string $email): int

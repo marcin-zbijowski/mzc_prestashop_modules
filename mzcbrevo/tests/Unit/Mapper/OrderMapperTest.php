@@ -89,4 +89,40 @@ final class OrderMapperTest extends TestCase
         self::assertSame('2026-01-15T11:00:00Z', OrderMapper::utc('2026-01-15 12:00:00', 'Europe/Warsaw'));
         self::assertSame('2026-07-15T10:00:00Z', OrderMapper::utc('2026-07-15 12:00:00', 'Europe/Warsaw'));
     }
+
+    public function testLinesBrevoWouldRefuseAreLeftOut(): void
+    {
+        // Brevo answers 400 "order's ProductId and quantity is mandatory" for a line without a
+        // product or with no quantity, and refuses the whole batch it was in.
+        $order = self::order(['lines' => [
+            ['product_id' => 12, 'product_attribute_id' => 0, 'product_quantity' => 1, 'unit_price_tax_incl' => '99.000000'],
+            ['product_id' => 0, 'product_attribute_id' => 0, 'product_quantity' => 1, 'unit_price_tax_incl' => '5.000000'],
+            ['product_id' => 15, 'product_attribute_id' => 0, 'product_quantity' => 0, 'unit_price_tax_incl' => '5.000000'],
+        ]]);
+
+        $mapped = OrderMapper::toOrder($order, [2 => 'completed'], [self::class, 'id']);
+
+        self::assertSame([['productId' => 'ad12', 'quantity' => 1, 'price' => 99.0]], $mapped['products']);
+    }
+
+    public function testAnOrderWithNothingSendableIsNotMapped(): void
+    {
+        $order = self::order(['lines' => [
+            ['product_id' => 15, 'product_attribute_id' => 0, 'product_quantity' => 0, 'unit_price_tax_incl' => '5.000000'],
+        ]]);
+
+        self::assertNull(OrderMapper::toOrder($order, [2 => 'completed'], [self::class, 'id']));
+        self::assertNull(OrderMapper::toOrder(self::order(['lines' => []]), [2 => 'completed'], [self::class, 'id']));
+    }
+
+    public function testSkipReasonTellsAnUnmappedStateFromAnEmptyOrder(): void
+    {
+        $map = [2 => 'completed'];
+
+        self::assertNull(OrderMapper::skipReason(self::order(), $map));
+        self::assertSame(OrderMapper::SKIP_STATE, OrderMapper::skipReason(self::order(['current_state' => 99]), $map));
+        self::assertSame(OrderMapper::SKIP_LINES, OrderMapper::skipReason(self::order(['lines' => []]), $map));
+        // An unmapped state wins: that is the answer the operator controls.
+        self::assertSame(OrderMapper::SKIP_STATE, OrderMapper::skipReason(self::order(['current_state' => 99, 'lines' => []]), $map));
+    }
 }
