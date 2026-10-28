@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+    <name>mzcbrevo</name>
+    <displayName><![CDATA[MZC Brevo]]></displayName>
+    <version><![CDATA[1.0.0]]></version>
+    <description><![CDATA[Contacts, orders and cart events to Brevo, server-side through a queue. Replaces the official Brevo plugin.]]></description>
+    <author><![CDATA[Marcin Zbijowski Consulting]]></author>
+    <tab><![CDATA[emailing]]></tab>
+    <confirmUninstall><![CDATA[Uninstalling deletes the queue, including jobs not sent yet, and the manual occasions of products. Data already in Brevo stays there.]]></confirmUninstall>
+    <is_configurable>1</is_configurable>
+    <need_instance>0</need_instance>
+</module>
