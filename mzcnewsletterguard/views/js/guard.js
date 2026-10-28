@@ -3,9 +3,9 @@
  *
  * 1. Formularze newslettera dostają pole-pułapkę i token czasowy.
  * 2. Gdy skonfigurowano Cloudflare Turnstile, formularz newslettera i formularz
- *    kontaktowy dostają widżet. Skrypt Cloudflare ładuje się dopiero, gdy formularz
- *    zbliża się do widoku albo ktoś w nim klika, a nie na każdej stronie od razu.
- *    Widżet sam dokłada do formularza pole `cf-turnstile-response`.
+ *    kontaktowy dostają widżet. Skrypt Cloudflare ładuje się dopiero, gdy ktoś zaczyna
+ *    wypełniać formularz (kontakt: gdy formularz jest widoczny), a nie na każdej stronie
+ *    od razu. Token trafia do formularza przez ukryte pole `cf-turnstile-response`.
  */
 (function () {
   'use strict';
@@ -81,24 +81,68 @@
     list.forEach(function (fn) { fn(ok); });
   }
 
+  // Motyw widżetu z tła, na którym stoi formularz: ciemna stopka dostaje ciemny widżet.
+  function themeFor(el) {
+    for (var node = el; node && node.nodeType === 1; node = node.parentElement) {
+      var m = /rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/.exec(getComputedStyle(node).backgroundColor);
+      if (m && (m[4] === undefined || parseFloat(m[4]) > 0.5)) {
+        // luminancja względna, wystarczy przybliżenie
+        var lum = (0.2126 * m[1] + 0.7152 * m[2] + 0.0722 * m[3]) / 255;
+        return lum < 0.45 ? 'dark' : 'light';
+      }
+    }
+    return 'light';
+  }
+
+  /**
+   * Widżet dostaje własne miejsce poza układem formularza. Wstawiony do środka stawał się
+   * kolejnym elementem rzędu i zgniatał pole e-mail w formularzach typu „pole + przycisk”.
+   * Newsletter: tuż pod formularzem. Kontakt: nad przyciskiem wysyłania.
+   * Token trafia do formularza przez własne ukryte pole, a nie przez pole, które
+   * Turnstile dokładałby sam do swojego kontenera.
+   */
+  function placeBox(form, kind, box) {
+    if (kind === 'contact') {
+      var btn = form.querySelector(CONTACT);
+      var anchor = btn && btn.parentElement && btn.parentElement !== form ? btn.parentElement : btn;
+      if (anchor && anchor.parentNode) {
+        anchor.parentNode.insertBefore(box, anchor);
+        return;
+      }
+    }
+    form.insertAdjacentElement('afterend', box);
+  }
+
   function mountTurnstile(form) {
     var kind = kindOf(form);
     if (!ts || !kind || !ts[kind] || form.__mzcngTs) { return; }
 
-    var st = form.__mzcngTs = { box: null, id: null, token: '', failed: false, pending: null, timer: null };
+    var field = document.createElement('input');
+    field.type = 'hidden';
+    field.name = 'cf-turnstile-response';
+    form.appendChild(field);
+
+    var st = form.__mzcngTs = { box: null, id: null, token: '', failed: false, interactive: false, pending: null, timer: null };
 
     function render() {
       if (st.id !== null || st.failed) { return; }
       st.box = document.createElement('div');
       st.box.className = 'mzcng-turnstile';
-      form.appendChild(st.box);
+      st.box.style.cssText = 'margin:12px 0 0;max-width:100%;';
+      placeBox(form, kind, st.box);
 
       st.id = window.turnstile.render(st.box, {
         sitekey: ts.sitekey,
         appearance: ts.appearance,
-        callback: function (token) { st.token = token; release(); },
-        'expired-callback': function () { st.token = ''; window.turnstile.reset(st.id); },
-        'error-callback': function () { st.failed = true; release(); }
+        // Wąska kolumna stopki: wersja kompaktowa (150 px) zamiast 300 px.
+        size: kind === 'newsletter' ? 'compact' : 'normal',
+        theme: themeFor(form),
+        'response-field': false,
+        callback: function (token) { st.token = token; field.value = token; release(); },
+        'expired-callback': function () { st.token = ''; field.value = ''; window.turnstile.reset(st.id); },
+        'error-callback': function () { st.failed = true; release(); },
+        // Cloudflare uznał, że bez kliknięcia się nie obejdzie: widżet jest teraz widoczny.
+        'before-interactive-callback': function () { st.interactive = true; }
       });
     }
 
@@ -126,29 +170,45 @@
     }
 
     form.addEventListener('submit', function (e) {
-      if (st.token || st.failed || st.pending) {
-        // Token jest, widżet zawiódł (formularz idzie dalej bez niego) albo właśnie czekamy.
-        if (st.pending) { e.preventDefault(); }
+      if (st.token || st.failed) { return; }
+
+      e.preventDefault();
+
+      // Widżet czeka na kliknięcie: nie ma sensu odliczać, trzeba pokazać go odwiedzającemu.
+      if (st.interactive && st.box) {
+        st.pending = { submitter: e.submitter || null };
+        clearTimeout(st.timer);
+        st.box.scrollIntoView({ block: 'center', behavior: 'smooth' });
         return;
       }
-      e.preventDefault();
+      if (st.pending) { return; }
+
       st.pending = { submitter: e.submitter || null };
-      st.timer = setTimeout(function () { st.failed = true; release(); }, WAIT_MS);
+      st.timer = setTimeout(function () {
+        // Dalej bez tokenu, o ile widżet nie zdążył się pokazać: serwer odpowie komunikatem.
+        if (!st.interactive) { st.failed = true; release(); }
+      }, WAIT_MS);
       ensure();
     }, true);
 
+    // Zawsze, gdy ktoś zaczyna wypełniać formularz (focusin obejmuje też dotyk na telefonie).
     form.addEventListener('focusin', function () { ensure(); }, { once: true });
 
-    if ('IntersectionObserver' in window) {
-      var io = new IntersectionObserver(function (entries) {
-        if (entries.some(function (en) { return en.isIntersecting; })) {
-          io.disconnect();
-          ensure();
-        }
-      }, { rootMargin: '300px' });
-      io.observe(form);
-    } else {
-      ensure();
+    // Kontakt to osobna strona z jednym formularzem, więc widżet przygotowujemy, gdy formularz
+    // jest widoczny. Newsletter siedzi w stopce każdej strony: tam dopiero po kliknięciu, żeby
+    // nie ładować skryptu Cloudflare i nie generować wyzwań komuś, kto go nie używa.
+    if (kind === 'contact') {
+      if ('IntersectionObserver' in window) {
+        var io = new IntersectionObserver(function (entries) {
+          if (entries.some(function (en) { return en.isIntersecting; })) {
+            io.disconnect();
+            ensure();
+          }
+        }, { rootMargin: '300px' });
+        io.observe(form);
+      } else {
+        ensure();
+      }
     }
   }
 

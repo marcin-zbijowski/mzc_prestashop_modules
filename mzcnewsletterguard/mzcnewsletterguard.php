@@ -43,7 +43,7 @@ class Mzcnewsletterguard extends Module
     {
         $this->name = 'mzcnewsletterguard';
         $this->tab = 'front_office_features';
-        $this->version = '1.1.0';
+        $this->version = '1.1.1';
         $this->author = 'Marcin Zbijowski Consulting';
         $this->need_instance = 0;
         $this->bootstrap = true;

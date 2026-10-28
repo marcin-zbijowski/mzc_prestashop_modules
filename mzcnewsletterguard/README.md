@@ -20,8 +20,12 @@ Chroni **zapis do newslettera** (`ps_emailsubscription`) i **formularz kontaktow
    Wtedy klucz tajny nie trafia do bazy ani do jej kopii. Alternatywa: pola w panelu modułu.
    Zmienne mają pierwszeństwo, ale tylko gdy ustawione są **obie**.
 3. Widżet jest niewidoczny, dopóki Cloudflare nie wymaga interakcji (można zmienić na „zawsze
-   widoczny”). Skrypt Cloudflare ładuje się dopiero, gdy formularz zbliża się do widoku albo ktoś
-   w nim klika.
+   widoczny”). Ma własne miejsce poza układem formularza: pod formularzem w newsletterze (wersja
+   kompaktowa, motyw jasny lub ciemny według tła), nad przyciskiem „Wyślij” w kontakcie. Skrypt
+   Cloudflare ładuje się dopiero, gdy ktoś klika w formularz newslettera albo gdy formularz
+   kontaktowy jest widoczny. Jeśli ktoś wyśle formularz, zanim Cloudflare wystawi token, wysyłka
+   czeka (przy wyzwaniu z kliknięciem pokazuje się widżet i formularz wysyła się po jego
+   zaliczeniu).
 
 Zachowanie przy awarii: **brak tokenu = odrzucenie** (tak wygląda bot bez JavaScriptu);
 **brak odpowiedzi Cloudflare, 5xx albo zły klucz tajny = przepuszczenie** (formularza nie wolno
