@@ -14,24 +14,61 @@ use Mzc\Brevo\Data\ShopData;
  */
 final class OrderMapper
 {
+    /** Why toOrder() returned null. */
+    public const SKIP_STATE = 'state';
+    public const SKIP_LINES = 'lines';
+
+    /**
+     * The lines Brevo accepts: a product and a quantity. A line without either makes Brevo refuse
+     * the whole batch the order is in ("order's ProductId and quantity is mandatory at index N").
+     * Such lines exist in old shops: a product deleted long ago, a line zeroed by hand.
+     *
+     * @param array<string,mixed> $order
+     *
+     * @return list<array<string,mixed>>
+     */
+    private static function sendableLines(array $order): array
+    {
+        return array_values(array_filter(
+            (array) ($order['lines'] ?? []),
+            static fn (array $line): bool => (int) $line['product_id'] > 0 && (int) $line['product_quantity'] > 0
+        ));
+    }
+
+    /**
+     * Why an order is not sent: its state has no Brevo status (a decision of the operator), or it has
+     * no line Brevo would accept (a fact about the order). Null when it is sent.
+     *
+     * @param array<string,mixed> $order
+     * @param array<int,string> $statusMap
+     */
+    public static function skipReason(array $order, array $statusMap): ?string
+    {
+        if (($statusMap[(int) $order['current_state']] ?? '') === '') {
+            return self::SKIP_STATE;
+        }
+
+        return self::sendableLines($order) ? null : self::SKIP_LINES;
+    }
+
     /**
      * @param array<string,mixed> $order ShopData::order()
      * @param array<int,string> $statusMap id_order_state => Brevo status ('' = do not send)
      * @param callable(int): string $brevoId the shop id → Brevo id (adds the per-shop prefix)
      *
-     * @return array<string,mixed>|null null when the order's state is not to be sent
+     * @return array<string,mixed>|null null when the order is not to be sent: see skipReason()
      */
     public static function toOrder(array $order, array $statusMap, callable $brevoId): ?array
     {
         $status = $statusMap[(int) $order['current_state']] ?? '';
 
-        if ($status === '') {
+        if (self::skipReason($order, $statusMap) !== null) {
             return null;
         }
 
         $products = [];
 
-        foreach ($order['lines'] as $line) {
+        foreach (self::sendableLines($order) as $line) {
             $product = [
                 'productId' => $brevoId((int) $line['product_id']),
                 'quantity' => (int) $line['product_quantity'],

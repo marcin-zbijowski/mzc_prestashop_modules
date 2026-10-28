@@ -50,7 +50,9 @@ class OrderHandler extends AbstractHandler
             $mapped = OrderMapper::toOrder($order, $statusMap, $brevoId);
 
             if ($mapped === null) {
-                $results[$job->id] = Result::done(['skipped' => 'state ' . (int) $order['current_state'] . ' is not mapped to a Brevo status']);
+                $results[$job->id] = Result::done(['skipped' => OrderMapper::skipReason($order, $statusMap) === OrderMapper::SKIP_LINES
+                    ? 'the order has no line with a product and a quantity, which Brevo requires'
+                    : 'state ' . (int) $order['current_state'] . ' is not mapped to a Brevo status']);
 
                 continue;
             }

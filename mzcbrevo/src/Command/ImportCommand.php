@@ -15,6 +15,7 @@ use Mzc\Brevo\Mapper\CatalogMapper;
 use Mzc\Brevo\Mapper\CustomerMapper;
 use Mzc\Brevo\Mapper\OrderMapper;
 use Mzc\Brevo\Occasion\OccasionExtractor;
+use Mzc\Brevo\Sync\BatchBisector;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -301,6 +302,9 @@ class ImportCommand extends Command
         $count = 0;
         $skipped = 0;
         $revenue = 0.0;
+        $noLines = [];
+        $refused = [];
+        $failed = 0;
 
         while ($ids = $this->data->orderIds($since, $after, self::ORDERS_PER_BATCH)) {
             $orders = [];
@@ -310,24 +314,59 @@ class ImportCommand extends Command
                 $mapped = $order !== null ? OrderMapper::toOrder($order, $statusMap, $brevoId) : null;
 
                 if ($mapped === null) {
-                    ++$skipped;
+                    // An order without a line Brevo accepts is a fact about the order, listed by id so
+                    // it can be looked at; an unmapped state is the operator's own decision.
+                    if ($order !== null && OrderMapper::skipReason($order, $statusMap) === OrderMapper::SKIP_LINES) {
+                        $noLines[] = $id;
+                    } else {
+                        ++$skipped;
+                    }
+
                     continue;
                 }
 
                 $orders[] = $mapped;
-                $revenue += (float) $mapped['amount'];
             }
 
             $after = (int) end($ids);
+            ++$batch;
 
-            if ($orders) {
-                $this->send('orders/status/batch', ['orders' => $orders, 'historical' => true, 'notifyUrl' => $notifyUrl], 'orders-' . ++$batch);
-                $count += count($orders);
+            if (!$orders) {
+                continue;
             }
+
+            // Brevo refuses a whole batch for one bad order. Refused batches are split until the bad
+            // orders stand alone, so the good ones still go through.
+            $result = BatchBisector::deliver($orders, function (array $chunk, bool $final) use ($batch, $notifyUrl): string {
+                $label = $final ? 'order ' . $chunk[0]['id'] : 'orders-' . $batch . ' (' . count($chunk) . ' orders)';
+
+                return $this->send('orders/status/batch', ['orders' => $chunk, 'historical' => true, 'notifyUrl' => $notifyUrl], $label, $final);
+            });
+
+            foreach ($result['accepted'] as $accepted) {
+                ++$count;
+                $revenue += (float) $accepted['amount'];
+            }
+
+            $refused = array_merge($refused, array_column($result['refused'], 'id'));
+            $failed += count($result['failed']);
         }
 
-        // The numbers to compare with Brevo's eCommerce dashboard and the shop's own report.
-        $this->output->writeln(sprintf('%d orders sent (%d skipped by state), total amount %.2f', $count, $skipped, $revenue));
+        // The numbers to compare with Brevo's eCommerce dashboard and the shop's own report: only what
+        // Brevo accepted counts.
+        $this->output->writeln(sprintf('%d orders accepted by Brevo (%d skipped by state), total amount %.2f', $count, $skipped, $revenue));
+
+        if ($noLines) {
+            $this->output->writeln(sprintf('<comment>%d order(s) not sent: no line with a product and a quantity, which Brevo requires (shop ids %s)</comment>', count($noLines), implode(', ', array_slice($noLines, 0, 30)) . (count($noLines) > 30 ? ', …' : '')));
+        }
+
+        if ($refused) {
+            $this->output->writeln(sprintf('<error>%d order(s) refused by Brevo one by one (Brevo ids %s)</error>', count($refused), implode(', ', array_slice($refused, 0, 30)) . (count($refused) > 30 ? ', …' : '')));
+        }
+
+        if ($failed) {
+            $this->output->writeln(sprintf('<error>%d order(s) not delivered: the request failed after all retries. Run the step again.</error>', $failed));
+        }
     }
 
     /**
@@ -348,17 +387,25 @@ class ImportCommand extends Command
     /**
      * Sends one request, or writes it to the dry-run directory. Waits and repeats on
      * 429, 5xx and network errors; reports and moves on after a 4xx.
+     *
+     * A caller that is going to split a refused batch and try again passes $final = false: the
+     * refusal is then a step towards finding the bad item, not an error to count and print.
+     *
+     * @return string BatchBisector::OK, REJECTED (a 4xx) or FAILED (gave up)
      */
-    private function send(string $path, array $body, string $label): void
+    private function send(string $path, array $body, string $label, bool $final = true): string
     {
         if ($this->dumpDir !== null) {
+            // Labels like "orders-1 (884 orders)" are for the operator's eyes; the file name is the part
+            // before the first space ("orders-1"), which is what the dry run always produced.
+            $file = preg_replace('/[^A-Za-z0-9_-]+/', '_', explode(' ', $label)[0]);
             file_put_contents(
-                $this->dumpDir . '/' . $label . '.json',
+                $this->dumpDir . '/' . $file . '.json',
                 Json::encode(['path' => $path, 'body' => $body], JSON_PRETTY_PRINT)
             );
-            $this->output->writeln('  ' . $label . ' → ' . $label . '.json');
+            $this->output->writeln('  ' . $label . ' → ' . $file . '.json');
 
-            return;
+            return BatchBisector::OK;
         }
 
         for ($try = 1; $try <= self::MAX_TRIES; ++$try) {
@@ -373,7 +420,7 @@ class ImportCommand extends Command
             if ($response->isSuccess()) {
                 $this->output->writeln('  ' . $label . ': HTTP ' . $response->status . self::describe($response));
 
-                return;
+                return BatchBisector::OK;
             }
 
             if ($response->status === 429 || $response->status >= 500) {
@@ -382,14 +429,22 @@ class ImportCommand extends Command
                 continue;
             }
 
+            if (!$final) {
+                $this->output->writeln('<comment>  ' . $label . ': refused (' . $response->errorMessage() . ') — splitting to find the bad order</comment>');
+
+                return BatchBisector::REJECTED;
+            }
+
             ++$this->failures;
             $this->output->writeln('<error>  ' . $label . ': ' . $response->errorMessage() . '</error>');
 
-            return;
+            return BatchBisector::REJECTED;
         }
 
         ++$this->failures;
         $this->output->writeln('<error>  ' . $label . ': gave up after ' . self::MAX_TRIES . ' tries</error>');
+
+        return BatchBisector::FAILED;
     }
 
     private function wait(string $label, string $why, int $seconds): void
