@@ -15,7 +15,7 @@ use Mzc\Brevo\Queue\Job;
 use Mzc\Brevo\Queue\Result;
 
 /**
- * Events for Brevo automations (job type "event"), up to 200 per /v3/events/batch.
+ * Events for Brevo automations (job type "event"), up to 200 per /v3/events/batch (body {"events": [...]}).
  *
  * Cart events go only to contacts with marketing consent while
  * MZCBREVO_CART_REQUIRE_CONSENT is on (the default): in Poland an abandoned-cart
@@ -152,7 +152,7 @@ class EventHandler extends AbstractHandler
      */
     private function sendChunk(array $chunk): array
     {
-        $response = $this->raw(fn (): Response => $this->client->post('events/batch', array_values($chunk)));
+        $response = $this->raw(fn (): Response => $this->client->post('events/batch', ['events' => array_values($chunk)]));
         $results = [];
         $jobIds = array_keys($chunk);
 
@@ -168,10 +168,11 @@ class EventHandler extends AbstractHandler
 
         if ($response->status === 207) {
             foreach ((array) ($response->data['errors'] ?? []) as $error) {
-                $index = (int) ($error['eventIndex'] ?? -1);
-
-                if (isset($jobIds[$index])) {
-                    $refused[$jobIds[$index]] = 'HTTP 207: ' . (string) ($error['message'] ?? 'refused');
+                // eventIndex is a list: one message can cover several events.
+                foreach ((array) ($error['eventIndex'] ?? []) as $index) {
+                    if (isset($jobIds[(int) $index])) {
+                        $refused[$jobIds[(int) $index]] = 'HTTP 207: ' . (string) ($error['message'] ?? 'refused');
+                    }
                 }
             }
         }

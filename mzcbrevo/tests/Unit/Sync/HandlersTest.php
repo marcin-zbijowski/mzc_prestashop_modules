@@ -163,7 +163,7 @@ final class HandlersTest extends TestCase
         $data->orders[502] = OrderMapperTest::order(['id_order' => 502, 'email' => 'broken']);
 
         $handler = new EventHandler($this->client([
-            new MockResponse('{"message":"partial","count":1,"errors":[{"eventIndex":1,"message":"invalid email_id"}]}', ['http_code' => 207]),
+            new MockResponse('{"message":"partial","count":1,"errors":[{"eventIndex":[1],"message":"invalid email_id"}]}', ['http_code' => 207]),
         ]), $this->config, $data);
 
         $results = $handler->handle([
@@ -174,9 +174,10 @@ final class HandlersTest extends TestCase
         ]);
 
         self::assertSame('https://api.brevo.com/v3/events/batch', $this->requests[0]['url']);
-        self::assertCount(2, $this->requests[0]['body']);
-        self::assertSame('completed', $this->requests[0]['body'][0]['event_properties']['status']);
-        self::assertSame('State 2', $this->requests[0]['body'][0]['event_properties']['state_name']);
+        self::assertSame(['events'], array_keys($this->requests[0]['body']), 'Brevo wants {"events": [...]}, not a bare array');
+        self::assertCount(2, $this->requests[0]['body']['events']);
+        self::assertSame('completed', $this->requests[0]['body']['events'][0]['event_properties']['status']);
+        self::assertSame('State 2', $this->requests[0]['body']['events'][0]['event_properties']['state_name']);
         self::assertSame(Result::DONE, $results[1]->kind);
         self::assertSame(Result::FAIL, $results[2]->kind);
         self::assertStringContainsString('invalid email_id', $results[2]->error);
