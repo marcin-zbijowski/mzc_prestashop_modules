@@ -3,12 +3,13 @@
  * MZC Newsletter Guard
  *
  * Chroni zapis do newslettera (ps_emailsubscription) i formularz kontaktowy
- * (contactform) przed botami. Warstwy, od najtańszej:
+ * (contactform) przed botami, a zakładanie konta klienta — przed adresami z listy
+ * zablokowanych wzorców (fałszywe rejestracje). Warstwy, od najtańszej:
  *   1. pole-pułapka i token czasowy (tylko newsletter),
  *   2. filtr adresów e-mail (tylko newsletter),
  *   3. Cloudflare Turnstile — rozstrzyga, czy po drugiej stronie jest człowiek,
  *   4. limity zapisów na IP i globalny (tylko newsletter).
- * Nie dotyka koszyka, zamówień, logowania ani rejestracji konta.
+ * Nie dotyka koszyka, zamówień ani logowania; konto blokuje tylko po adresie e-mail.
  *
  * Awaria po stronie Cloudflare (brak odpowiedzi, błędny klucz tajny) nigdy nie
  * blokuje formularza — wtedy działają pozostałe warstwy (fail-open). Brak tokenu
@@ -34,16 +35,26 @@ class Mzcnewsletterguard extends Module
     const CONFIG_KEYS = [
         'MZCNG_ENABLED', 'MZCNG_IP_LIMIT', 'MZCNG_GLOBAL_LIMIT', 'MZCNG_MIN_SECONDS', 'MZCNG_REQUIRE_TOKEN',
         'MZCNG_PATTERNS', 'MZCNG_TS_NEWSLETTER', 'MZCNG_TS_CONTACT', 'MZCNG_TS_SITEKEY', 'MZCNG_TS_SECRET',
-        'MZCNG_TS_APPEARANCE',
+        'MZCNG_TS_APPEARANCE', 'MZCNG_ACCOUNT_ENABLED', 'MZCNG_ACCOUNT_PATTERNS',
     ];
 
-    const HOOKS = ['actionNewsletterRegistrationBefore', 'actionFrontControllerSetMedia', 'actionFrontControllerInitAfter'];
+    /**
+     * Domyślny filtr adresów przy zakładaniu konta. Pierwsza linia to wzorzec fałszywych rejestracji
+     * „mail<cyfry>@protonmail.com” (testy/skanery, z których każda wiadomość wraca jako niedostarczona).
+     * Celowo wąski: sama końcówka @protonmail.com należy do prawdziwych ludzi.
+     */
+    const ACCOUNT_PATTERNS_DEFAULT = "^mail\\d{5,}@(protonmail\\.com|proton\\.me|pm\\.me)\$\n@(mailinator|guerrillamail|10minutemail|tempmail|yopmail|trashmail)\\.\n";
+
+    const HOOKS = [
+        'actionNewsletterRegistrationBefore', 'actionFrontControllerSetMedia', 'actionFrontControllerInitAfter',
+        'actionSubmitAccountBefore',
+    ];
 
     public function __construct()
     {
         $this->name = 'mzcnewsletterguard';
         $this->tab = 'front_office_features';
-        $this->version = '1.1.1';
+        $this->version = '1.2.0';
         $this->author = 'Marcin Zbijowski Consulting';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -52,7 +63,7 @@ class Mzcnewsletterguard extends Module
         parent::__construct();
 
         $this->displayName = $this->l('MZC Newsletter Guard');
-        $this->description = $this->l('Ochrona zapisu do newslettera i formularza kontaktowego przed botami (Cloudflare Turnstile, honeypot, limity). Nie blokuje zakupów.');
+        $this->description = $this->l('Ochrona zapisu do newslettera i formularza kontaktowego przed botami (Cloudflare Turnstile, honeypot, limity) oraz blokada fałszywych adresów przy zakładaniu konta. Nie blokuje zakupów.');
     }
 
     // ---------------------------------------------------------------- install
@@ -82,6 +93,8 @@ class Mzcnewsletterguard extends Module
             'MZCNG_TS_SITEKEY' => '',
             'MZCNG_TS_SECRET' => '',
             'MZCNG_TS_APPEARANCE' => 'interaction-only',
+            'MZCNG_ACCOUNT_ENABLED' => 1,
+            'MZCNG_ACCOUNT_PATTERNS' => self::ACCOUNT_PATTERNS_DEFAULT,
         ];
 
         foreach ($defaults as $key => $value) {
@@ -219,7 +232,60 @@ class Mzcnewsletterguard extends Module
         }
     }
 
+    /**
+     * Zakładanie konta: strona rejestracji i krok „Dane osobowe” w koszyku (także zakup jako gość)
+     * wołają ten sam hook przed zapisem klienta. Zwrócone `false` zatrzymuje zapis.
+     *
+     * UWAGA: PrestaShop łączy wyniki hooków przez `&&`, więc KAŻDA ścieżka musi zwrócić `true`
+     * (samo `return;` dałoby `null` i zablokowało rejestrację wszystkim).
+     * Błąd lub wyjątek = rejestracja przechodzi (fail-open).
+     */
+    public function hookActionSubmitAccountBefore()
+    {
+        try {
+            if (!Configuration::get('MZCNG_ENABLED') || !Configuration::get('MZCNG_ACCOUNT_ENABLED')) {
+                return true;
+            }
+
+            $email = Tools::strtolower(trim((string) Tools::getValue('email')));
+            if ($email === '' || !$this->matchesPatterns($email, (string) Configuration::get('MZCNG_ACCOUNT_PATTERNS'))) {
+                return true;
+            }
+
+            $this->log($this->getClientIp(), $email, 'acct_pattern', 0);
+
+            // Komunikat nie zdradza, co dokładnie jest nie tak z adresem.
+            $controller = $this->context->controller;
+            if ($controller) {
+                $controller->errors[] = $this->l('Nie możemy założyć konta na ten adres e-mail. Użyj innego adresu albo napisz do nas.');
+            }
+
+            return false;
+        } catch (\Throwable $e) {
+            return true; // fail-open
+        }
+    }
+
     // -------------------------------------------------------------- detection
+
+    /**
+     * Czy adres pasuje do któregokolwiek wzorca (regex, po jednym w linii, bez ograniczników,
+     * wielkość liter bez znaczenia). Błędny wzorzec jest pomijany.
+     */
+    private function matchesPatterns($email, $patterns)
+    {
+        foreach (preg_split('/\R/', $patterns) as $pattern) {
+            $pattern = trim($pattern);
+            if ($pattern === '' || $email === '') {
+                continue;
+            }
+            if (@preg_match('~' . str_replace('~', '\~', $pattern) . '~i', $email) === 1) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     private function detect($email, $ip)
     {
@@ -249,14 +315,8 @@ class Mzcnewsletterguard extends Module
         }
 
         // wzorce adresów (regex, po jednym w linii)
-        foreach (preg_split('/\R/', (string) Configuration::get('MZCNG_PATTERNS')) as $pattern) {
-            $pattern = trim($pattern);
-            if ($pattern === '' || $email === '') {
-                continue;
-            }
-            if (@preg_match('~' . str_replace('~', '\~', $pattern) . '~i', $email) === 1) {
-                return 'pattern';
-            }
+        if ($this->matchesPatterns($email, (string) Configuration::get('MZCNG_PATTERNS'))) {
+            return 'pattern';
         }
 
         // Turnstile — po tanich filtrach, bo to zapytanie do zewnętrznej usługi
@@ -466,13 +526,14 @@ class Mzcnewsletterguard extends Module
 
     private function saveSettings()
     {
-        foreach (['MZCNG_ENABLED', 'MZCNG_REQUIRE_TOKEN', 'MZCNG_TS_NEWSLETTER', 'MZCNG_TS_CONTACT'] as $key) {
+        foreach (['MZCNG_ENABLED', 'MZCNG_REQUIRE_TOKEN', 'MZCNG_TS_NEWSLETTER', 'MZCNG_TS_CONTACT', 'MZCNG_ACCOUNT_ENABLED'] as $key) {
             Configuration::updateValue($key, (int) (bool) Tools::getValue($key));
         }
         Configuration::updateValue('MZCNG_IP_LIMIT', max(1, (int) Tools::getValue('MZCNG_IP_LIMIT')));
         Configuration::updateValue('MZCNG_GLOBAL_LIMIT', max(1, (int) Tools::getValue('MZCNG_GLOBAL_LIMIT')));
         Configuration::updateValue('MZCNG_MIN_SECONDS', max(0, (int) Tools::getValue('MZCNG_MIN_SECONDS')));
         Configuration::updateValue('MZCNG_PATTERNS', (string) Tools::getValue('MZCNG_PATTERNS'));
+        Configuration::updateValue('MZCNG_ACCOUNT_PATTERNS', (string) Tools::getValue('MZCNG_ACCOUNT_PATTERNS'));
         Configuration::updateValue('MZCNG_TS_APPEARANCE', Tools::getValue('MZCNG_TS_APPEARANCE') === 'always' ? 'always' : 'interaction-only');
         Configuration::updateValue('MZCNG_TS_SITEKEY', trim((string) Tools::getValue('MZCNG_TS_SITEKEY')));
 
@@ -578,6 +639,10 @@ class Mzcnewsletterguard extends Module
                     ['type' => 'text', 'label' => $this->l('Limit zapisów w sumie na godzinę'), 'name' => 'MZCNG_GLOBAL_LIMIT', 'class' => 'fixed-width-sm'],
                     ['type' => 'text', 'label' => $this->l('Minimalny czas od załadowania strony (s)'), 'name' => 'MZCNG_MIN_SECONDS', 'class' => 'fixed-width-sm'],
                     ['type' => 'textarea', 'label' => $this->l('Zablokowane wzorce adresów (regex, po jednym w linii)'), 'name' => 'MZCNG_PATTERNS', 'rows' => 6, 'cols' => 60],
+                    $switch('MZCNG_ACCOUNT_ENABLED', $this->l('Blokuj fałszywe adresy przy zakładaniu konta'),
+                        $this->l('Rejestracja i konto zakładane w koszyku (także zakup jako gość).')),
+                    ['type' => 'textarea', 'label' => $this->l('Zablokowane adresy przy zakładaniu konta (regex, po jednym w linii)'), 'name' => 'MZCNG_ACCOUNT_PATTERNS', 'rows' => 6, 'cols' => 60,
+                        'desc' => $this->l('Wielkość liter bez znaczenia, bez ograniczników. Przykład: ^mail\\d{5,}@protonmail\\.com$')],
                     $switch('MZCNG_TS_NEWSLETTER', $this->l('Turnstile w zapisie do newslettera')),
                     $switch('MZCNG_TS_CONTACT', $this->l('Turnstile w formularzu kontaktowym')),
                     ['type' => 'text', 'label' => $this->l('Turnstile: klucz witryny (site key)'), 'name' => 'MZCNG_TS_SITEKEY', 'class' => 'fixed-width-xxl'],
@@ -623,6 +688,8 @@ class Mzcnewsletterguard extends Module
             'MZCNG_GLOBAL_LIMIT' => (int) Configuration::get('MZCNG_GLOBAL_LIMIT'),
             'MZCNG_MIN_SECONDS' => (int) Configuration::get('MZCNG_MIN_SECONDS'),
             'MZCNG_PATTERNS' => (string) Configuration::get('MZCNG_PATTERNS'),
+            'MZCNG_ACCOUNT_ENABLED' => (int) Configuration::get('MZCNG_ACCOUNT_ENABLED'),
+            'MZCNG_ACCOUNT_PATTERNS' => (string) Configuration::get('MZCNG_ACCOUNT_PATTERNS'),
             'MZCNG_TS_NEWSLETTER' => (int) Configuration::get('MZCNG_TS_NEWSLETTER'),
             'MZCNG_TS_CONTACT' => (int) Configuration::get('MZCNG_TS_CONTACT'),
             'MZCNG_TS_SITEKEY' => (string) Configuration::get('MZCNG_TS_SITEKEY'),

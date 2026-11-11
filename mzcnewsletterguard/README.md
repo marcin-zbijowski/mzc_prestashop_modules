@@ -1,7 +1,8 @@
 # MZC Newsletter Guard
 
 Chroni **zapis do newslettera** (`ps_emailsubscription`) i **formularz kontaktowy**
-(`contactform`) przed botami. Nie dotyka koszyka, zamówień, logowania ani rejestracji.
+(`contactform`) przed botami oraz **zakładanie konta** przed fałszywymi adresami e-mail. Nie dotyka
+koszyka, zamówień ani logowania.
 
 ## Warstwy (od najtańszej)
 
@@ -49,9 +50,19 @@ adres Traefika i limit na IP działa jak limit globalny.
 na stronie kontaktu: przy niepowodzeniu usuwa `submitMessage` z żądania (formularz tylko się
 pokazuje, nic nie jest wysyłane) i dopisuje komunikat do błędów strony.
 
+## Fałszywe rejestracje
+
+Hook `actionSubmitAccountBefore` obsługuje stronę rejestracji i krok „Dane osobowe” w koszyku
+(także zakup jako gość). Adres z formularza jest porównywany z listą wzorców (regex, po jednym w
+linii, bez wielkości liter) z ustawienia „Zablokowane adresy przy zakładaniu konta”. Domyślnie:
+`^mail\d{5,}@(protonmail\.com|proton\.me|pm\.me)$` (wzorzec botów „mail5613216@protonmail.com”)
+oraz jednorazowe skrzynki. Dopasowany adres: konto nie powstaje, klient widzi neutralny komunikat,
+próba trafia do statystyk jako `acct_pattern`. Przełącznik „Blokuj fałszywe adresy…” wyłącza całość.
+Hook zawsze zwraca `true` poza dopasowaniem (PrestaShop łączy wyniki przez `&&`); wyjątek = przepuszczenie.
+
 ## Wdrożenie
 
 Moduł jest poza repozytorium motywu: skopiować do `modules/` kontenera (`chown www-data`).
-Nowa instalacja: `prestashop:module install mzcnewsletterguard`. Aktualizacja z 1.0.0:
-`prestashop:module upgrade mzcnewsletterguard` (rejestruje hook formularza kontaktowego,
-dopisuje ustawienia; Turnstile pozostaje wyłączony, dopóki nie podasz kluczy).
+Nowa instalacja: `prestashop:module install mzcnewsletterguard`. Aktualizacja z 1.0.0 / 1.1.x:
+`prestashop:module upgrade mzcnewsletterguard` (rejestruje hooki formularza kontaktowego i
+zakładania konta, dopisuje ustawienia; Turnstile pozostaje wyłączony, dopóki nie podasz kluczy).
